@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Welcome to our new Holy Cross College Student Portal." />
-    <title><?php $this->renderSection("title"); ?></title>
+    <title><?= $this->renderSection('title') ?></title>
     
     <!-- Favicon -->
     <link rel="shortcut icon" href="<?= base_url(); ?>/public/assets/images/favicon.ico">
@@ -35,7 +35,7 @@
     <!-- CODE HERE! -->
 
 
-    <?php $this->renderSection("content"); ?>
+    <?= $this->renderSection("content"); ?>
 
 
     <!-- END OF CODE -->

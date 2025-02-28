@@ -660,7 +660,7 @@
                                     <li><a class="dropdown-item" href="<?= base_url(); ?>profile">Profile</a></li>
                                     <li><a class="dropdown-item" href="#">Privacy Setting</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="<?= base_url(); ?>/dashboard/logout">Logout</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url(); ?>logout">Logout</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -674,8 +674,8 @@
                         <div class="col-md-12">
                             <div class="flex-wrap d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h1><?php $this->renderSection("page_heading"); ?></h1>
-                                    <p><?php $this->renderSection("page_p"); ?></p>
+                                    <h1><?= $this->renderSection("page_heading"); ?></h1>
+                                    <p><?= $this->renderSection("page_p"); ?></p>
                                 </div>
                                 <div>
                                     <a href="#" class="btn btn-link btn-soft-light">

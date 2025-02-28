@@ -1,15 +1,9 @@
-<?php
-    $page_session = \CodeIgniter\Config\Services::session();
-?>
-<?php $this->section("title"); ?>
-    <?php echo $page_title; ?>
-<?php $this->endSection(); ?>
 <!doctype html>
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title><?php $this->renderSection("title"); ?></title>
+        <title>Holy Cross College | Student Portal</title>
         <!-- Favicon -->
         <link rel="shortcut icon" href="<?= base_url(); ?>/public/assets/images/hccicon.ico">
         <!-- Library / Plugin Css Build -->
@@ -36,7 +30,7 @@
                                     <img src="<?= base_url(); ?>public/assets/images/logo4.png" alt="" style="width: 40%">
                                     <h3 style="color: white;"><strong>HOLY CROSS COLLEGE<br>STUDENT PORTAL</strong></h3>
                                     <br>
-                                    <?php echo form_open(); ?>
+                                    <?= form_open('/'); ?>
                                         <div class="row" style="text-align: left;">
                                             <?php if(isset($validation)): ?>
                                                 <div class="alert alert-danger d-flex align-items-left" role="alert">
@@ -77,7 +71,7 @@
                                                 <input type="submit" value="SIGN IN" class="btn btn-primary" style="width: 100%">
                                             </div>
                                         </div>
-                                    <?php echo form_close();?>
+                                    <?= form_close();?>
                                 </div>
                             </div>
                         </div>
