@@ -21,8 +21,7 @@ class SYController extends BaseController
             'page_heading' => 'SCHOOL YEAR! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
-        if(!session()->has('logged_user'))
-        {
+        if(!session()->has('logged_user')) {
             return redirect()->to(base_url());
         }
         $uid = session()->get('logged_user');

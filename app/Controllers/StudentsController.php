@@ -113,4 +113,53 @@ class StudentsController extends BaseController
         session()->setTempdata('activatesuccess', 'Student is deleted!', 2);
         return redirect()->to(base_url()."students");
     }
+    public function studentInfo($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Students Information',
+            'page_heading' => 'STUDENTS INFORMATION',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $StudentsCondition = array('studid' => $id);
+        $data['studentdata'] = $this->studentsModel->where($StudentsCondition)->findAll();
+
+        return view('studentsinfo', $data);
+    }
+    public function studentInfoUpdate($id=null) {
+        if($this->request->is('post')) {
+            $LN = $this->request->getVar('lname');
+            $FN = $this->request->getVar('fname');
+            $MN = $this->request->getVar('mname');
+            $EXT = $this->request->getVar('extname');
+            $FULL = $LN.', '.$FN.' '.$EXT.' '.$MN;
+            $data = [
+                'studln' => $LN,
+                'studfn' => $FN,
+                'studmn' => $MN,
+                'studextension' => $EXT,
+                'studfullname' => $FULL,
+                'studbirthday' => $this->request->getVar('birthdate'),
+                'studage' => $this->request->getVar('age'),
+                'studgender' => $this->request->getVar('gender'),
+                'studstbarangay' => $this->request->getVar('barangay'),
+                'studcity' => $this->request->getVar('city'),
+                'studprovince' => $this->request->getVar('province'),
+                'studcontact' => $this->request->getVar('contact'),
+                'studcitizenship' => $this->request->getVar('citizenship'),
+                'studreligion' => $this->request->getVar('religion'),
+                'studemail' => $this->request->getVar('email'),
+                'studbirthplace' => $this->request->getVar('birthplace'),
+                'studcreatedat' => $this->request->getVar('section'),
+            ];
+
+            $this->studentsModel->where('studid', $id)->update($id, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."students");
+        }
+    }
 }
