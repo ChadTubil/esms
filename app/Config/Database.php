@@ -26,10 +26,10 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'sms',
+        'hostname'     => '192.185.41.38',
+        'username'     => 'holycros_misadmin',
+        'password'     => '{_VNe+qld#Mv',
+        'database'     => 'holycros_sms',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
