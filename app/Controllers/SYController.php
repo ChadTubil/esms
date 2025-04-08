@@ -29,7 +29,7 @@ class SYController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
 
-        if($this->request->is('post')){
+        if($this->request->is('post')) {
             $rules = [
                 'schoolyear' => [
                     'rules' => 'required|is_unique[sy.syname]',

@@ -118,6 +118,19 @@ $routes->get('assessment', 'EnrollmentController::assessment');
 $routes->post('assessment', 'EnrollmentController::assessment');
 $routes->add('assessment/process/(:segment)', 'EnrollmentController::assessmentProcess/$1');
 $routes->add('assessment/process2/(:segment)', 'EnrollmentController::assessmentProcess2/$1');
+// STUDENT FPA
+$routes->get('studentfar', 'FARController::index');
+$routes->get('studentfar/evaluation/(:segment)', 'FARController::farStudent/$1');
+$routes->post('studentfar/evaluationfirst', 'FARController::farStudentfirst');
+$routes->add('studentfar/evaluationsecond/(:segment)', 'FARController::farStudentsecond/$1');
+$routes->post('studentfar/evaluationthird/(:segment)', 'FARController::farStudentthird/$1');
+$routes->get('studentfar/evaluationfourth/(:segment)', 'FARController::farStudentfourth/$1');
+$routes->post('studentfar/evaluationfifth/(:segment)', 'FARController::farStudentfifth/$1');
+$routes->get('studentfar/evaluationsixth/(:segment)', 'FARController::farStudentsixth/$1');
+$routes->add('studentfar/evaluationseventh/(:segment)', 'FARController::farStudentseventh/$1');
+// HRD
+$routes->add('hrd-fpareports', 'HRDController::index'); //di pa tapos
+
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');
