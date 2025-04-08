@@ -245,7 +245,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#hrd" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -274,7 +274,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> -->
                         <li><hr class="hr-horizontal"></li>
                         <li class="nav-item static-item">
                             <a class="nav-link static-item disabled" href="#" tabindex="-1">
