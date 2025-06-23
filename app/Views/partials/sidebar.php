@@ -1,11 +1,7 @@
 <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all">
-    <div class="sidebar-header d-flex align-items-center justify-content-start">
-        
-        <a href="#" class="navbar-brand">
-            <div class="logo-main" style="text-align: center;">
-                <img src="<?= base_url();?>/public/assets/images/hcchopelogo.png" alt="Logo" style="width: 80%">
-            </div>
-        </a>
+    <div class="sidebar-header d-flex align-items-center justify-content-start" style="padding-bottom: 10px">
+        <br>
+        <br>
         <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
             <i class="icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,12 +10,16 @@
                 </svg>
             </i>
         </div>
-        
     </div>
     <div class="sidebar-body pt-0 data-scrollbar">
+        <div class="logo-main" style="text-align: center;">
+            <img src="<?= base_url();?>/public/assets/images/hcchopelogo.png" alt="Logo" style="width: 60%">
+            <h5 style="font-size: 13px">SCHOOL MANAGEMENT SYSTEM</h5>
+        </div>
         <div class="sidebar-list">
             <!-- Sidebar Menu Start -->
             <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
+                <li><hr class="hr-horizontal"></li>
                 <?php foreach($usersaccess as $usera): ?>
                     <?php if($usera['uadmin'] == 1): ?>
                         <li class="nav-item">
