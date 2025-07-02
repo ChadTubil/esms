@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/base"); ?>
+<?php $this->extend("layouts/base"); ?>
 
 <?= $this->section("title"); ?>
     <?= $page_title; ?>
@@ -16,7 +16,6 @@
     <!-- ----------- END OF SIDEBAR ------------------ --> 
 
     <!-- Begin Page Content -->
-
     <div class="conatiner-fluid content-inner mt-n5 py-0">
         <div class="row">
             <div class="col-lg-4 col-sm-12">
@@ -32,33 +31,25 @@
                                 <?php echo $validation->listErrors(); ?>
                             </div>
                         <?php endif; ?>
-                        <?= form_open('users'); ?>
+                        <?= form_open('curriculum'); ?>
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">ACCOUNT NO.</label>
-                                    <input type="text" name="account" class="form-control">
+                                    <label class="form-label" for="validationDefault01">PROGRAM</label>
+                                    <select name="course" class="js-example-basic-single" id="Course" style="width: 100%;">
+                                        <option selected="" disabled=""></option>
+                                        <?php foreach ($coursedata as $courd): ?>
+                                            <option value="<?php echo $courd['courcode']; ?>"><?php echo $courd['courcode']; ?> - <?php echo $courd['course']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">USERNAME</label>
-                                    <input type="text" name="username" class="form-control">
-                                </div>
-                                <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">PASSWORD</label>
-                                    <input type="text" name="password" class="form-control">
-                                </div>
-                                <div class="col-lg-12 col-sm-12">
-                                    <br>
-                                    <label class="form-label" for="validationDefault01">ACCESS</label>
-                                    <br>
-                                    <input class="form-check-input" type="checkbox" name="cadmin" value="1"><span> Administrator</span>
-                                    <br>
-                                    <input class="form-check-input" type="checkbox" name="cregistrar" value="1"><span> Registrar</span>
-                                    <br>
-                                    <input class="form-check-input" type="checkbox" name="cpc" value="1"><span> Program Chair</span>
-                                    <br>
-                                    <input class="form-check-input" type="checkbox" name="chrd" value="1"><span> HRD</span>
-                                    <br>
-                                    <input class="form-check-input" type="checkbox" name="cemployee" value="1"><span> Employee</span>
+                                    <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
+                                    <select name="sy" class="js-example-basic-single" id="SY" style="width: 100%;">
+                                        <option selected="" disabled=""></option>
+                                        <?php foreach ($sydata as $syd): ?>
+                                            <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
                             <br>
@@ -94,51 +85,32 @@
                             <table id="datatable" class="table table-striped" data-toggle="data-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>USERNAME</th>
-                                        <th>STATUS</th>
+                                        <th>PROGRAM</th>
+                                        <th>SCHOOL YEAR</th>
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach($usersinfo as $user):?>
+                                    <?php foreach($curriculumdata as $curriculumd):?>
                                         <tr>
-                                            <td><?= $user['uaccountid']; ?></td>
-                                            <td><?= $user['username']; ?></td>
-                                            <td>
-                                                <?php if($user['ustatus'] == 1): ?>
-                                                    <?= "Disabled"; ?>
-                                                <?php else: ?>
-                                                    <?= "Active"; ?>
-                                                <?php endif; ?>
-                                            </td>
+                                            <td><?= $curriculumd['course']; ?></td>
+                                            <td><?= $curriculumd['sy']; ?></td>
                                             <td>
                                                 <div class="flex align-items-center list-user-action">
-                                                    <button class="btn btn-sm btn-icon btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Disable"
-                                                        onclick="window.location.href='<?= base_url(); ?>users/disable/<?= $user['uid']; ?>';"
-                                                        <?php if($user['ustatus'] == 1){echo 'hidden';}else{} ?>>
-                                                        <span class="btn-inner">
-                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path d="M14.3955 9.59497L9.60352 14.387" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path d="M14.3971 14.3898L9.60107 9.59277" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            </svg>                                                                                              
-                                                        </span>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Enable"
-                                                        onclick="window.location.href='<?= base_url(); ?>users/enable/<?= $user['uid']; ?>';"
-                                                        <?php if($user['ustatus'] == 0){echo 'hidden';}else{} ?>>
+                                                    <a class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Set Up"
+                                                        onclick="window.location.href='<?= base_url(); ?>curriculum-setup/<?= $curriculumd['currid']; ?>';">
                                                         <span class="btn-inner">
                                                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                 <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                                 <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                         
-                                                            </svg>                                                                                              
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            </svg>                            
                                                         </span>
-                                                    </button>
+                                                        <span>SET UP</span>
+                                                    </a>
                                                     <a class="btn btn-sm btn-icon btn-primary" title="Edit"
-                                                        href="#" data-bs-toggle="modal" data-bs-target="#editModal<?= $user['uid']; ?>">
+                                                        href="#" data-bs-toggle="modal" data-bs-target="#editModal<?= $curriculumd['currid']; ?>">
                                                         <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -147,45 +119,38 @@
                                                         </svg>
                                                         </span>
                                                     </a>
-                                                    <div class="modal fade" id="editModal<?= $user['uid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal fade" id="editModal<?= $curriculumd['currid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content dark">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE - <?= $user['username'] ?></h5>
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE CURRICULUM</h5>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
-                                                                <?= form_open('users/update/'.$user['uid']); ?>
+                                                                <?= form_open('curriculum/update/'.$curriculumd['currid']); ?>
                                                                 <div class="modal-body">
                                                                     <div class="form-group">
-                                                                        <label for="email" class="form-label">ACCOUNT NO.</label>
-                                                                        <input type="text" name="account" class="form-control" value="<?php echo $user['uaccountid']; ?>">
+                                                                        <label for="email" class="form-label">PROGRAM</label>
+                                                                        <select name="course" class="form-select" id="exampleFormControlSelect1">
+                                                                            <option value="<?php echo $curriculumd['course']; ?>" selected>
+                                                                                <?php echo $curriculumd['course']; ?>
+                                                                            </option>
+                                                                            <?php foreach ($coursedata as $courd): ?>
+                                                                                <option value="<?php echo $courd['courcode']; ?>"><?php echo $courd['courcode']; ?> - <?php echo $courd['course']; ?></option>
+                                                                            <?php endforeach; ?>
+                                                                        </select>
                                                                     </div>
                                                                     <div class="form-group">
-                                                                        <label for="email" class="form-label">USERNAME</label>
-                                                                        <input type="text" name="username" class="form-control" value="<?php echo $user['username']; ?>">
+                                                                        <label for="email" class="form-label">SCHOOL YEAR</label>
+                                                                        <select name="sy" class="form-select" id="exampleFormControlSelect1">
+                                                                            <option value="<?php echo $curriculumd['sy']; ?>" selected>
+                                                                                <?php echo $curriculumd['sy']; ?>
+                                                                            </option>
+                                                                            <?php foreach ($sydata as $syd): ?>
+                                                                                <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
+                                                                            <?php endforeach; ?>
+                                                                        </select>
                                                                     </div>
-                                                                    <div class="form-group">
-                                                                        <label for="email" class="form-label">PASSWORD</label>
-                                                                        <input type="text" name="password" class="form-control" value="<?php echo $user['upassword']; ?>">
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label class="form-label" for="validationDefault01">ACCESS</label>
-                                                                        <br>
-                                                                        <input class="form-check-input" type="checkbox" name="cadmin" value="1"
-                                                                            <?php if($user['uadmin'] == 1){ echo 'checked'; }else{ } ?>><span> Administrator</span>
-                                                                        <br>
-                                                                        <input class="form-check-input" type="checkbox" name="cregistrar" value="1"
-                                                                            <?php if($user['uregistrar'] == 1){ echo 'checked'; }else{ } ?>><span> Registrar</span>
-                                                                        <br>
-                                                                        <input class="form-check-input" type="checkbox" name="cpc" value="1"
-                                                                            <?php if($user['uprogramchair'] == 1){ echo 'checked'; }else{ } ?>><span> Program Chair</span>
-                                                                        <br>
-                                                                        <input class="form-check-input" type="checkbox" name="chrd" value="1"
-                                                                            <?php if($user['uhrd'] == 1){ echo 'checked'; }else{ } ?>><span> HRD</span>
-                                                                        <br>
-                                                                        <input class="form-check-input" type="checkbox" name="cemployee" value="1"
-                                                                            <?php if($user['uemployee'] == 1){ echo 'checked'; }else{ } ?>><span> Employee</span>
-                                                                    </div>
+                                                                    <br>
                                                                     <div class="text-start">
                                                                         <button type="submit" name="update" class="btn btn-primary">Update</button>
                                                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
@@ -195,9 +160,8 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                     <a class="btn btn-sm btn-icon btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
-                                                        onclick="window.location.href='<?= base_url(); ?>users/delete/<?= $user['uid']; ?>';">
+                                                        onclick="window.location.href='<?= base_url(); ?>curriculum/delete/<?= $curriculumd['currid']; ?>';">
                                                         <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -218,7 +182,6 @@
             </div>
         </div>
     </div>
-
     <!-- End of Page Content -->
 
     <!-- ----------- FOOTER ------------------ -->

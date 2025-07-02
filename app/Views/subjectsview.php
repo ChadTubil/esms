@@ -19,7 +19,7 @@
 
     <div class="conatiner-fluid content-inner mt-n5 py-0">
         <div class="row">
-            <div class="col-lg-4 col-sm-12">
+            <div class="col-lg-6 col-sm-12">
                 <div class="card">
                     <div class="card-body">
                         <?php if(session()->getTempdata('addsuccess')) :?>
@@ -38,13 +38,33 @@
                                     <label class="form-label" for="validationDefault01">SUBJECT</label>
                                     <input type="text" name="subject" class="form-control">
                                 </div>
-                                <div class="col-lg-6 col-sm-12">
+                                <div class="col-lg-4 col-sm-12">
                                     <label class="form-label" for="validationDefault01">CODE</label>
-                                    <input type="text" name="subjectcode" class="form-control">
+                                    <input type="text" name="subcode" class="form-control">
+                                </div>
+                                <div class="col-lg-2 col-sm-12" style="text-align: center;">
+                                    <label class="form-label" for="validationDefault01">MAJOR</label>
+                                    <input class="form-check-input" type="checkbox" name="major" value="1">
+                                </div>
+                                <div class="col-lg-3 col-sm-12" style="text-align: center;">
+                                    <label class="form-label" for="validationDefault01">LEC HOURS</label>
+                                    <input type="text" name="lechours" class="form-control">
+                                </div>
+                                <div class="col-lg-3 col-sm-12" style="text-align: center;">
+                                    <label class="form-label" for="validationDefault01">LAB HOURS</label>
+                                    <input type="text" name="labhours" class="form-control">
+                                </div>
+                                <div class="col-lg-3 col-sm-12" style="text-align: center;">
+                                    <label class="form-label" for="validationDefault01">LEC UNITS</label>
+                                    <input type="text" name="lecunits" class="form-control">
+                                </div>
+                                <div class="col-lg-3 col-sm-12" style="text-align: center;">
+                                    <label class="form-label" for="validationDefault01">LAB UNITS</label>
+                                    <input type="text" name="labunits" class="form-control">
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">UNITS</label>
-                                    <input type="number" name="subjectunits" class="form-control">
+                                    <label class="form-label" for="validationDefault01">PRE-REQUISITE</label>
+                                    <input type="text" name="prerequisite" class="form-control">
                                 </div>
                             </div>
                             <br>
@@ -53,7 +73,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-sm-12">
+            <div class="col-lg-6 col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
@@ -80,7 +100,6 @@
                             <table id="datatable" class="table table-striped" data-toggle="data-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>CODE</th>
                                         <th>SUBJECT</th>
                                         <th>ACTION</th>
@@ -89,7 +108,6 @@
                                 <tbody>
                                     <?php foreach($subjectsdata as $subjectsd):?>
                                         <tr>
-                                            <td><?= $subjectsd['subid']; ?></td>
                                             <td><?= $subjectsd['subcode']; ?></td>
                                             <td><?= $subjectsd['subject']; ?></td>
                                             <td>
@@ -118,13 +136,42 @@
                                                                         <input type="text" name="subject" class="form-control" value="<?php echo $subjectsd['subject']; ?>">
                                                                     </div>
                                                                     <div class="row">
-                                                                        <div class="col-lg-6 col-sm-12">
+                                                                        <div class="col-lg-5 col-sm-12">
                                                                             <label class="form-label" for="validationDefault01">CODE</label>
-                                                                            <input type="text" name="subjectcode" class="form-control" value="<?php echo $subjectsd['subcode']; ?>">
+                                                                            <input type="text" name="subcode" class="form-control" value="<?php echo $subjectsd['subcode']; ?>">
                                                                         </div>
-                                                                        <div class="col-lg-6 col-sm-12">
-                                                                            <label class="form-label" for="validationDefault01">UNITS</label>
-                                                                            <input type="number" name="subjectunits" class="form-control" value="<?php echo $subjectsd['subunits']; ?>">
+                                                                        <div class="col-lg-2 col-sm-12" style="text-align: center;">
+                                                                            <label class="form-label" for="validationDefault01">MAJOR</label><br>
+                                                                            <input class="form-check-input" type="checkbox" name="major" value="1"
+                                                                            <?php if($subjectsd['major'] == 1){ echo 'checked'; }else{ } ?>>
+                                                                        </div>
+                                                                        <div class="col-lg-5 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">PRE-REQUISITE</label>
+                                                                            <input type="text" name="prerequisite" class="form-control" value="<?php echo $subjectsd['prerequisite']; ?>">
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">LEC HOURS</label>
+                                                                            <input type="text" name="lechours" class="form-control" value="<?php echo $subjectsd['lechours']; ?>">
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">LAB HOURS</label>
+                                                                            <input type="text" name="labhours" class="form-control" value="<?php echo $subjectsd['labhours']; ?>">
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">TOTAL HOURS</label>
+                                                                            <h2><?php echo $subjectsd['hours']; ?></h2>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">LEC UNITS</label>
+                                                                            <input type="text" name="lecunits" class="form-control" value="<?php echo $subjectsd['lecunits']; ?>">
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">LAB UNITS</label>
+                                                                            <input type="text" name="labunits" class="form-control" value="<?php echo $subjectsd['labunits']; ?>">
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-sm-12">
+                                                                            <label class="form-label" for="validationDefault01">TOTAL UNITS</label>
+                                                                            <h2><?php echo $subjectsd['units']; ?></h2>
                                                                         </div>
                                                                     </div>
                                                                     <br>

@@ -44,7 +44,7 @@ class SchedulesController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['scheduledata'] = $this->schedModel->where('schedisdel', 0)->findAll();
-        $data['subjectsdata'] = $this->subjModel->where('subisdel', 0)->paginate(10);
+        $data['subjectsdata'] = $this->subjModel->where('isdel', 0)->paginate(10);
         $employeeCondition = array('empisdel' => 0, 'empid !=' => 1);
         $data['employeesdata'] = $this->empModel->where($employeeCondition)->paginate(10);
         $data['roomsdata'] = $this->roomsModel->where('roomisdel', 0)->paginate(10);

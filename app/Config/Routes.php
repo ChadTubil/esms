@@ -34,6 +34,13 @@ $routes->get('subjects', 'SubjectsController::index');
 $routes->post('subjects', 'SubjectsController::index');
 $routes->add('subjects/delete/(:segment)', 'SubjectsController::deleteSubject/$1');
 $routes->post('subjects/update/(:segment)', 'SubjectsController::updateSubject/$1');
+// CURRICULUM
+$routes->get('curriculum', 'CurriculumController::index');
+$routes->post('curriculum', 'CurriculumController::index');
+$routes->add('curriculum/delete/(:segment)', 'CurriculumController::deleteCurriculum/$1');
+$routes->post('curriculum/update/(:segment)', 'CurriculumController::updateCurriculum/$1');
+$routes->get('curriculum-setup/(:segment)', 'CurriculumController::curriculumsetup/$1');
+$routes->post('curriculum-setup/(:segment)', 'CurriculumController::curriculumsetup/$1');
 //DEPARTMENTS
 $routes->get('departments', 'DepartmentsController::index');
 $routes->post('departments', 'DepartmentsController::index');
@@ -129,7 +136,15 @@ $routes->post('studentfar/evaluationfifth/(:segment)', 'FARController::farStuden
 $routes->get('studentfar/evaluationsixth/(:segment)', 'FARController::farStudentsixth/$1');
 $routes->add('studentfar/evaluationseventh/(:segment)', 'FARController::farStudentseventh/$1');
 // HRD
-$routes->add('hrd-fpareports', 'HRDController::index'); //di pa tapos
+$routes->get('hrd-fpareports', 'HRDController::index'); //di pa tapos
+$routes->post('hrd-fpareports', 'HRDController::index'); //di pa tapos
+$routes->add('hrd-fpareportsfaculty-result/(:segment)', 'HRDController::facultyView/$1'); //di pa tapos
+$routes->add('hrd-fpareportsfaculty-view/(:segment)', 'HRDController::facultyResult/$1'); //di pa tapos
+$routes->get('hrd-payslip', 'PayslipController::index');
+$routes->post('hrd-payslip', 'PayslipController::index');
+$routes->get('hrd-payslip-view/(:segment)', 'PayslipController::payslipView/$1');
+$routes->get('payslip', 'PayslipController::payslip');
+$routes->get('payslip-view/(:segment)', 'PayslipController::payslipviewview/$1');
 
 
 $routes->set404Override(function() {

@@ -20,6 +20,7 @@
             <!-- Sidebar Menu Start -->
             <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
                 <li><hr class="hr-horizontal"></li>
+                <!-- DASHBOARD -->
                 <?php foreach($usersaccess as $usera): ?>
                     <?php if($usera['uadmin'] == 1): ?>
                         <li class="nav-item">
@@ -33,21 +34,22 @@
                                 <span class="item-name">Dashboard</span> <!-- Dashboard -->
                             </a>
                         </li>
-                    <?php elseif($usera['uregistrar'] == 1): ?>
+                    <?php endif; ?>
+                    <?php if($usera['uemployee'] == 1): ?>
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="<?= base_url(); ?>dashboard">
+                            <a class="nav-link" aria-current="page" href="<?= base_url(); ?>payslip">
                                 <i class="icon">
-                                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
-                                        <path opacity="0.4" d="M16.0756 2H19.4616C20.8639 2 22.0001 3.14585 22.0001 4.55996V7.97452C22.0001 9.38864 20.8639 10.5345 19.4616 10.5345H16.0756C14.6734 10.5345 13.5371 9.38864 13.5371 7.97452V4.55996C13.5371 3.14585 14.6734 2 16.0756 2Z" fill="currentColor"></path>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.53852 2H7.92449C9.32676 2 10.463 3.14585 10.463 4.55996V7.97452C10.463 9.38864 9.32676 10.5345 7.92449 10.5345H4.53852C3.13626 10.5345 2 9.38864 2 7.97452V4.55996C2 3.14585 3.13626 2 4.53852 2ZM4.53852 13.4655H7.92449C9.32676 13.4655 10.463 14.6114 10.463 16.0255V19.44C10.463 20.8532 9.32676 22 7.92449 22H4.53852C3.13626 22 2 20.8532 2 19.44V16.0255C2 14.6114 3.13626 13.4655 4.53852 13.4655ZM19.4615 13.4655H16.0755C14.6732 13.4655 13.537 14.6114 13.537 16.0255V19.44C13.537 20.8532 14.6732 22 16.0755 22H19.4615C20.8637 22 22 20.8532 22 19.44V16.0255C22 14.6114 20.8637 13.4655 19.4615 13.4655Z" fill="currentColor"></path>
-                                    </svg>
+                                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.857 20.417C19.73 20.417 21.249 18.899 21.25 17.026V17.024V14.324C20.013 14.324 19.011 13.322 19.01 12.085C19.01 10.849 20.012 9.846 21.249 9.846H21.25V7.146C21.252 5.272 19.735 3.752 17.862 3.75H17.856H6.144C4.27 3.75 2.751 5.268 2.75 7.142V7.143V9.933C3.944 9.891 4.945 10.825 4.987 12.019C4.988 12.041 4.989 12.063 4.989 12.085C4.99 13.32 3.991 14.322 2.756 14.324H2.75V17.024C2.749 18.897 4.268 20.417 6.141 20.417H6.142H17.857Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3711 9.06303L12.9871 10.31C13.0471 10.432 13.1631 10.517 13.2981 10.537L14.6751 10.738C15.0161 10.788 15.1511 11.206 14.9051 11.445L13.9091 12.415C13.8111 12.51 13.7671 12.647 13.7891 12.782L14.0241 14.152C14.0821 14.491 13.7271 14.749 13.4231 14.589L12.1921 13.942C12.0711 13.878 11.9271 13.878 11.8061 13.942L10.5761 14.589C10.2711 14.749 9.91609 14.491 9.97409 14.152L10.2091 12.782C10.2321 12.647 10.1871 12.51 10.0891 12.415L9.09409 11.445C8.84809 11.206 8.98309 10.788 9.32309 10.738L10.7001 10.537C10.8351 10.517 10.9521 10.432 11.0121 10.31L11.6271 9.06303C11.7791 8.75503 12.2191 8.75503 12.3711 9.06303Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>                            
                                 </i>
-                                <span class="item-name">Dashboard</span> <!-- Dashboard -->
+                                <span class="item-name">Payslip</span> <!-- Dashboard -->
                             </a>
                         </li>
                     <?php endif; ?>
                 <?php endforeach; ?> 
-                
+                <!-- STUDENTS -->
                 <?php foreach($usersaccess as $usera): ?>
                     <?php if($usera['ustudent'] == 1): ?>
                         <li class="nav-item">
@@ -94,6 +96,7 @@
                     <?php endif; ?>
                 <?php endforeach; ?>    
                 <li><hr class="hr-horizontal"></li>
+                <!-- WHOLE -->
                 <?php foreach($usersaccess as $usera): ?>
                     <?php if($usera['uadmin'] == 1): ?>
                         <li class="nav-item static-item">
@@ -245,7 +248,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <!-- <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#hrd" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -273,8 +276,21 @@
                                         <span class="item-name"> FPA Reports </span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>hrd-payslip">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> P </i>
+                                        <span class="item-name"> Payroll </span>
+                                    </a>
+                                </li>
                             </ul>
-                        </li> -->
+                        </li>
                         <li><hr class="hr-horizontal"></li>
                         <li class="nav-item static-item">
                             <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -334,6 +350,19 @@
                                         </i>
                                         <i class="sidenav-mini-icon"> S </i>
                                         <span class="item-name"> Schedule </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>curriculum">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> C </i>
+                                        <span class="item-name"> Curriculum </span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -502,8 +531,65 @@
                                 </li>
                             </ul>
                         </li>
+                    <?php endif; ?>
                         <li><hr class="hr-horizontal"></li>
-                    <?php elseif($usera['uregistrar'] == 1): ?>
+                    <?php if($usera['uregistrar'] == 1): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#collegestudent" role="button" aria-expanded="false" aria-controls="horizontal-menu">
+                                <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">                                
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2124 7.76241C14.2124 10.4062 12.0489 12.5248 9.34933 12.5248C6.6507 12.5248 4.48631 10.4062 4.48631 7.76241C4.48631 5.11865 6.6507 3 9.34933 3C12.0489 3 14.2124 5.11865 14.2124 7.76241ZM2 17.9174C2 15.47 5.38553 14.8577 9.34933 14.8577C13.3347 14.8577 16.6987 15.4911 16.6987 17.9404C16.6987 20.3877 13.3131 21 9.34933 21C5.364 21 2 20.3666 2 17.9174ZM16.1734 7.84875C16.1734 9.19506 15.7605 10.4513 15.0364 11.4948C14.9611 11.6021 15.0276 11.7468 15.1587 11.7698C15.3407 11.7995 15.5276 11.8177 15.7184 11.8216C17.6167 11.8704 19.3202 10.6736 19.7908 8.87118C20.4885 6.19676 18.4415 3.79543 15.8339 3.79543C15.5511 3.79543 15.2801 3.82418 15.0159 3.87688C14.9797 3.88454 14.9405 3.90179 14.921 3.93246C14.8955 3.97174 14.9141 4.02253 14.9396 4.05607C15.7233 5.13216 16.1734 6.44206 16.1734 7.84875ZM19.3173 13.7023C20.5932 13.9466 21.4317 14.444 21.7791 15.1694C22.0736 15.7635 22.0736 16.4534 21.7791 17.0475C21.2478 18.1705 19.5335 18.5318 18.8672 18.6247C18.7292 18.6439 18.6186 18.5289 18.6333 18.3928C18.9738 15.2805 16.2664 13.8048 15.5658 13.4656C15.5364 13.4493 15.5296 13.4263 15.5325 13.411C15.5345 13.4014 15.5472 13.3861 15.5697 13.3832C17.0854 13.3545 18.7155 13.5586 19.3173 13.7023Z" fill="currentColor"></path>
+                                </svg>                        
+                                </i>
+                                <span class="item-name">Enrollment</span>
+                                <i class="right-icon">
+                                    <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </i>
+                            </a>
+                            <ul class="sub-nav collapse" id="collegestudent" data-bs-parent="#sidebar-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>registerstudent">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> + </i>
+                                        <span class="item-name">Register Student</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>admission">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> A </i>
+                                        <span class="item-name"> Admission </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>assessment">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> A </i>
+                                        <span class="item-name"> Assessment </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#registrar" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -547,7 +633,8 @@
                                 </li>
                             </ul>
                         </li>
-                    <?php elseif($usera['uprogramchair'] == 1): ?>
+                    <?php endif; ?>
+                    <?php if($usera['uprogramchair'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#programchair" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -587,6 +674,51 @@
                                         </i>
                                         <i class="sidenav-mini-icon"> F </i>
                                         <span class="item-name"> FPA </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($usera['uhrd'] == 1): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#hrd" role="button" aria-expanded="false" aria-controls="horizontal-menu">
+                                <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.92574 16.39H14.3119C14.7178 16.39 15.0545 16.05 15.0545 15.64C15.0545 15.23 14.7178 14.9 14.3119 14.9H8.92574C8.5198 14.9 8.18317 15.23 8.18317 15.64C8.18317 16.05 8.5198 16.39 8.92574 16.39ZM12.2723 9.9H8.92574C8.5198 9.9 8.18317 10.24 8.18317 10.65C8.18317 11.06 8.5198 11.39 8.92574 11.39H12.2723C12.6782 11.39 13.0149 11.06 13.0149 10.65C13.0149 10.24 12.6782 9.9 12.2723 9.9ZM19.3381 9.02561C19.5708 9.02292 19.8242 9.02 20.0545 9.02C20.302 9.02 20.5 9.22 20.5 9.47V17.51C20.5 19.99 18.5099 22 16.0545 22H8.17327C5.59901 22 3.5 19.89 3.5 17.29V6.51C3.5 4.03 5.5 2 7.96535 2H13.2525C13.5099 2 13.7079 2.21 13.7079 2.46V5.68C13.7079 7.51 15.203 9.01 17.0149 9.02C17.4381 9.02 17.8112 9.02316 18.1377 9.02593C18.3917 9.02809 18.6175 9.03 18.8168 9.03C18.9578 9.03 19.1405 9.02789 19.3381 9.02561ZM19.6111 7.566C18.7972 7.569 17.8378 7.566 17.1477 7.559C16.0527 7.559 15.1507 6.648 15.1507 5.542V2.906C15.1507 2.475 15.6685 2.261 15.9646 2.572C16.5004 3.13476 17.2368 3.90834 17.9699 4.67837C18.7009 5.44632 19.4286 6.21074 19.9507 6.759C20.2398 7.062 20.0279 7.565 19.6111 7.566Z" fill="currentColor"></path>                       
+                                </svg>                        
+                                </i>
+                                <span class="item-name">HRD</span>
+                                <i class="right-icon">
+                                    <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </i>
+                            </a>
+                            <ul class="sub-nav collapse" id="hrd" data-bs-parent="#sidebar-menu">
+                                <!-- <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>hrd-fpareports">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> E </i>
+                                        <span class="item-name"> FPA Reports </span>
+                                    </a>
+                                </li> -->
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>hrd-payslip">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> P </i>
+                                        <span class="item-name"> Payroll </span>
                                     </a>
                                 </li>
                             </ul>

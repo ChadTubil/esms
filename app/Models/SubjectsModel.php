@@ -7,7 +7,9 @@ class SubjectsModel extends Model
     protected $table = 'subjects';
     protected $primaryKey = 'subid';
     protected $allowedFields = [
-        'subject', 'subcode', 'subunits', 'substatus', 'subisdel',
+        'subcode', 'subject', 'lechours', 'labhours', 'hours',
+        'lecunits', 'labunits', 'units', 'major', 'prerequisite',
+        'status', 'isdel',
     ];
     protected $returnType = 'array';
     

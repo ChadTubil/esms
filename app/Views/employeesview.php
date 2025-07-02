@@ -70,6 +70,8 @@
                             <label class="form-label" for="exampleFormControlSelect1">STATUS</label>
                             <select name="employeestatus" class="form-select" id="exampleFormControlSelect1">
                                 <option selected="" disabled=""></option>
+                                <option value="Full Time">Full Time</option>
+                                <option value="Part Time">Part Time</option>
                                 <option value="On The Job Training">On The Job Training</option>
                                 <option value="Part Time">Part Time</option>
                                 <option value="Contractual">Contractual</option>

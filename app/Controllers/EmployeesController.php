@@ -26,7 +26,7 @@ class EmployeesController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $employeeCondition = array('empisdel' => 0, 'empid !=' => 1);
+        $employeeCondition = array('empisdel' => 0);
         $data['employeesdata'] = $this->empModel->where($employeeCondition)->findAll();
 
         if($this->request->is('post')) {
@@ -50,12 +50,12 @@ class EmployeesController extends BaseController
                         'required' => 'First name is required.',
                     ],
                 ],
-                'hiringdate' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Hiring date is required.',
-                    ],
-                ],
+                // 'hiringdate' => [
+                //     'rules' => 'required',
+                //     'errors' => [
+                //         'required' => 'Hiring date is required.',
+                //     ],
+                // ],
             ];
             if($this->validate($rules)) {
                 $employeedata = [

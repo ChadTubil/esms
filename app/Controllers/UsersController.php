@@ -56,6 +56,9 @@ class UsersController extends BaseController
                 $admin = $this->request->getVar('cadmin');
                 $registrar = $this->request->getVar('cregistrar');
                 $pc = $this->request->getVar('cpc');
+                $hrd = $this->request->getVar('chrd');
+                $employee = $this->request->getVar('cemployee');
+
                 if($admin == ''){
                     $ADMIN = 0;
                 }else{
@@ -71,6 +74,16 @@ class UsersController extends BaseController
                 }else{
                     $PC = 1;
                 }
+                if($hrd == ''){
+                    $HRD = 0;
+                }else{
+                    $HRD = 1;
+                }
+                if($employee == ''){
+                    $EMPLOYEE = 0;
+                }else{
+                    $EMPLOYEE = 1;
+                }
                 
                 $udata = [
                     'uaccountid' => $this->request->getVar('account'),
@@ -79,6 +92,8 @@ class UsersController extends BaseController
                     'uadmin' => $ADMIN,
                     'uregistrar' => $REGISTRAR,
                     'uprogramchair' => $PC,
+                    'uhrd' => $HRD,
+                    'uemployee' => $EMPLOYEE,
                     'ustatus' => '0',
                     'uisdel' => '0',
                 ];
@@ -97,6 +112,9 @@ class UsersController extends BaseController
             $admin = $this->request->getVar('cadmin');
             $registrar = $this->request->getVar('cregistrar');
             $pc = $this->request->getVar('cpc');
+            $hrd = $this->request->getVar('chrd');
+            $employee = $this->request->getVar('cemployee');
+
             if($admin == '') {
                 $ADMIN = 0;
             } else {
@@ -112,6 +130,16 @@ class UsersController extends BaseController
             } else {
                 $PC = 1;
             }
+            if($hrd == ''){
+                $HRD = 0;
+            }else{
+                $HRD = 1;
+            }
+            if($employee == ''){
+                $EMPLOYEE = 0;
+            }else{
+                $EMPLOYEE = 1;
+            }
             
             $udata = [
                 'uaccountid' => $this->request->getVar('account'),
@@ -120,6 +148,8 @@ class UsersController extends BaseController
                 'uadmin' => $ADMIN,
                 'uregistrar' => $REGISTRAR,
                 'uprogramchair' => $PC,
+                'uhrd' => $HRD,
+                'uemployee' => $EMPLOYEE,
                 'ustatus' => '0',
                 'uisdel' => '0',
             ];
