@@ -129,6 +129,88 @@
                                             <td><?= $empd['empstatus']; ?></td>
                                             <td>
                                                 <div class="flex align-items-center list-user-action">
+                                                    <a class="btn btn-sm btn-icon btn-warning" title="Image"
+                                                        href="#" data-bs-toggle="modal" data-bs-target="#imageModal<?= $empd['empid']; ?>">
+                                                        <span class="btn-inner">
+                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9849 15.3462C8.11731 15.3462 4.81445 15.931 4.81445 18.2729C4.81445 20.6148 8.09636 21.2205 11.9849 21.2205C15.8525 21.2205 19.1545 20.6348 19.1545 18.2938C19.1545 15.9529 15.8735 15.3462 11.9849 15.3462Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9849 12.0059C14.523 12.0059 16.5801 9.94779 16.5801 7.40969C16.5801 4.8716 14.523 2.81445 11.9849 2.81445C9.44679 2.81445 7.3887 4.8716 7.3887 7.40969C7.38013 9.93922 9.42394 11.9973 11.9525 12.0059H11.9849Z" stroke="currentColor" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            </svg>                                                        
+                                                        </span>
+                                                    </a>
+                                                    <div class="modal fade" id="imageModal<?= $empd['empid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content dark">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE IMAGE</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <?= form_open_multipart('employees/image/'.$empd['empid']); ?>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12 col-sm-12">
+                                                                            <div class="form-group" style="text-align: center">
+                                                                                <img src="<?php
+                                                                                        if(empty($empd['image'])){
+                                                                                            echo base_url().'/public/assets/images/bioimage.png"';
+                                                                                        } else {
+                                                                                            echo $empd['image'];
+                                                                                        }
+                                                                                ?>" alt="" style="width: 50%">
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <label for="email" class="form-label">UPLOAD IMAGE FOR BIOMETRICS</label>
+                                                                                <p>Use 1920 x 1920 pixels and layout format.</p>
+                                                                                <input type="file" name="bioimage" class="form-control" value="<?php echo $empd['image']; ?>">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <br>
+                                                                    <div class="text-start">
+                                                                        <button type="submit" name="update" class="btn btn-primary">Update</button>
+                                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                                                    </div>
+                                                                </div>
+                                                                <?= form_close(); ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <a class="btn btn-sm btn-icon btn-info" title="RFID"
+                                                        href="#" data-bs-toggle="modal" data-bs-target="#rfidModal<?= $empd['empid']; ?>">
+                                                        <span class="btn-inner">
+                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9846 21.606C11.9846 21.606 19.6566 19.283 19.6566 12.879C19.6566 6.474 19.9346 5.974 19.3196 5.358C18.7036 4.742 12.9906 2.75 11.9846 2.75C10.9786 2.75 5.26557 4.742 4.65057 5.358C4.03457 5.974 4.31257 6.474 4.31257 12.879C4.31257 19.283 11.9846 21.606 11.9846 21.606Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                <path d="M9.38574 11.8746L11.2777 13.7696L15.1757 9.86963" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            </svg>                            
+                                                        </span>
+                                                    </a>
+                                                    <div class="modal fade" id="rfidModal<?= $empd['empid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content dark">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE RFID</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <?= form_open('employees/rfid/'.$empd['empid']); ?>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12 col-sm-12">
+                                                                            <div class="form-group">
+                                                                                <label for="email" class="form-label">RFID</label>
+                                                                                <input type="text" name="rfid" class="form-control" value="<?php echo $empd['rfidno']; ?>" autocomplete="off" autofocus>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <br>
+                                                                    <!-- <div class="text-start">
+                                                                        <button type="submit" name="update" class="btn btn-primary">Update</button>
+                                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                                                    </div> -->
+                                                                </div>
+                                                                <?= form_close(); ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <a class="btn btn-sm btn-icon btn-primary" title="Edit"
                                                         href="#" data-bs-toggle="modal" data-bs-target="#editModal<?= $empd['empid']; ?>">
                                                         <span class="btn-inner">
@@ -143,19 +225,25 @@
                                                         <div class="modal-dialog">
                                                             <div class="modal-content dark">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE SEMESTER</h5>
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE EMPLOYEE</h5>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <?= form_open('employees/update/'.$empd['empid']); ?>
                                                                 <div class="modal-body">
                                                                     <div class="row">
-                                                                        <div class="col-lg-5 col-sm-12">
+                                                                        <div class="col-lg-4 col-sm-12">
                                                                             <div class="form-group">
                                                                                 <label for="email" class="form-label">EMP NO.</label>
                                                                                 <input type="text" name="employeenum" class="form-control" value="<?php echo $empd['empnum']; ?>">
                                                                             </div>
                                                                         </div>
-                                                                        <div class="col-lg-7 col-sm-12">
+                                                                        <div class="col-lg-3 col-sm-12">
+                                                                            <div class="form-group">
+                                                                                <label for="email" class="form-label">IMP ID</label>
+                                                                                <input type="text" name="impno" class="form-control" value="<?php echo $empd['impno']; ?>">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-lg-5 col-sm-12">
                                                                             <div class="form-group">
                                                                                 <label for="email" class="form-label">HIRING DATE</label>
                                                                                 <input type="date" name="hiringdate" class="form-control" value="<?php echo $empd['emphiringdate']; ?>">

@@ -38,6 +38,11 @@
                                     <?= session()->getTempdata('endedsuccess');?>
                                 </div>
                             <?php endif; ?>
+                            <?php if(session()->getTempdata('error')) :?>
+                                <div class="alert alert-danger">
+                                    <?= session()->getTempdata('error');?>
+                                </div>
+                            <?php endif; ?>
                             <?php if(session()->getTempdata('updatesuccess')) :?>
                                 <div class="alert alert-success">
                                     <?= session()->getTempdata('updatesuccess');?>
@@ -46,17 +51,64 @@
                             <table id="datatable" class="table table-striped" data-toggle="data-table">
                                 <thead>
                                     <tr>
-                                        <th>NAME</th>
-                                        <th>ACTION</th>
+                                        <th style="text-align: center;">STUDENT NO</th>
+                                        <th style="text-align: center;">NAME</th>
+                                        <th style="text-align: center;">SY</th>
+                                        <th style="text-align: center;">SEMESTER</th>
+                                        <th style="text-align: center;">LEVEL</th>
+                                        <th style="text-align: center;">DATE</th>
+                                        <th style="text-align: center;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach($admission as $ad):?>
+                                    <?php foreach($etdlist as $etdl):?>
                                         <tr>
-                                            <td style="text-transform: uppercase"><?= $ad['studfullname']; ?></td>
-                                            <td>
-                                                <a class="btn btn-sm btn-icon btn-primary" title="PROCESS"
-                                                    href="#" data-bs-toggle="modal" data-bs-target="#processModal<?= $ad['studid']; ?>">
+                                            <td style="text-align: center;">
+                                                <?php
+                                                    foreach($studentinfo as $studenti) {
+                                                        if($etdl['studno'] == $studenti['studid']) {
+                                                            if($studenti['studentno'] == '') {
+                                                                echo "NEW STUDENT";
+                                                            } else {
+                                                                echo $studenti['studentno'];
+                                                            }
+                                                        }
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td style="text-transform: uppercase; text-align: center;"><?= $etdl['fullname']; ?></td>
+                                            <td style="text-align: center;">
+                                                <?php 
+                                                    if($etdl['sy'] == '') {
+                                                        echo "-";
+                                                    } else {
+                                                        echo $etdl['sy'];
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <?php 
+                                                    if($etdl['sem'] == '') {
+                                                        echo "-";
+                                                    } else {
+                                                        echo $etdl['sem'];
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <?php 
+                                                    if($etdl['level'] == '') {
+                                                        echo "-";
+                                                    } else {
+                                                        echo $etdl['level'];
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td style="text-align: center;"><?php echo $formattedDate = date('F j, Y', strtotime($etdl['date'])); ?>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="PROCESS"
+                                                    onclick="window.location.href='<?= base_url(); ?>admission-view/<?= $etdl['studno']; ?>';">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M12.0001 8.32739V15.6537" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -65,112 +117,14 @@
                                                         </svg> PROCESS
                                                     </span>
                                                 </a>
-                                                <div class="modal fade" id="processModal<?= $ad['studid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content dark">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="staticBackdropLabel">ADMISSION PROCESS</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <?= form_open('admission/process/'.$ad['studid']); ?>
-                                                            <div class="modal-body">
-                                                                <h5>NAME: <strong style="text-transform: uppercase"><?= $ad['studfullname']; ?></strong></h5>
-                                                                <div class="row">
-                                                                    <div class="col-lg-6">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">STUDENT NO.</label>
-                                                                            <input type="text" name="studnum" class="form-control">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <br>
-                                                                <div class="row">
-                                                                    <div class="col-lg-6 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">SCHOOL YEAR</label>
-                                                                            <select name="schoolyear" class="form-select">
-                                                                                <?php foreach ($schoolyear as $sy): ?>
-                                                                                    <option value="<?php echo $sy['syname']; ?>"><?php echo $sy['syname']; ?></option>
-                                                                                <?php endforeach; ?>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-6 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">SEMESTER</label>
-                                                                            <select name="semester" class="form-select">
-                                                                                <?php foreach ($semester as $sem): ?>
-                                                                                    <option value="<?php echo $sem['semester']; ?>"><?php echo $sem['semester']; ?></option>
-                                                                                <?php endforeach; ?>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-6 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">LEVEL</label>
-                                                                            <select name="level" class="form-select">
-                                                                                <?php foreach ($level as $lev): ?>
-                                                                                    <option value="<?php echo $lev['level']; ?>"><?php echo $lev['level']; ?></option>
-                                                                                <?php endforeach; ?>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-6 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label class="form-label">STATUS</label>
-                                                                            <select name="status" class="form-select">
-                                                                                <option value="NEW">NEW</option>
-                                                                                <option value="OLD">OLD</option>
-                                                                                <option value="KICKED">KICKED-OUT</option>
-                                                                                <option value="TRANSFERRED">TRANSFERRED</option>
-                                                                                <option value="TRANSFEREE">TRANSFEREE</option>
-                                                                                <option value="INACTIVE">INACTIVE</option>
-                                                                                <option value="RETURNEE">RETURNEE</option>
-                                                                                <option value="WITH-CASES">WITH-CASES</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-12 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">COURSE</label>
-                                                                            <select name="course" class="form-select" style="text-transform: uppercase">
-                                                                                <?php foreach ($course as $cour): ?>
-                                                                                    <option value="<?php echo $cour['courid']; ?>"><?php echo $cour['course']; ?></option>
-                                                                                <?php endforeach; ?>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-12 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="email" class="form-label">MAJOR</label>
-                                                                            <input type="text" name="major" class="form-control">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-lg-12 col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <input class="form-check-input" type="checkbox" name="irreg">
-                                                                            <span>IRREGULAR</span><span style="color: red;"> (Check if the student is not regular.)</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <br>
-                                                                <div class="text-start">
-                                                                    <button type="submit" name="update" class="btn btn-primary">Update</button>
-                                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                                                </div>
-                                                            </div>
-                                                            <?= form_close(); ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <a class="btn btn-sm btn-icon btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
-                                                    onclick="window.location.href='<?= base_url(); ?>admission/delete/<?= $ad['studid']; ?>';">
+                                                <a class="btn btn-sm btn-icon btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="CANCEL"
+                                                    onclick="window.location.href='<?= base_url(); ?>admission/delete/<?= $etdl['etdid']; ?>'">
                                                     <span class="btn-inner">
-                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
-                                                            <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path d="M20.708 6.23975H3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path d="M17.4406 6.23973C16.6556 6.23973 15.9796 5.68473 15.8256 4.91573L15.5826 3.69973C15.4326 3.13873 14.9246 2.75073 14.3456 2.75073H10.1126C9.53358 2.75073 9.02558 3.13873 8.87558 3.69973L8.63258 4.91573C8.47858 5.68473 7.80258 6.23973 7.01758 6.23973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        </svg>
+                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M14.3955 9.59497L9.60352 14.387" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M14.3971 14.3898L9.60107 9.59277" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        </svg> CANCEL                        
                                                     </span>
                                                 </a>
                                             </td>

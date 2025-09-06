@@ -11,6 +11,11 @@ $routes->post('/', 'LoginController::index');
 $routes->get('dashboard', 'DashboardController::index');
 $routes->get('logout', 'DashboardController::logout');
 $routes->add('students/login/(:segment)', 'LoginController::loginStudent/$1');
+// ATTENDANCE
+$routes->get('biometrics', 'AttendanceController::index');
+$routes->post('biometrics', 'AttendanceController::index');
+$routes->get('biometrics-out/(:segment)', 'AttendanceController::biometricsoout/$1');
+$routes->get('biometrics-blank', 'AttendanceController::biometricsblank');
 // SCHOOL YEAR
 $routes->get('schoolyear', 'SYController::index');
 $routes->post('schoolyear', 'SYController::index');
@@ -61,6 +66,8 @@ $routes->get('employees', 'EmployeesController::index');
 $routes->post('employees', 'EmployeesController::index');
 $routes->add('employees/delete/(:segment)', 'EmployeesController::deleteEmployee/$1');
 $routes->post('employees/update/(:segment)', 'EmployeesController::updateEmployee/$1');
+$routes->post('employees/rfid/(:segment)', 'EmployeesController::updateRfid/$1');
+$routes->post('employees/image/(:segment)', 'EmployeesController::updateImage/$1');
 //SCHEDULES
 $routes->get('schedules', 'SchedulesController::index');
 $routes->post('schedules', 'SchedulesController::index');
@@ -88,11 +95,13 @@ $routes->get('collegestudentsgrades', 'ColStudentsController::index');
 $routes->post('collegestudentsgrades', 'ColStudentsController::index');
 $routes->get('collegestudentsgradesview', 'ColStudentsController::collegestudentgradesview');
 $routes->post('collegestudentsgradesview', 'ColStudentsController::collegestudentgradesview');
+$routes->get('college-enrollment', 'EnrollmentController::collegeenrollment');
+$routes->post('college-enrollment', 'EnrollmentController::collegeenrollment');
 // PROFILE
 $routes->get('profile', 'ProfileController::index');
 $routes->post('profile/changepassword/(:segment)', 'ProfileController::changepassword/$1');
 $routes->post('profile/updateaccount/(:segment)', 'ProfileController::updateAccount/$1');
-// GRADE
+// VIEWING GRADE
 $routes->get('grades', 'GradeController::index');
 $routes->post('grades', 'GradeController::index');
 $routes->add('gradesimportedlock', 'GradeController::gradesImportedLock');
@@ -116,14 +125,20 @@ $routes->post('studentmanagement/update/(:segment)', 'UsersController::studmanUp
 $routes->add('studentmanagement/disable/(:segment)', 'UsersController::studmanDisable/$1');
 $routes->add('studentmanagement/enable/(:segment)', 'UsersController::studmanEnable/$1');
 // ENROLLMENT
+$routes->get('registration-select', 'EnrollmentController::registrationselect');
 $routes->get('registerstudent', 'EnrollmentController::index');
 $routes->post('registerstudent', 'EnrollmentController::index');
+$routes->get('register-oldstudent', 'EnrollmentController::oldstudent');
+$routes->post('register-oldstudent-process/(:segment)', 'EnrollmentController::oldstudentprocess/$1');
 $routes->get('admission', 'EnrollmentController::admission');
+$routes->get('admission-view/(:segment)', 'EnrollmentController::admissionview/$1');
+$routes->add('admission-generate/(:segment)', 'EnrollmentController::admissionGenerate/$1');
 $routes->add('admission/delete/(:segment)', 'EnrollmentController::deleteAdmission/$1');
 $routes->post('admission/process/(:segment)', 'EnrollmentController::processAdmission/$1');
 $routes->get('assessment', 'EnrollmentController::assessment');
 $routes->post('assessment', 'EnrollmentController::assessment');
-$routes->add('assessment/process/(:segment)', 'EnrollmentController::assessmentProcess/$1');
+$routes->get('assessment/process/(:segment)', 'EnrollmentController::assessmentProcess/$1');
+$routes->add('assessment/curricullum-set/(:segment)', 'EnrollmentController::curricullumSet/$1');
 $routes->add('assessment/process2/(:segment)', 'EnrollmentController::assessmentProcess2/$1');
 // STUDENT FPA
 $routes->get('studentfar', 'FARController::index');
@@ -145,6 +160,21 @@ $routes->post('hrd-payslip', 'PayslipController::index');
 $routes->get('hrd-payslip-view/(:segment)', 'PayslipController::payslipView/$1');
 $routes->get('payslip', 'PayslipController::payslip');
 $routes->get('payslip-view/(:segment)', 'PayslipController::payslipviewview/$1');
+$routes->get('hrd-attendance', 'AttendanceController::attendanceview');
+$routes->post('hrd-attendance', 'AttendanceController::attendanceview');
+$routes->get('hrd-attendance-generate', 'AttendanceController::attendancegenerate');
+$routes->add('hrd-attendanc-download-excel/(:segment)/(:segment)', 'AttendanceController::downloadExcel/$1/$2');
+// ACCOUNTING
+$routes->get('rates', 'AccountingController::index');
+$routes->post('rates', 'AccountingController::index');
+$routes->get('rates/setup/(:segment)', 'AccountingController::ratesSetup/$1');
+$routes->post('rates/setup/(:segment)', 'AccountingController::ratesSetup/$1');
+// ENCODING GRADES
+$routes->get('grades-college', 'GradeController::gradesCollege');
+$routes->post('grades-college', 'GradeController::gradesCollege');
+$routes->get('grades-college-result', 'GradeController::gradesCollegeResult');
+$routes->get('grades-college-encoding/(:segment)', 'GradeController::gradesCollegeEncoding/$1');
+$routes->post('grades-college-encoding-submit', 'GradeController::gradesCollegeEncodingSubmit');
 
 
 $routes->set404Override(function() {

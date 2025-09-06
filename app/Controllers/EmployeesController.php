@@ -102,11 +102,12 @@ class EmployeesController extends BaseController
                 $fn = $this->request->getVar('firstname'),
                 $mn = $this->request->getVar('middlename'),
                 'empnum' => $this->request->getVar('employeenum'),
+                'impno' => $this->request->getVar('impno'),
                 'empfn' => $this->request->getVar('firstname'),
                 'empmn' => $this->request->getVar('middlename'),
                 'empln' => $this->request->getVar('lastname'),
                 'empextension' => $this->request->getVar('extension'),
-                'empfullname' => $ln.', '.$fn.' '.$ex.' '.$mn,
+                'empfullname' => $ln.' '.$ex.', '.$fn.' '.$mn.'.',
                 'emphiringdate' => $this->request->getVar('hiringdate'),
                 'empposition' => $this->request->getVar('position'),
                 'empstatus' => $this->request->getVar('employeestatus'),
@@ -115,6 +116,37 @@ class EmployeesController extends BaseController
             $this->empModel->where('empid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
             return redirect()->to(base_url()."employees");
+        }
+    }
+    public function updateRfid($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'rfidno' => $this->request->getVar('rfid'),
+            ];
+
+            $this->empModel->where('empid', $id)->update($id, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."employees");
+        }
+    }
+    public function updateImage($id=null) {
+        if($this->request->is('post')) {
+            $file = $this->request->getFile('bioimage');
+            if($file->isValid() && !$file->hasMoved())
+            {
+                if($file->move(FCPATH.'public\uploads\id', $file->getRandomName()))
+                {
+                    $imagepath = base_url().'public/uploads/id/'.$file->getName();
+                    $data = [
+                        
+                        'image' => $imagepath,
+                    ];
+        
+                    $this->empModel->where('empid', $id)->update($id, $data);
+                    session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+                    return redirect()->to(base_url()."employees");
+                }
+            }
         }
     }
 }

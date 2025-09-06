@@ -5,10 +5,11 @@ use \CodeIgniter\Model;
 class AssessmentModel extends Model 
 {
     protected $table = 'assessment';
-    protected $primaryKey = 'assessmentid';
+    protected $primaryKey = 'assid';
     protected $allowedFields = [
-        'asstudentno', 'assy', 'assem',
-        'asscourse', 'asslevel', 'asstatus', 'assisdel',
+        'studentno', 'sy', 'sem', 'level', 'course',
+        'curriculum', 'section', 'date', 'status',
+        'isdel',
     ];
     protected $returnType = 'array';
     

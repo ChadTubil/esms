@@ -27,12 +27,18 @@
                                 <?= session()->getTempdata('addsuccess');?>
                             </div>
                         <?php endif; ?>
+                        <?php if(session()->getTempdata('error')) :?>
+                            <div class="alert alert-danger">
+                                <?= session()->getTempdata('error');?>
+                            </div>
+                        <?php endif; ?>
                         <?php if(isset($validation)): ?>
                             <div class="alert alert-danger">
                                 <?php echo $validation->listErrors(); ?>
                             </div>
                         <?php endif; ?>
                         <?= form_open('registerstudent'); ?>
+                            <h4 style="text-align: center;">STUDENT INFORMATION</h4>
                             <div class="row">
                                 <div class="col-lg-4 col-sm-12">
                                     <label class="form-label" for="validationDefault01">LAST NAME</label><span style="color: red"> *</span>
@@ -43,7 +49,7 @@
                                     <input type="text" name="fname" class="form-control" value="<?php echo set_value('fname'); ?>">
                                 </div>
                                 <div class="col-lg-3 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">MIDDLE NAME</label>
+                                    <label class="form-label" for="validationDefault01">MIDDLE NAME</label><span style="color: red"> *</span>
                                     <input type="text" name="mname" class="form-control" value="<?php echo set_value('mname'); ?>">
                                 </div>
                                 <div class="col-lg-4 col-sm-12">
@@ -107,6 +113,40 @@
                                 <div class="col-lg-7 col-sm-12">
                                     <label class="form-label" for="validationDefault01">EMAIL</label>
                                     <input type="text" name="email" class="form-control" value="<?php echo set_value('email'); ?>">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-lg-8 col-sm-12" style="text-align: center;">
+                                    <h4>SCHOOL BACKGROUND</h4>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <h5>GRADE SCHOOL</h5>
+                                <div class="col-lg-6 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">SCHOOL ATTENDED</label><span style="color: red"> *</span>
+                                    <input type="text" name="eschool" class="form-control" value="<?php echo set_value('eschool'); ?>">
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">YEAR GRADUATED</label><span style="color: red"> *</span>
+                                    <input type="month" name="eyeargraduate" class="form-control" value="<?php echo set_value('eyeargraduate'); ?>">
+                                </div>
+                                <h5>JUNIOR HIGH SCHOOL</h5>
+                                <div class="col-lg-6 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">SCHOOL ATTENDED</label><span style="color: red"> *</span>
+                                    <input type="text" name="jhschool" class="form-control" value="<?php echo set_value('jhschool'); ?>">
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">YEAR GRADUATED</label><span style="color: red"> *</span>
+                                    <input type="month" name="jhyeargraduate" class="form-control" value="<?php echo set_value('jhyeargraduate'); ?>">
+                                </div>
+                                <h5>SENIOR HIGH SCHOOL</h5>
+                                <div class="col-lg-6 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">SCHOOL ATTENDED</label><span style="color: red"> *</span>
+                                    <input type="text" name="shschool" class="form-control" value="<?php echo set_value('shschool'); ?>">
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">YEAR GRADUATED</label><span style="color: red"> *</span>
+                                    <input type="month" name="shyeargraduate" class="form-control" value="<?php echo set_value('shyeargraduate'); ?>">
                                 </div>
                             </div>
                             <br>

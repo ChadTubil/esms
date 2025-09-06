@@ -43,7 +43,7 @@
                                     <input type="text" name="subcode" class="form-control">
                                 </div>
                                 <div class="col-lg-2 col-sm-12" style="text-align: center;">
-                                    <label class="form-label" for="validationDefault01">MAJOR</label>
+                                    <label class="form-label" for="validationDefault01">MAJOR</label><br>
                                     <input class="form-check-input" type="checkbox" name="major" value="1">
                                 </div>
                                 <div class="col-lg-3 col-sm-12" style="text-align: center;">

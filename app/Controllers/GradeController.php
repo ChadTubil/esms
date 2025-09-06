@@ -6,6 +6,8 @@ use App\Models\ImportedGradesModel;
 use App\Models\StudentsModel;
 use App\Models\SYModel;
 use App\Models\SemesterModel;
+use App\Models\EmployeesModel;
+use App\Models\SectionTempModel;
 use TCPDF;
 class GradeController extends BaseController
 {
@@ -14,6 +16,8 @@ class GradeController extends BaseController
     public $studentsModel;
     public $syModel;
     public $semModel;
+    public $empModel;
+    public $stModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -22,6 +26,8 @@ class GradeController extends BaseController
         $this->studentsModel = new StudentsModel();
         $this->syModel = new SYModel();
         $this->semModel = new SemesterModel();
+        $this->empModel = new EmployeesModel();
+        $this->stModel = new SectionTempModel();
         $this->session = session();
     }
     public function index()
@@ -448,6 +454,197 @@ class GradeController extends BaseController
             // Output PDF to browser
             $pdf->writeHTML($html, true, false, false, false, '');
             $pdf->Output($studresult->studln.','.$studresult->studfn.'.pdf', 'D');
+        }
+    }
+    public function gradesCollege() {
+        $data = [
+            'page_title' => 'Holy Cross College | College Grades Encoding',
+            'page_heading' => 'COLLEGE GRADES ENCODING! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user'))
+        {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'schoolyear' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'semester' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)) {
+                $sy = $this->request->getVar('schoolyear');
+                $sem = $this->request->getVar('semester');
+                $this->session->set('selected_sy', $sy);
+                $this->session->set('selected_sem', $sem);
+                return redirect()->to(base_url().'grades-college-result');
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('collegegradesview', $data);
+    }
+    public function gradesCollegeResult() {
+        $data = [
+            'page_title' => 'Holy Cross College | College Grades Encoding',
+            'page_heading' => 'COLLEGE GRADES ENCODING! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ]; 
+
+        if(!session()->has('logged_user'))
+        {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($data['usersaccess'] as $user) {
+            $ACCOUNTNO = $user['uaccountid'];
+        }
+        $IMPNO = $this->empModel->where('empnum', $ACCOUNTNO)->findColumn('impno');
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+        $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
+        $data['selectedsem'] = $this->semModel->where('semester', $semid)->findAll();
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'schoolyear' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'semester' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)) {
+                $sy = $this->request->getVar('schoolyear');
+                $sem = $this->request->getVar('semester');
+                $this->session->set('selected_sy', $sy);
+                $this->session->set('selected_sem', $sem);
+                return redirect()->to(base_url().'grades-college-result');
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        
+        $importedGradeCondition = array('sy' => $syid, 'sem' => $semid, 'teacherid' => $IMPNO);
+        $data['importedGradeData'] = $this->importedGradeModel->where($importedGradeCondition)->groupBy('scheduleid')->findAll();
+        $data['sectionTempData'] = $this->stModel->findAll();
+        return view('collegegradesresultview', $data);
+    
+
+        return view('collegegradesresultview', $data);
+    }
+    public function gradesCollegeEncoding($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | College Grades Encoding',
+            'page_heading' => 'COLLEGE GRADES ENCODING! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ]; 
+
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($data['usersaccess'] as $user) {
+            $ACCOUNTNO = $user['uaccountid'];
+        }
+        $IMPNO = $this->empModel->where('empnum', $ACCOUNTNO)->findColumn('impno');
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+        $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
+        $data['selectedsem'] = $this->semModel->where('semester', $semid)->findAll();
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        $importedGradeCondition = array('sy' => $syid, 'sem' => $semid, 'teacherid' => $IMPNO, 'scheduleid' => $id);
+        $data['importedGradeData'] = $this->importedGradeModel->where($importedGradeCondition)->orderBy('lname', 'ASC')->findAll();
+
+        return view('collegegradesencodingview', $data);
+    }
+    public function gradesCollegeEncodingSubmit() {
+        // if($this->request->is('post')) {
+        //     $SCHEDID = $this->request->getVar('scheduleid');
+        //     $data = [
+        //         'prelim' => $this->request->getVar('prelim'),
+        //         'midterm' => $this->request->getVar('midterm'),
+        //         'final' => $this->request->getVar('final'),
+        //     ];
+
+        //     $this->importedGradeModel->where('impgradeid', $id)->update($id, $data);
+        //     // UPDATE SEMESTRAL
+        //     $db = \Config\Database::connect();
+        //     $sql = 'UPDATE importedgrades SET semestral = (prelim * .3) + (midterm * .3) + (final* .4)';
+        //     $db->query($sql);
+
+        //     session()->setTempdata('updatesuccess', 'Update is Successful!', 2);
+        //     return redirect()->to(base_url()."grades-college-encoding/".$SCHEDID);
+        // }
+        if($this->request->is('post')) {
+            $importedG = new ImportedGradesModel();
+            $SCHEDID = $this->request->getVar('schedid');
+            $ids = $this->request->getPost('id');
+            $prelims = $this->request->getPost('prelim');
+            $midterms = $this->request->getPost('midterm');
+            $finals = $this->request->getPost('final');
+
+            // Use a transaction to ensure data integrity
+            $db = \Config\Database::connect();
+            $db->transStart();
+            
+            try {
+                foreach ($ids as $index => $id) {
+                    $data = [
+                        'prelim' => $prelims[$index],
+                        'midterm' => $midterms[$index],
+                        'final' => $finals[$index],
+                    ];
+                    
+                    // Update each record individually
+                    $importedG->update($id, $data);
+                }
+                
+                $db->transComplete();
+                
+                if ($db->transStatus() === FALSE) {
+                    session()->setTempdata('error', 'Update failed!', 2);
+                } else {
+                    session()->setTempdata('updatesuccess', 'Update is Successful!', 2);
+                }
+                
+            } catch (\Exception $e) {
+                $db->transRollback();
+                session()->setTempdata('error', 'Update failed: ' . $e->getMessage(), 2);
+            }
+            
+            return redirect()->to(base_url()."grades-college-encoding/".$SCHEDID);
         }
     }
 }

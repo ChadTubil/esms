@@ -7,9 +7,9 @@ class EmployeesModel extends Model
     protected $table = 'employees';
     protected $primaryKey = 'empid';
     protected $allowedFields = [
-        'empnum', 'empfn', 'empmn', 'empln', 'empextension',
-        'empfullname', 'emphiringdate', 'empresignationdate', 'empposition', 'empstatus',
-        'empisdel',
+        'empnum', 'impno', 'empfn', 'empmn', 'empln', 'empextension',
+        'empfullname', 'emphiringdate', 'empresignationdate', 'empposition', 
+        'rfidno', 'image', 'empstatus', 'empisdel',
     ];
     protected $returnType = 'array';
     
