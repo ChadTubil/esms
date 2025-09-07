@@ -13,7 +13,10 @@ use App\Models\PermanentRecordModel;
 use App\Models\EnrollmentTempDataModel;
 use App\Models\FamilyBackgroundModel;
 use App\Models\CurriculumsModel;
+use App\Models\CurriculumDataModel;
 use App\Models\StudentCurriculumModel;
+use App\Models\CollegeGradesModel;
+use App\Models\SectionsModel;
 class EnrollmentController extends BaseController
 {
     public $usersModel;
@@ -28,7 +31,10 @@ class EnrollmentController extends BaseController
     public $etdModel;
     public $fbModel;
     public $curriModel;
+    public $currdataModel;
     public $studcurriModel;
+    public $colgradesModel;
+    public $sectionsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -44,7 +50,10 @@ class EnrollmentController extends BaseController
         $this->etdModel = new EnrollmentTempDataModel();
         $this->fbModel = new FamilyBackgroundModel();
         $this->curriModel = new CurriculumsModel();
+        $this->currdataModel = new CurriculumDataModel();
         $this->studcurriModel = new StudentCurriculumModel();
+        $this->colgradesModel = new CollegeGradesModel();
+        $this->sectionsModel = new SectionsModel();
         $this->session = session();
     }
     public function index()
@@ -436,6 +445,16 @@ class EnrollmentController extends BaseController
 
         $data['assessment'] = $this->assModel->where('studentno', $id)->findAll();
 
+        $ETDData = $this->etdModel->where('studno', $id)->findAll();
+        foreach($ETDData as $etdd) {
+            $ETDSY = $etdd['sy'];
+            $ETDSEM = $etdd['sem'];
+            $ETDLEVEL = $etdd['level'];
+            $ETDCOURSE = $etdd['course'];
+        }
+        $data['sectiondata'] = $this->sectionsModel->where('seccourid', $ETDCOURSE)
+        ->where('seclevelid', $ETDLEVEL)->where('secsemid', $ETDSEM)->where('secsyid', $ETDSY)->findAll();
+
         return view('assessmentviewprocess', $data);
     }
     public function assessmentProcess2($id=null) {
@@ -444,25 +463,51 @@ class EnrollmentController extends BaseController
             $SEM = $this->request->getVar('sem');
             $COURSE = $this->request->getVar('course');
             $LEVEL = $this->request->getVar('yl');
+            $CURRICULUM = $this->request->getVar('curriculum');
+            $SECTION = $this->request->getVar('section');
 
             $assessmentinfo = $this->assModel->where('studentno', $id)
             ->where('sy', $SY)->where('sem', $SEM)->where('course', $COURSE)
             ->where('level', $LEVEL)->findAll();
-
-            // $checkcourse = ""
-            // $findCurriculum = $this->curriModel->
 
             if(empty($assessmentinfo)){
                 $assessmentdata = [
                     'studentno' => $id,
                     'sy' => $SY,
                     'sem' => $SEM,
-                    'course' => $COURSE,
                     'level' => $LEVEL,
+                    'course' => $COURSE,
+                    'curriculum' => $CURRICULUM,
+                    'section' => $SECTION,
                     'date' => date('Y-m-d'),
                 ];
+                // print_r($assessmentdata);
                 $this->assModel->save($assessmentdata);
-                session()->setTempdata('processsuccess', 'Assessment Process Successful!', 2);
+                
+                $FindAssessmentId = $this->assModel->where('studentno', $id)->where('sy', $SY)
+                ->where('sem', $SEM)->where('level', $LEVEL)->where('course', $COURSE)->findAll();
+
+                foreach($FindAssessmentId as $FAId) {
+                    $ASSID = $FAId['assid'];
+                    
+                }
+                
+                $CurriculumData = $this->currdataModel->where('curriculumid', $CURRICULUM)
+                ->where('level', $LEVEL)->where('sem', $SEM)->findAll();
+                
+                foreach($CurriculumData as $currdata) {
+                    $collegegradesdata = [
+                        'studentno' => $id, // change to student no
+                        'assid' => $ASSID, // change to assessment id
+                        'currid' => $CURRICULUM,
+                        'subid' => $currdata['subjectsid'],
+                        'section' => $SECTION,
+                    ];
+                    $this->colgradesModel->save($collegegradesdata);
+                    // print_r($asas);
+                    
+                }
+                session()->setTempdata('success', 'Assessment Process Successful!', 2);
                 return redirect()->to(base_url()."assessment/process/".$id);
             }
             else{
@@ -471,8 +516,31 @@ class EnrollmentController extends BaseController
             }
         }
     }
+    public function viewSubjects($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Assessment',
+            'page_heading' => 'ASSESSMENT! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        return view('assessmentviewprocess', $data);
+    }
     public function curricullumSet($id=null) {
-        
+        if($this->request->is('post')) {
+            $data = [
+                'studentno' => $id,
+                'currid' => $this->request->getVar('curriculum'),
+            ];
+            $this->studcurriModel->save($data);
+            session()->setTempdata('success', 'Creating Curriculum Successful!', 2);
+            return redirect()->to(base_url()."assessment/process/".$id);
+        }
     }
     public function registrationselect() {
         $data = [

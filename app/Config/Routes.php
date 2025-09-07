@@ -140,6 +140,7 @@ $routes->post('assessment', 'EnrollmentController::assessment');
 $routes->get('assessment/process/(:segment)', 'EnrollmentController::assessmentProcess/$1');
 $routes->add('assessment/curricullum-set/(:segment)', 'EnrollmentController::curricullumSet/$1');
 $routes->add('assessment/process2/(:segment)', 'EnrollmentController::assessmentProcess2/$1');
+$routes->get('assessment/viewsubjects/(:segment)', 'EnrollmentController::viewSubjects/$1');
 // STUDENT FPA
 $routes->get('studentfar', 'FARController::index');
 $routes->get('studentfar/evaluation/(:segment)', 'FARController::farStudent/$1');

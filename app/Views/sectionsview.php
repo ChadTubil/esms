@@ -43,7 +43,7 @@
                                         <select name="schoolyear" class="form-select" id="exampleFormControlSelect1">
                                             <option selected="" disabled=""></option>
                                             <?php foreach ($schoolyeardata as $syd): ?>
-                                                <option value="<?php echo $syd['syid']; ?>"><?php echo $syd['syname']; ?></option>
+                                                <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                 </div>
@@ -52,7 +52,7 @@
                                         <select name="semester" class="form-select" id="exampleFormControlSelect1">
                                             <option selected="" disabled=""></option>
                                             <?php foreach ($semesterdata as $semd): ?>
-                                                <option value="<?php echo $semd['semid']; ?>"><?php echo $semd['semester']; ?></option>
+                                                <option value="<?php echo $semd['semester']; ?>"><?php echo $semd['semester']; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                 </div>
@@ -70,7 +70,7 @@
                                         <select name="level" class="form-select" id="exampleFormControlSelect1">
                                         <option selected="" disabled=""></option>
                                         <?php foreach ($leveldata as $leveld): ?>
-                                            <option value="<?php echo $leveld['levelid']; ?>"><?php echo $leveld['level']; ?></option>
+                                            <option value="<?php echo $leveld['level']; ?>"><?php echo $leveld['level']; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -120,17 +120,9 @@
                                             <td><?= $sectiond['secid']; ?></td>
                                             <td><?= $sectiond['section']; ?></td>
                                             <td>
-                                                <?php foreach($schoolyeardata as $syd):?>
-                                                    <?php if($syd['syid'] == $sectiond['secsyid']): ?>
-                                                        <?= $syd['syname']; ?> 
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
+                                                <?= $sectiond['secsyid']; ?>
                                                 - 
-                                                <?php foreach($semesterdata as $semd):?>
-                                                    <?php if($semd['semid'] == $sectiond['secsemid']): ?>
-                                                        <?= $semd['semester']; ?> 
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
+                                                <?= $sectiond['secsemid']; ?>
                                             </td>
                                             <td>
                                                 <div class="flex align-items-center list-user-action">
@@ -162,14 +154,10 @@
                                                                             <label class="form-label" for="exampleFormControlSelect1">SCHOOL YEAR</label>
                                                                                 <select name="schoolyear" class="form-select" id="exampleFormControlSelect1">
                                                                                 <option value="<?php echo $sectiond['secsyid']; ?>" selected>
-                                                                                    <?php foreach($schoolyeardata as $syd): ?>
-                                                                                        <?php if($syd['syid'] == $sectiond['secsyid']): ?>
-                                                                                            <?= $syd['syname']; ?>
-                                                                                        <?php endif; ?>
-                                                                                    <?php endforeach; ?>
+                                                                                    <?php echo $sectiond['secsyid']; ?>
                                                                                 </option>
                                                                                 <?php foreach ($schoolyeardata as $syd): ?>
-                                                                                    <option value="<?php echo $syd['syid']; ?>"><?php echo $syd['syname']; ?></option>
+                                                                                    <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
                                                                                 <?php endforeach; ?>
                                                                             </select>
                                                                         </div>
@@ -177,14 +165,10 @@
                                                                             <label class="form-label" for="exampleFormControlSelect1">SEMESTER</label>
                                                                                 <select name="semester" class="form-select" id="exampleFormControlSelect1">
                                                                                 <option value="<?php echo $sectiond['secsemid']; ?>" selected>
-                                                                                    <?php foreach($semesterdata as $semd): ?>
-                                                                                        <?php if($semd['semid'] == $sectiond['secsemid']): ?>
-                                                                                            <?= $semd['semester']; ?>
-                                                                                        <?php endif; ?>
-                                                                                    <?php endforeach; ?>
+                                                                                    <?php echo $sectiond['secsemid']; ?>
                                                                                 </option>
                                                                                 <?php foreach ($semesterdata as $semd): ?>
-                                                                                    <option value="<?php echo $semd['semid']; ?>"><?php echo $semd['semester']; ?></option>
+                                                                                    <option value="<?php echo $semd['semester']; ?>"><?php echo $semd['semester']; ?></option>
                                                                                 <?php endforeach; ?>
                                                                             </select>
                                                                         </div>
@@ -207,14 +191,10 @@
                                                                             <label class="form-label" for="exampleFormControlSelect1">LEVEL</label>
                                                                                 <select name="level" class="form-select" id="exampleFormControlSelect1">
                                                                                 <option value="<?php echo $sectiond['seclevelid']; ?>" selected>
-                                                                                    <?php foreach($leveldata as $leveld): ?>
-                                                                                        <?php if($leveld['levelid'] == $sectiond['seclevelid']): ?>
-                                                                                            <?= $leveld['level']; ?>
-                                                                                        <?php endif; ?>
-                                                                                    <?php endforeach; ?>
+                                                                                    <?php echo $sectiond['seclevelid']; ?>
                                                                                 </option>
                                                                                 <?php foreach ($leveldata as $leveld): ?>
-                                                                                    <option value="<?php echo $leveld['levelid']; ?>"><?php echo $leveld['level']; ?></option>
+                                                                                    <option value="<?php echo $leveld['level']; ?>"><?php echo $leveld['level']; ?></option>
                                                                                 <?php endforeach; ?>
                                                                             </select>
                                                                         </div>

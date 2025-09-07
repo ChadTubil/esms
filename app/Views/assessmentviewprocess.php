@@ -22,6 +22,11 @@
             <div class="col-lg-12 col-sm-12">
                 <div class="card">
                     <div class="card-body">
+                        <?php if(session()->getTempdata('success')) :?>
+                            <div class="alert alert-success">
+                                <?= session()->getTempdata('success');?>
+                            </div>
+                        <?php endif; ?>
                         <?php foreach($etddata as $etdd): ?>
                             <?php foreach($students as $stud): ?>
                                 <?php if(!empty($studcurriculums)): ?>
@@ -67,18 +72,20 @@
                                                 <input type="hidden" name="yl" class="form-control" value="<?= $etdd['level']; ?>">
                                                 <input type="text" class="form-control" value="<?= $etdd['level']; ?>" disabled>
                                             </div>
-                                            <?php if($etdd['level'] == "1st Year" && $etdd['status'] == "Admitted"): ?>
-                                                
-                                            <?php else: ?>
-                                                <div class="col-lg-2">
-                                                    <br>
-                                                    <button class="btn btn-primary" type="submit" name="add" style="width: 100%;">VIEW CURRICULUM</button>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <br>
-                                                    <button class="btn btn-info" type="submit" name="add" style="width: 100%;">SHIFT</button>
-                                                </div>
-                                            <?php endif; ?>
+                                            <div class="col-lg-3">
+                                                <input type="hidden" name="curriculum" class="form-control" value="<?php 
+                                                        foreach($studcurriculums as $sctudcurr) {
+                                                            echo $sctudcurr['currid'];
+                                                        } 
+                                                    ?>">
+                                                <label class="form-label" for="validationDefault01">SECTION</label>
+                                                <select name="section" class="form-select" style="width: 100%;" required>
+                                                    <option value="" selected disabled>SELECT SECTION</option>
+                                                    <?php foreach($sectiondata as $sectiond) : ?>
+                                                        <option value="<?= $sectiond['secid']; ?>"><?= $sectiond['section']; ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
                                             <div class="col-lg-2">
                                                 <label class="form-label" for="validationDefault01">ACTION</label>
                                                 <button class="btn btn-success" type="submit" name="add" style="width: 100%;">PROCESS</button>
@@ -150,6 +157,11 @@
         <div class="row">
             <div class="col-lg-6 col-sm-12">
                 <div class="card">
+                    <div class="row" style="margin: 10px;">
+                        <div class="col-lg-4 col-sm-12">
+                            <button class="btn btn-primary" style="width: 100%;">VIEW CURRICULUM</button>
+                        </div>
+                    </div>
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
                             <h4 class="card-title">ASSESSMENT HISTORY</h4>
@@ -180,23 +192,23 @@
                                 <tbody>
                                     <?php foreach($assessment as $ass) : ?>
                                         <tr>
-                                            <td><?= $ass['assy']; ?></td>
-                                            <td><?= $ass['assem']; ?></td>
-                                            <td><?= $ass['asslevel']; ?></td>
-                                            <td><?= $ass['asstatus']; ?></td>
+                                            <td><?= $ass['sy']; ?></td>
+                                            <td><?= $ass['sem']; ?></td>
+                                            <td><?= $ass['level']; ?></td>
+                                            <td><?= $ass['status']; ?></td>
                                             <td>
-                                                <button class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="ENROLL SUBJECTS"
-                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['asstudentno']; ?>';">
+                                                <button class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="VIEW ASSESSMENT"
+                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['studentno']; ?>';">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7366 2.76175H8.08455C6.00455 2.75375 4.29955 4.41075 4.25055 6.49075V17.3397C4.21555 19.3897 5.84855 21.0807 7.89955 21.1167C7.96055 21.1167 8.02255 21.1167 8.08455 21.1147H16.0726C18.1416 21.0937 19.8056 19.4087 19.8026 17.3397V8.03975L14.7366 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             <path d="M14.4741 2.75V5.659C14.4741 7.079 15.6231 8.23 17.0431 8.234H19.7971" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M14.2936 12.9141H9.39355" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             <path d="M11.8442 15.3639V10.4639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                          
                                                         </svg>                       
-                                                    </span>
+                                                    </span>VIEW
                                                 </button>
-                                                <button class="btn btn-sm btn-icon btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="CHANGE ENROLLMENT"
-                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['asstudentno']; ?>';">
+                                                <button class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE ASSESSMENT"
+                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['studentno']; ?>';">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -204,7 +216,7 @@
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                           
                                                         </svg>                       
-                                                    </span>
+                                                    </span>FINALIZE
                                                 </button>
                                             </td>
                                         </tr>
