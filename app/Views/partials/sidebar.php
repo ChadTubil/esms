@@ -189,6 +189,7 @@
                                 <span class="mini-icon">-</span>
                             </a>
                         </li>
+                        <!-- ENROLLMENT -->
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collegestudent" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -243,8 +244,22 @@
                                         <span class="item-name"> Advising </span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>assessment-cor">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> A </i>
+                                        <span class="item-name"> Assessment </span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
+                        <!-- REGISTRAR -->
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#registrar" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -288,6 +303,7 @@
                                 </li>
                             </ul>
                         </li>
+                        <!-- PROGRAM CHAIR -->
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#programchair" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -330,6 +346,13 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+                        <!-- HRD -->
+                        <li class="nav-item static-item">
+                            <a class="nav-link static-item disabled" href="#" tabindex="-1">
+                                <span class="default-icon">Administration Department</span>
+                                <span class="mini-icon">-</span>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#hrd" role="button" aria-expanded="false" aria-controls="horizontal-menu">
@@ -387,6 +410,13 @@
                                 </li>
                             </ul>
                         </li>
+                        <!-- ACCOUNTING -->
+                        <li class="nav-item static-item">
+                            <a class="nav-link static-item disabled" href="#" tabindex="-1">
+                                <span class="default-icon">Accounting Department</span>
+                                <span class="mini-icon">-</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#accounting" role="button" aria-expanded="false" aria-controls="horizontal-menu">
                                 <i class="icon">
@@ -394,7 +424,7 @@
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M8.92574 16.39H14.3119C14.7178 16.39 15.0545 16.05 15.0545 15.64C15.0545 15.23 14.7178 14.9 14.3119 14.9H8.92574C8.5198 14.9 8.18317 15.23 8.18317 15.64C8.18317 16.05 8.5198 16.39 8.92574 16.39ZM12.2723 9.9H8.92574C8.5198 9.9 8.18317 10.24 8.18317 10.65C8.18317 11.06 8.5198 11.39 8.92574 11.39H12.2723C12.6782 11.39 13.0149 11.06 13.0149 10.65C13.0149 10.24 12.6782 9.9 12.2723 9.9ZM19.3381 9.02561C19.5708 9.02292 19.8242 9.02 20.0545 9.02C20.302 9.02 20.5 9.22 20.5 9.47V17.51C20.5 19.99 18.5099 22 16.0545 22H8.17327C5.59901 22 3.5 19.89 3.5 17.29V6.51C3.5 4.03 5.5 2 7.96535 2H13.2525C13.5099 2 13.7079 2.21 13.7079 2.46V5.68C13.7079 7.51 15.203 9.01 17.0149 9.02C17.4381 9.02 17.8112 9.02316 18.1377 9.02593C18.3917 9.02809 18.6175 9.03 18.8168 9.03C18.9578 9.03 19.1405 9.02789 19.3381 9.02561ZM19.6111 7.566C18.7972 7.569 17.8378 7.566 17.1477 7.559C16.0527 7.559 15.1507 6.648 15.1507 5.542V2.906C15.1507 2.475 15.6685 2.261 15.9646 2.572C16.5004 3.13476 17.2368 3.90834 17.9699 4.67837C18.7009 5.44632 19.4286 6.21074 19.9507 6.759C20.2398 7.062 20.0279 7.565 19.6111 7.566Z" fill="currentColor"></path>                       
                                 </svg>                        
                                 </i>
-                                <span class="item-name">Accounting</span>
+                                <span class="item-name">Rates</span>
                                 <i class="right-icon">
                                     <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -411,13 +441,53 @@
                                                 </g>
                                             </svg>
                                         </i>
-                                        <i class="sidenav-mini-icon"> R </i>
-                                        <span class="item-name"> Rates </span>
+                                        <i class="sidenav-mini-icon"> C </i>
+                                        <span class="item-name"> College </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>rates">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> SHS </i>
+                                        <span class="item-name"> Senior High School </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>rates">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> JHS </i>
+                                        <span class="item-name"> Junior High School </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>rates">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> GS </i>
+                                        <span class="item-name"> Grade School </span>
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li><hr class="hr-horizontal"></li>
+                        <!-- SCHOOL SETTINGS -->
                         <li class="nav-item static-item">
                             <a class="nav-link static-item disabled" href="#" tabindex="-1">
                                 <span class="default-icon">School Settings</span>
@@ -608,7 +678,7 @@
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M20.4023 13.58C20.76 13.77 21.036 14.07 21.2301 14.37C21.6083 14.99 21.5776 15.75 21.2097 16.42L20.4943 17.62C20.1162 18.26 19.411 18.66 18.6855 18.66C18.3278 18.66 17.9292 18.56 17.6022 18.36C17.3365 18.19 17.0299 18.13 16.7029 18.13C15.6911 18.13 14.8429 18.96 14.8122 19.95C14.8122 21.1 13.872 22 12.6968 22H11.3069C10.1215 22 9.18125 21.1 9.18125 19.95C9.16081 18.96 8.31259 18.13 7.30085 18.13C6.96361 18.13 6.65702 18.19 6.40153 18.36C6.0745 18.56 5.66572 18.66 5.31825 18.66C4.58245 18.66 3.87729 18.26 3.49917 17.62L2.79402 16.42C2.4159 15.77 2.39546 14.99 2.77358 14.37C2.93709 14.07 3.24368 13.77 3.59115 13.58C3.87729 13.44 4.06125 13.21 4.23498 12.94C4.74596 12.08 4.43937 10.95 3.57071 10.44C2.55897 9.87 2.23194 8.6 2.81446 7.61L3.49917 6.43C4.09191 5.44 5.35913 5.09 6.38109 5.67C7.27019 6.15 8.425 5.83 8.9462 4.98C9.10972 4.7 9.20169 4.4 9.18125 4.1C9.16081 3.71 9.27323 3.34 9.4674 3.04C9.84553 2.42 10.5302 2.02 11.2763 2H12.7172C13.4735 2 14.1582 2.42 14.5363 3.04C14.7203 3.34 14.8429 3.71 14.8122 4.1C14.7918 4.4 14.8838 4.7 15.0473 4.98C15.5685 5.83 16.7233 6.15 17.6226 5.67C18.6344 5.09 19.9118 5.44 20.4943 6.43L21.179 7.61C21.7718 8.6 21.4447 9.87 20.4228 10.44C19.5541 10.95 19.2475 12.08 19.7687 12.94C19.9322 13.21 20.1162 13.44 20.4023 13.58ZM9.10972 12.01C9.10972 13.58 10.4076 14.83 12.0121 14.83C13.6165 14.83 14.8838 13.58 14.8838 12.01C14.8838 10.44 13.6165 9.18 12.0121 9.18C10.4076 9.18 9.10972 10.44 9.10972 12.01Z" fill="currentColor"></path>
                                     </svg> 
                                 </i>
-                                <span class="item-name">Administration</span>
+                                <span class="item-name">TRS</span>
                                 <i class="right-icon">
                                     <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

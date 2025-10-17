@@ -44,12 +44,12 @@ class SchedulesController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['scheduledata'] = $this->schedModel->where('schedisdel', 0)->findAll();
-        $data['subjectsdata'] = $this->subjModel->where('subisdel', 0)->paginate(10);
-        $employeeCondition = array('empisdel' => 0, 'empid !=' => 1);
-        $data['employeesdata'] = $this->empModel->where($employeeCondition)->paginate(10);
-        $data['roomsdata'] = $this->roomsModel->where('roomisdel', 0)->paginate(10);
-        $data['coursedata'] = $this->coursesModel->where('courisdel', 0)->paginate(10);
-        $data['sectiondata'] = $this->sectionsModel->where('secisdel', 0)->paginate(10);
+        $data['subjectsdata'] = $this->subjModel->where('isdel', 0)->paginate(10);
+        $employeeCondition = array('empisdel' => 0,);
+        $data['employeesdata'] = $this->empModel->where($employeeCondition)->findAll();
+        $data['roomsdata'] = $this->roomsModel->where('roomisdel', 0)->findAll();
+        $data['coursedata'] = $this->coursesModel->where('courisdel', 0)->findAll();
+        $data['sectiondata'] = $this->sectionsModel->where('secisdel', 0)->findAll();
 
         if($this->request->is('post')) {
             $rules = [

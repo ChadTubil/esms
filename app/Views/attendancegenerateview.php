@@ -91,6 +91,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>IMAGE</th>
                                         <th>NAME</th>
                                         <th>DATE</th>
                                         <th>IN</th>
@@ -104,6 +105,7 @@
                                             <?php if($attendanced['employeeno'] == $empd['empnum']): ?>
                                                 <tr>
                                                     <td><?= $attendanced['employeeno']; ?></td>
+                                                    <td><img src="<?= base_url();?>public/uploads/captured/<?= $attendanced['image']; ?>" alt="" width=100></td>
                                                     <td><?= $empd['empfullname']; ?></td>
                                                     <td><?= $formattedDate = date('F j, Y', strtotime($attendanced['date'])); ?></td>
                                                     <td><?= $formattedTime = date('h:i A', strtotime($attendanced['timein'])); ?></td>

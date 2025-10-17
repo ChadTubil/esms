@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta http-equiv="refresh" content="30;url=<?= base_url(); ?>biometrics-blank">
+        <meta http-equiv="refresh" content="10;url=<?= base_url(); ?>biometrics-blank">
         <title>Holy Cross College | Biometrics</title>
         <!-- Favicon -->
         <link rel="shortcut icon" href="<?= base_url(); ?>/public/assets/images/hccicon.ico">
@@ -90,6 +90,14 @@
                                 </div>
                                 <br>
                                 <br>
+                                <div class="row" style="justify-content: center; text-align: center;">
+                                    <div class="col-12">
+                                        <!-- Hidden video preview -->
+                                        <video id="video" autoplay playsinline style="display:none;"></video>
+                                        <!-- <video id="video" autoplay playsinline style="width: 500px"></video> -->
+                                        <canvas id="canvas" style="display:none;"></canvas>
+                                    </div>
+                                </div>
                                 <img src="<?= base_url().'/public/assets/images/bioimage.png' ?>" alt="" style="width: 30%">
                                 <br>
                                 <br>
@@ -109,7 +117,8 @@
                                         <h4 style="color: white;"><strong>--:-- --</strong></h4>
                                     </div>
                                 </div>
-                                <?= form_open('biometrics'); ?>
+                                <?= form_open_multipart('biometrics', ['id' => 'captureForm']); ?>
+                                    <input type="hidden" name="image" id="image">
                                     <input type="text" name="rfidno" id="hiddenInput" class="visually-hidden" autocomplete="off" autofocus>
                                 <?= form_close(); ?>
                             </div>
@@ -153,5 +162,40 @@
                 border: 0;
             }
         </style>
+        <script>
+            // Access the webcam
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+
+                    // Wait for stream to be ready, then capture automatically
+                    setTimeout(() => {
+                        captureImage();
+                    }, 2000); // 2 seconds delay
+                })
+                .catch(err => {
+                    console.error("Camera access denied:", err);
+                });
+
+            function captureImage() {
+                const video = document.getElementById('video');
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+
+                // Set canvas size same as video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Draw the current frame
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert to Base64
+                const dataUrl = canvas.toDataURL('image/png');
+
+                // Put in hidden input
+                document.getElementById('image').value = dataUrl;
+            }
+        </script>
     </body>
 </html>

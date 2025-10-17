@@ -27,135 +27,217 @@
                                 <?= session()->getTempdata('success');?>
                             </div>
                         <?php endif; ?>
-                        <?php foreach($etddata as $etdd): ?>
-                            <?php foreach($students as $stud): ?>
-                                <?php if(!empty($studcurriculums)): ?>
-                                    <?= form_open('assessment/process2/'.$etdd['studno']) ?>
-                                        <div class="row">
-                                            <div class="col-lg-12 col-sm-12">
-                                                <h1><?= $etdd['fullname']; ?></h1>
-                                            </div>
-                                            
-                                            <div class="col-lg-2">
-                                            <br>
-                                                <label class="form-label" for="validationDefault01">STUDENT NUMBER</label>
-                                                <input type="hidden" name="studentnumber" class="form-control" value="<?= $etdd['studno']; ?>" disabled>
-                                                <input type="text" class="form-control" value="<?= $stud['studentno']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">COURSE</label>
-                                                <input type="hidden" name="course" class="form-control" value="<?= $etdd['course']; ?>">
-                                                <input type="text" class="form-control" value="<?php
-                                                        foreach($course as $c) {
-                                                            if($c['courid'] == $etdd['course']) {
-                                                                echo $c['courcode']." - ".$c['course'];
+                        <?php if(!empty($assessment)) : ?>
+                            <?php foreach($assessment as $assess) : ?>
+                                <div class="row">
+                                    <div class="col-lg-12 col-sm-12">
+                                        <h1><?php
+                                            foreach($studdata as $sd) {
+                                                if($sd['studid'] == $assess['studentno']){
+                                                    echo $sd['studfullname'];
+                                                }
+                                            }
+                                        ?></h1>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">STUDENT NUMBER</label>
+                                        <input type="text" class="form-control" value="<?php
+                                            foreach($studdata as $sd) {
+                                                if($sd['studid'] == $assess['studentno']){
+                                                    echo $sd['studentno'];
+                                                }
+                                            }
+                                        ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">COURSE</label>
+                                        <input type="text" class="form-control" value="<?php
+                                                foreach($course as $c) {
+                                                    if($c['courid'] == $assess['course']) {
+                                                        echo $c['courcode']." - ".$c['course'];
+                                                    }
+                                                }
+                                            ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
+                                        <input type="text" class="form-control" value="<?= $assess['sy']; ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">SEMESTER</label>
+                                        <input type="text" class="form-control" value="<?= $assess['sem']; ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
+                                        <input type="text" class="form-control" value="<?= $assess['level']; ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">CURRICULUM</label>
+                                        <input type="text" class="form-control" value="<?php
+                                            foreach($curriculumdata as $curriculumd) {
+                                                if($curriculumd['currid'] == $assess['curriculum']){
+                                                    echo $curriculumd['course']." - ".$curriculumd['sy'];
+                                                }
+                                            }
+                                        ?>" disabled>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <br>
+                                        <label class="form-label" for="validationDefault01">SECTION</label>
+                                        <input type="text" class="form-control" value="<?php
+                                            foreach($secdata as $secd) {
+                                                if($secd['secid'] == $assess['section']){
+                                                    echo $secd['section'];
+                                                }
+                                            }
+                                        ?>" disabled>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php foreach($etddata as $etdd): ?>
+                                <?php foreach($students as $stud): ?>
+                                    <?php if(!empty($studcurriculums)): ?>
+                                        <?= form_open('assessment/process2/'.$etdd['studno']) ?>
+                                            <div class="row">
+                                                <div class="col-lg-12 col-sm-12">
+                                                    <h1><?= $etdd['fullname']; ?></h1>
+                                                </div>
+                                                
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">STUDENT NUMBER</label>
+                                                    <input type="hidden" name="studentnumber" class="form-control" value="<?= $etdd['studno']; ?>" disabled>
+                                                    <input type="text" class="form-control" value="<?= $stud['studentno']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">COURSE</label>
+                                                    <input type="hidden" name="course" class="form-control" value="<?= $etdd['course']; ?>">
+                                                    <input type="text" class="form-control" value="<?php
+                                                            foreach($course as $c) {
+                                                                if($c['courid'] == $etdd['course']) {
+                                                                    echo $c['courcode']." - ".$c['course'];
+                                                                }
                                                             }
-                                                        }
-                                                    ?>" disabled>
+                                                        ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
+                                                    <input type="hidden" name="sy" class="form-control" value="<?= $etdd['sy']; ?>">
+                                                    <input type="text" class="form-control" value="<?= $etdd['sy']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">SEMESTER</label>
+                                                    <input type="hidden" name="sem" class="form-control" value="<?= $etdd['sem']; ?>">
+                                                    <input type="text" class="form-control" value="<?= $etdd['sem']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
+                                                    <input type="hidden" name="yl" class="form-control" value="<?= $etdd['level']; ?>">
+                                                    <input type="text" class="form-control" value="<?= $etdd['level']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input type="hidden" name="curriculum" class="form-control" value="<?php 
+                                                            foreach($studcurriculums as $sctudcurr) {
+                                                                echo $sctudcurr['currid'];
+                                                            } 
+                                                        ?>">
+                                                    <label class="form-label" for="validationDefault01">SECTION</label>
+                                                    <select name="section" class="form-select" style="width: 100%;" required>
+                                                        <option value="" selected disabled>SELECT SECTION</option>
+                                                        <?php if(empty($sectiondata)) : ?>
+                                                            <option value="" disabled>No Section Found</option>
+                                                        <?php else: ?>
+                                                            <?php foreach($sectiondata as $sectiond) : ?>
+                                                                <option value="<?= $sectiond['secid']; ?>"><?= $sectiond['section']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <label class="form-label" for="validationDefault01">ACTION</label>
+                                                    <button class="btn btn-success" type="submit" name="add" style="width: 100%;">PROCESS</button>
+                                                </div>
                                             </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
-                                                <input type="hidden" name="sy" class="form-control" value="<?= $etdd['sy']; ?>">
-                                                <input type="text" class="form-control" value="<?= $etdd['sy']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">SEMESTER</label>
-                                                <input type="hidden" name="sem" class="form-control" value="<?= $etdd['sem']; ?>">
-                                                <input type="text" class="form-control" value="<?= $etdd['sem']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
-                                                <input type="hidden" name="yl" class="form-control" value="<?= $etdd['level']; ?>">
-                                                <input type="text" class="form-control" value="<?= $etdd['level']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <input type="hidden" name="curriculum" class="form-control" value="<?php 
-                                                        foreach($studcurriculums as $sctudcurr) {
-                                                            echo $sctudcurr['currid'];
-                                                        } 
-                                                    ?>">
-                                                <label class="form-label" for="validationDefault01">SECTION</label>
-                                                <select name="section" class="form-select" style="width: 100%;" required>
-                                                    <option value="" selected disabled>SELECT SECTION</option>
-                                                    <?php foreach($sectiondata as $sectiond) : ?>
-                                                        <option value="<?= $sectiond['secid']; ?>"><?= $sectiond['section']; ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <label class="form-label" for="validationDefault01">ACTION</label>
-                                                <button class="btn btn-success" type="submit" name="add" style="width: 100%;">PROCESS</button>
-                                            </div>
-                                        </div>
-                                    <?= form_close(); ?>
-                                    <?php else: ?>
-                                        <div class="row">
-                                            <div class="col-lg-12 col-sm-12">
-                                                <h1><?= $etdd['fullname']; ?></h1>
-                                            </div>
-                                            <div class="col-lg-2">
-                                            <br>
-                                                <label class="form-label" for="validationDefault01">STUDENT NUMBER</label>
-                                                <input type="text" class="form-control" value="<?= $stud['studentno']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">COURSE</label>
-                                                <input type="text" class="form-control" value="<?php
-                                                        foreach($course as $c) {
-                                                            if($c['courid'] == $etdd['course']) {
-                                                                echo $c['courcode']." - ".$c['course'];
-                                                            }
-                                                        }
-                                                    ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
-                                                <input type="text" class="form-control" value="<?= $etdd['sy']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">SEMESTER</label>
-                                                <input type="text" class="form-control" value="<?= $etdd['sem']; ?>" disabled>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <br>
-                                                <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
-                                                <input type="text" class="form-control" value="<?= $etdd['level']; ?>" disabled>
-                                            </div>
-                                        </div>
-                                        <?= form_open('assessment/curricullum-set/'.$etdd['studno']) ?>
-                                        <div class="row">
-                                            <div class="col-lg-2">
-                                                <label class="form-label" for="validationDefault01">SELECT CURRICULUM</label>
-                                                <select name="curriculum" class="js-example-basic-single" id="Curriculum"
-                                                    style="width: 100%;" required>
-                                                    <option value="" selected disabled>--SELECT CURRICULUM--</option>
-                                                    <?php foreach($curriculums as $cur) : ?>
-                                                        <option value="<?= $cur['currid']; ?>"><?= $cur['course']; ?> - <?= $cur['sy']; ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <label class="form-label" for="validationDefault01">ACTION</label>
-                                                <button class="btn btn-success" type="submit" name="add" style="width: 100%;">PROCESS</button>
-                                            </div>
-                                        </div>
                                         <?= form_close(); ?>
-                                <?php endif; ?>
-                            <?php endforeach; ?>  
-                        <?php endforeach; ?>    
+                                        <?php else: ?>
+                                            <div class="row">
+                                                <div class="col-lg-12 col-sm-12">
+                                                    <h1><?= $etdd['fullname']; ?></h1>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                <br>
+                                                    <label class="form-label" for="validationDefault01">STUDENT NUMBER</label>
+                                                    <input type="text" class="form-control" value="<?= $stud['studentno']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">COURSE</label>
+                                                    <input type="text" class="form-control" value="<?php
+                                                            foreach($course as $c) {
+                                                                if($c['courid'] == $etdd['course']) {
+                                                                    echo $c['courcode']." - ".$c['course'];
+                                                                }
+                                                            }
+                                                        ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
+                                                    <input type="text" class="form-control" value="<?= $etdd['sy']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">SEMESTER</label>
+                                                    <input type="text" class="form-control" value="<?= $etdd['sem']; ?>" disabled>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <br>
+                                                    <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
+                                                    <input type="text" class="form-control" value="<?= $etdd['level']; ?>" disabled>
+                                                </div>
+                                            </div>
+                                            <?= form_open('assessment/curricullum-set/'.$etdd['studno']) ?>
+                                            <div class="row">
+                                                <div class="col-lg-2">
+                                                    <label class="form-label" for="validationDefault01">SELECT CURRICULUM</label>
+                                                    <select name="curriculum" class="form-select" style="width: 100%;" required>
+                                                        <option value="" selected disabled>SELECT CURRICULUM</option>
+                                                        <?php if(empty($curriculums)) : ?>
+                                                            <option value="" disabled>No Curriculum Found</option>
+                                                        <?php else: ?>
+                                                            <?php foreach($curriculums as $cur) : ?>
+                                                                <option value="<?= $cur['currid']; ?>"><?= $cur['course']; ?> - <?= $cur['sy']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <label class="form-label" for="validationDefault01">ACTION</label>
+                                                    <button class="btn btn-success" type="submit" name="add" style="width: 100%;">PROCESS</button>
+                                                </div>
+                                            </div>
+                                            <?= form_close(); ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>  
+                            <?php endforeach; ?> 
+                        <?php endif; ?>   
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6 col-sm-12">
+            <div class="col-lg-12 col-sm-12">
                 <div class="card">
                     <div class="row" style="margin: 10px;">
                         <div class="col-lg-4 col-sm-12">
@@ -198,7 +280,7 @@
                                             <td><?= $ass['status']; ?></td>
                                             <td>
                                                 <button class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="VIEW ASSESSMENT"
-                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['studentno']; ?>';">
+                                                    onclick="window.location.href='<?= base_url(); ?>assessment/viewsubjects/<?= $ass['assid']; ?>'">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7366 2.76175H8.08455C6.00455 2.75375 4.29955 4.41075 4.25055 6.49075V17.3397C4.21555 19.3897 5.84855 21.0807 7.89955 21.1167C7.96055 21.1167 8.02255 21.1167 8.08455 21.1147H16.0726C18.1416 21.0937 19.8056 19.4087 19.8026 17.3397V8.03975L14.7366 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -207,8 +289,8 @@
                                                         </svg>                       
                                                     </span>VIEW
                                                 </button>
-                                                <button class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE ASSESSMENT"
-                                                    onclick="window.location.href='<?= base_url(); ?>studentsinfo/<?= $ass['studentno']; ?>';">
+                                                <a class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE ASSESSMENT"
+                                                    onclick="window.location.href='<?= base_url(); ?>assessment/finalize/<?= $ass['studentno']; ?>'">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -217,7 +299,7 @@
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                           
                                                         </svg>                       
                                                     </span>FINALIZE
-                                                </button>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

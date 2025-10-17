@@ -8,7 +8,9 @@ class PayslipDatasModel extends Model
     protected $primaryKey = 'payslipid';
     protected $allowedFields = [
         'cutoffdate',
-        'employeeno', 'name', 'basicpay', 'advisoryclass', 'specialdesignation',
+        'employeeno', 'name', 'basicpay', 
+        'unpaidabtard', 'unpaiddays', 'netbasicpay', 
+        'advisoryclass', 'specialdesignation',
         'gs', 'jhs', 'college', 'shs', 'economic',
         'adjustmentOL', 'makeupclass', 'cpload', 'allowance', 'thesis',
         'ot', 'grossincome', 'sss', 'philhealth', 'pagibig',

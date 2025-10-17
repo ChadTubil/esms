@@ -7,6 +7,8 @@ use App\Models\SYModel;
 use App\Models\SemesterModel;
 use App\Models\CoursesModel;
 use App\Models\LevelsModel;
+use App\Models\RateDuesModel;
+use App\Models\RateOtherFeesModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -15,6 +17,8 @@ class AccountingController extends BaseController
     public $semModel;
     public $coursesModel;
     public $levelsModel;
+    public $rdModel;
+    public $rofModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -24,6 +28,8 @@ class AccountingController extends BaseController
         $this->semModel = new SemesterModel();
         $this->coursesModel = new CoursesModel();
         $this->levelsModel = new LevelsModel();
+        $this->rdModel = new RateDuesModel();
+        $this->rofModel = new RateOtherFeesModel();
         $this->session = session();
     }
     public function index()
@@ -101,6 +107,8 @@ class AccountingController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['ratesdata'] = $this->ratesModel->where('rateid', $id)->findAll();
+        $data['rddata'] = $this->rdModel->where('rateid', $id)->findAll();
+        $data['rofdata'] = $this->rofModel->where('rateid', $id)->findAll();
 
         if($this->request->is('post')) {
             $data = [
@@ -108,27 +116,6 @@ class AccountingController extends BaseController
                 'minor' => $this->request->getVar('minor'),
                 'nstp01' => $this->request->getVar('nstp01'),
                 'nstp02' => $this->request->getVar('nstp02'),
-                'registrationfee' => $this->request->getVar('registrationfee'),
-                'library' => $this->request->getVar('library'),
-                'laboratory' => $this->request->getVar('laboratory'),
-                'athletics' => $this->request->getVar('athletics'),
-                'medical' => $this->request->getVar('medical'),
-                'guidance' => $this->request->getVar('guidance'),
-                'schoolorgan' => $this->request->getVar('schoolorgan'),
-                'id' => $this->request->getVar('id'),
-                'av' => $this->request->getVar('av'),
-                'prisaa' => $this->request->getVar('prisaa'),
-                'internetfee' => $this->request->getVar('internetfee'),
-                'studenthb' => $this->request->getVar('studenthb'),
-                'insurance' => $this->request->getVar('insurance'),
-                'rso' => $this->request->getVar('rso'),
-                'cultural' => $this->request->getVar('cultural'),
-                'studentcouncil' => $this->request->getVar('studentcouncil'),
-                'learningsystem' => $this->request->getVar('learningsystem'),
-                'due1' => $this->request->getVar('due1'),
-                'due2' => $this->request->getVar('due2'),
-                'due3' => $this->request->getVar('due3'),
-                'due4' => $this->request->getVar('due4'),
             ];
             $this->ratesModel->where('rateid', $id)->update($id, $data);
             session()->setTempdata('addsuccess','Save successfully', 3);
@@ -136,5 +123,53 @@ class AccountingController extends BaseController
         }
 
         return view('ratessetup', $data);
+    }
+    public function ratedues($id=null) {
+        if($this->request->is('post')) {
+            $numberofdues = $this->rdModel->where('rateid', $id)->countAllResults();
+            $newcount = $numberofdues + 1;
+            // print_r($newcount);
+            $data = [
+                'rateid' => $id,
+                'name' => "Due Date ".$newcount,
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->rdModel->save($data);
+            return redirect()->to(base_url()."rates/setup/".$id);
+        }
+    }
+    public function rateduesupdate($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->rdModel->where('rdid', $id)->update($id, $data);
+            return redirect()->to(base_url()."rates/setup/".$id);
+        }
+    }
+    public function raterof($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'rateid' => $id,
+                'name' => $this->request->getVar('ratename'),
+                'otherfees' => $this->request->getVar('otherfees'),
+            ];
+
+            $this->rofModel->save($data);
+            return redirect()->to(base_url()."rates/setup/".$id);
+        }
+    }
+    public function raterofupdate($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'name' => $this->request->getVar('name'),
+                'otherfees' => $this->request->getVar('otherfee'),
+            ];
+
+            $this->rofModel->where('rofid', $id)->update($id, $data);
+            return redirect()->to(base_url()."rates/setup/".$id);
+        }
     }
 }

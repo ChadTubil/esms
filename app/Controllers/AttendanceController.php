@@ -26,7 +26,7 @@ class AttendanceController extends BaseController
     public function index()
     {
         $DATETODAY = date('Y-m-d');
-        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->findall();
+        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
         $data['empdata'] = $this->employeesModel->findall();
         $data['attendancedata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();
         $LastAttendance = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();
@@ -37,10 +37,9 @@ class AttendanceController extends BaseController
             $data['employeedata'] = $this->employeesModel->where('empnum', $EMPNUM)->first();
         }
         
-        
-        
         if($this->request->is('post')) {
             $RFID = $this->request->getVar('rfidno');
+            $imageData = $this->request->getPost('image');
             $CheckSY = $this->syModel->where('systatus', 0)->first();
 
             $CHECKRFIDIFEXIST = $this->attendancesModel->where('rfid', $RFID)->findAll();
@@ -56,12 +55,23 @@ class AttendanceController extends BaseController
                         $EMPNUM = $CER['empnum'];
                         $EMPRFID = $CER['rfidno'];
                     }
+                    $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $imageData);
+                    // Decode base64 into binary
+                    $decodedData = base64_decode($imageData);
+                    if ($decodedData === false) {
+                        return "Failed to decode image data!";
+                    }
+                    // Generate filename
+                    $filename = 'webcam' . time() . '.png';
+                    $filePath = FCPATH . 'public/uploads/captured/' . $filename;
+                    file_put_contents($filePath, $decodedData);
                     $data = [
                         'employeeno' => $EMPNUM,
                         'rfid' => $EMPRFID,
                         'sy' => $CheckSY['syname'],
                         'date' => date('Y-m-d'),
                         'timein' => date('H:i:s'),
+                        'image' => $filename,
                     ];
                     $this->attendancesModel->save($data);
                     return redirect()->to(current_url());
@@ -96,12 +106,23 @@ class AttendanceController extends BaseController
                         $EMPNUM = $CER['empnum'];
                         $EMPRFID = $CER['rfidno'];
                     }
+                    $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $imageData);
+                    // Decode base64 into binary
+                    $decodedData = base64_decode($imageData);
+                    if ($decodedData === false) {
+                        return "Failed to decode image data!";
+                    }
+                    // Generate filename
+                    $filename = 'webcam' . time() . '.png';
+                    $filePath = FCPATH . 'public/uploads/captured/' . $filename;
+                    file_put_contents($filePath, $decodedData);
                     $data = [
                         'employeeno' => $EMPNUM,
                         'rfid' => $EMPRFID,
                         'sy' => $CheckSY['syname'],
                         'date' => date('Y-m-d'),
                         'timein' => date('H:i:s'),
+                        'image' => $filename,
                     ];
                     $this->attendancesModel->save($data);
                     return redirect()->to(current_url());
@@ -112,7 +133,7 @@ class AttendanceController extends BaseController
     }
     public function biometricsoout($id=null) {
         $DATETODAY = date('Y-m-d');
-        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->findall();
+        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
         $data['empdata'] = $this->employeesModel->findall();
         
         $data['attendancedata'] = $this->attendancesModel->where('date', $DATETODAY)->where('attid', $id)->first();
@@ -127,7 +148,7 @@ class AttendanceController extends BaseController
     }
     public function biometricsblank() {
         $DATETODAY = date('Y-m-d');
-        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->findall();
+        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
         $data['empdata'] = $this->employeesModel->findall();
         $data['attendancedata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();
         $LastAttendance = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();

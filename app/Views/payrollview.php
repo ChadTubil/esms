@@ -35,6 +35,9 @@
                                         <th>EMPLOYEE NO</th>
                                         <th>NAME</th>
                                         <th style="text-align: center;">BASIC PAY</th>
+                                        <th style="text-align: center;">ABSENCES/TARDINESS</th>
+                                        <th style="text-align: center;">UNPAID DAYS</th>
+                                        <th style="text-align: center;">NET BASIC PAY</th>
                                         <th style="text-align: center;">ADVISORY</th>
                                         <th style="text-align: center;">SD</th>
                                         <th style="text-align: center;">GS</th>
@@ -54,8 +57,6 @@
                                         <th style="text-align: center;">PAGIBIG</th>
                                         <th style="text-align: center;">PERAA</th>
                                         <th style="text-align: center;">ABSENCES</th>
-                                        <th style="text-align: center;">ABSENCES OL</th>
-                                        <th style="text-align: center;">DEDUCTION OL</th>
                                         <th style="text-align: center;">TAX</th>
                                         <th style="text-align: center;">SSS SALARY</th>
                                         <th style="text-align: center;">SSS CALAMITY</th>
@@ -75,6 +76,9 @@
                                             <td><?= $payslipdatad['employeeno']; ?></td>
                                             <td><?= $payslipdatad['name']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['basicpay']; ?></td>
+                                            <td style="text-align: center;">₱<?= $payslipdatad['unpaidabtard']; ?></td>
+                                            <td style="text-align: center;">₱<?= $payslipdatad['unpaiddays']; ?></td>
+                                            <td style="text-align: center;">₱<?= $payslipdatad['netbasicpay']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['advisoryclass']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['specialdesignation']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['gs']; ?></td>
@@ -94,8 +98,6 @@
                                             <td style="text-align: center;">₱<?= $payslipdatad['pagibig']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['peraa']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['absences']; ?></td>
-                                            <td style="text-align: center;">₱<?= $payslipdatad['absencesOL']; ?></td>
-                                            <td style="text-align: center;">₱<?= $payslipdatad['deductionOL']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['tax']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['ssssalary']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['ssscalamity']; ?></td>

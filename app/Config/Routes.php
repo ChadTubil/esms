@@ -141,6 +141,11 @@ $routes->get('assessment/process/(:segment)', 'EnrollmentController::assessmentP
 $routes->add('assessment/curricullum-set/(:segment)', 'EnrollmentController::curricullumSet/$1');
 $routes->add('assessment/process2/(:segment)', 'EnrollmentController::assessmentProcess2/$1');
 $routes->get('assessment/viewsubjects/(:segment)', 'EnrollmentController::viewSubjects/$1');
+$routes->add('assessment/finalize/(:segment)', 'EnrollmentController::assessmentFinalize/$1');
+$routes->get('assessment-cor', 'EnrollmentController::assessmentCOR');
+$routes->post('assessment-cor', 'EnrollmentController::assessmentCOR');
+$routes->get('assessment-cor/view/(:segment)', 'EnrollmentController::assessmentCORview/$1');
+$routes->add('assessment-cor/print/(:segment)', 'EnrollmentController::assessmentCORprint/$1');
 // STUDENT FPA
 $routes->get('studentfar', 'FARController::index');
 $routes->get('studentfar/evaluation/(:segment)', 'FARController::farStudent/$1');
@@ -170,6 +175,10 @@ $routes->get('rates', 'AccountingController::index');
 $routes->post('rates', 'AccountingController::index');
 $routes->get('rates/setup/(:segment)', 'AccountingController::ratesSetup/$1');
 $routes->post('rates/setup/(:segment)', 'AccountingController::ratesSetup/$1');
+$routes->post('rates/dues/(:segment)', 'AccountingController::ratedues/$1');
+$routes->post('rates/rof/(:segment)', 'AccountingController::raterof/$1');
+$routes->post('rates/dues/update/(:segment)', 'AccountingController::rateduesupdate/$1');
+$routes->post('rates/rof/update/(:segment)', 'AccountingController::raterofupdate/$1');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');

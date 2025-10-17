@@ -46,6 +46,28 @@
                                     <h6>₱<?= $payslipdatad['basicpay']; ?></h6>
                                 </div>
                                 <div class="col-6" style="text-align: left;">
+                                    <h6>Unpaid Absences/Tardiness</h6>
+                                </div>
+                                <div class="col-6" style="text-align: right;">
+                                    <h6>₱<?= $payslipdatad['unpaidabtard']; ?></h6>
+                                </div>
+                                <div class="col-6" style="text-align: left;">
+                                    <h6>Unpaid Days</h6>
+                                </div>
+                                <div class="col-6" style="text-align: right;">
+                                    <h6>₱<?= $payslipdatad['unpaiddays']; ?></h6>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="col-6" style="text-align: left;">
+                                    <h6>Net Basic Pay</h6>
+                                </div>
+                                <div class="col-6" style="text-align: right;">
+                                    <h6>₱<?= $payslipdatad['netbasicpay']; ?></h6>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="col-6" style="text-align: left;">
                                     <h6>Adv. Class</h6>
                                 </div>
                                 <div class="col-6" style="text-align: right;">
@@ -166,18 +188,6 @@
                                 </div>
                                 <div class="col-6" style="text-align: right;">
                                     <h6>₱<?= $payslipdatad['absences']; ?></h6>
-                                </div>
-                                <div class="col-6" style="text-align: left;">
-                                    <h6>Absences/Tardiness (OL)</h6>
-                                </div>
-                                <div class="col-6" style="text-align: right;">
-                                    <h6>₱<?= $payslipdatad['absencesOL']; ?></h6>
-                                </div>
-                                <div class="col-6" style="text-align: left;">
-                                    <h6>Adjustment (Overload)</h6>
-                                </div>
-                                <div class="col-6" style="text-align: right;">
-                                    <h6>₱<?= $payslipdatad['deductionOL']; ?></h6>
                                 </div>
                                 <div class="col-6" style="text-align: left;">
                                     <h6>Withholding Tax</h6>

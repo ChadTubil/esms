@@ -44,325 +44,234 @@
                             <?= form_open('rates/setup/'.$ratesda['rateid']); ?>
                             <h6 style="margin-left: 10px;">ACTIONS:</h6>
                             <button class="btn btn-success" type="submit" style="margin-left: 10px;">SAVE</button>
+                            <a class="btn btn-primary" onclick="location.href='<?= base_url() ?>rates'" style="margin-left: 10px;">BACK</a>
                             <br>
                             <br>
-                                <div class="row">
-                                    <div class="col-lg-5 col-sm-12" style="text-align: center;">
-                                        <h5><strong>TUITION FEES</strong></h5>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">MAJOR:</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" step="0.01" class="form-control" 
-                                                    name="major" 
-                                                    <?php if($ratesda['major'] == '0.00'): ?>
-                                                        placeholder="Enter Rate per hour"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['major']; ?>"
-                                                    <?php endif; ?> 
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">MINOR:</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="minor"
-                                                    <?php if($ratesda['minor'] == '0.00'): ?>
-                                                        placeholder="Enter Rate per hour"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['minor']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">NSTP01:</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="nstp01"
-                                                    <?php if($ratesda['nstp01'] == '0.00'): ?>
-                                                        placeholder="Enter Rate per hour"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['nstp01']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">NSTP02:</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" step="0.01" class="form-control" 
-                                                    name="nstp02"
-                                                    <?php if($ratesda['nstp02'] == '0.00'): ?>
-                                                        placeholder="Enter Rate per hour"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['nstp02']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <br>
-                                        <br>
-                                        <h5><strong>DUE DATES</strong></h5>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">DUE DATE 1:</label>
-                                            <div class="col-sm-9">
-                                                <input type="date" class="form-control" 
-                                                    name="due1" value="<?= $ratesda['due1']; ?>">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">DUE DATE 2:</label>
-                                            <div class="col-sm-9">
-                                                <input type="date" class="form-control" 
-                                                    name="due2" value="<?= $ratesda['due2']; ?>">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">DUE DATE 3:</label>
-                                            <div class="col-sm-9">
-                                                <input type="date" class="form-control" 
-                                                    name="due3" value="<?= $ratesda['due3']; ?>">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-3 align-self-center mb-0">DUE DATE 4:</label>
-                                            <div class="col-sm-9">
-                                                <input type="date" class="form-control" 
-                                                    name="due4" value="<?= $ratesda['due4']; ?>">
-                                            </div>
+                            <div class="row">
+                                <div class="col-lg-5 col-sm-12" style="text-align: center;">
+                                    <h5><strong>TUITION FEES</strong></h5>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <label class="control-label col-sm-3 align-self-center mb-0">MAJOR: ₱</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" name="major" 
+                                                <?php if($ratesda['major'] == '0.00'): ?>
+                                                    step="0.01" type="number" placeholder="Enter Rate per hour"
+                                                <?php else: ?>
+                                                    type="text" value="<?= $ratesda['major']; ?>"
+                                                <?php endif; ?> 
+                                            >
                                         </div>
                                     </div>
-                                    <div class="col-lg-1 col-sm-12" style="text-align: center;">
-
+                                    <div class="form-group row" style="text-align: right;">
+                                        <label class="control-label col-sm-3 align-self-center mb-0">MINOR: ₱</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" name="minor"
+                                                <?php if($ratesda['minor'] == '0.00'): ?>
+                                                    step="0.01" type="number" placeholder="Enter Rate per hour"
+                                                <?php else: ?>
+                                                    type="text" value="<?= $ratesda['minor']; ?>"
+                                                <?php endif; ?>
+                                            >
+                                        </div>
                                     </div>
-                                    <div class="col-lg-5 col-sm-12" style="text-align: center;">
-                                        <h5><strong>OTHER FEES</strong><br>PARTICULARS</h5>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <label class="control-label col-sm-3 align-self-center mb-0">NSTP01: ₱</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" name="nstp01"
+                                                <?php if($ratesda['nstp01'] == '0.00'): ?>
+                                                    step="0.01" type="number" placeholder="Enter Rate per hour"
+                                                <?php else: ?>
+                                                    type="text" value="<?= $ratesda['nstp01']; ?>"
+                                                <?php endif; ?>
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <label class="control-label col-sm-3 align-self-center mb-0">NSTP02: ₱</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" name="nstp02"
+                                                <?php if($ratesda['nstp02'] == '0.00'): ?>
+                                                    step="0.01" type="number" placeholder="Enter Rate per hour"
+                                                <?php else: ?>
+                                                    type="text" value="<?= $ratesda['nstp02']; ?>"
+                                                <?php endif; ?>
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <label class="control-label col-sm-3 align-self-center mb-0">OTHER FEES: ₱</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" step="0.01" class="form-control" value="<?php
+                                                $totalotherfees = 0;
+                                                foreach($rofdata as $rofd) {
+                                                    $totalotherfees += $rofd['otherfees'];
+                                                }
+                                                echo number_format((float)$totalotherfees, 2, '.', '');
+                                            ?>" disabled>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <?= form_close(); ?>
+                                    <h5><strong>DUE DATES</strong></h5>
+                                    <br>
+                                    <?= form_open('rates/dues/'.$ratesda['rateid']); ?>
                                         <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">REGISTRATION FEE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="registrationfee" step="0.01" class="form-control" 
-                                                    name="registrationfee"
-                                                    <?php if($ratesda['registrationfee'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['registrationfee']; ?>"
-                                                    <?php endif; ?>
-                                                >
+                                            <div class="col-sm-1"></div>
+                                            <div class="col-sm-8" style="text-align: left;">
+                                                <input type="date" class="form-control col-sm-4" name="due" required>
+                                            </div>
+                                            <div class="col-sm-3" style="text-align: left;">
+                                                <button class="btn btn-primary" style="width: 100%">ADD</button>
                                             </div>
                                         </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">LIBRARY:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control" 
-                                                    name="library"
-                                                    <?php if($ratesda['library'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['library']; ?>"
+                                    <?= form_close(); ?>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-11" style="text-align: left;">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <?php if(empty($rddata)): ?>
+                                                        <tr>
+                                                            <td>-</td>
+                                                            <td>No due dates set.</td>
+                                                        </tr>
+                                                    <?php else : ?>
+                                                        <?php foreach($rddata as $rdd) :?>
+                                                            <tr>
+                                                                <td><?= $rdd['name']; ?></td>
+                                                                <td><?php 
+                                                                    $formatted = (new DateTime($rdd['due']))->format('F j, Y');
+                                                                    echo $formatted;
+                                                                ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <a class="btn btn-sm btn-icon btn-info" title="Edit"
+                                                                        href="#" data-bs-toggle="modal" data-bs-target="#editDues<?= $rdd['rdid']; ?>">
+                                                                        <span class="btn-inner">
+                                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.82812 10.921L16.3011 3.44799C17.2321 2.51799 18.7411 2.51799 19.6721 3.44799L20.8891 4.66499C21.8201 5.59599 21.8201 7.10599 20.8891 8.03599L13.3801 15.545C12.9731 15.952 12.4211 16.181 11.8451 16.181H8.09912L8.19312 12.401C8.20712 11.845 8.43412 11.315 8.82812 10.921Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                            <path d="M15.1655 4.60254L19.7315 9.16854" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                        </svg>
+                                                                        </span>
+                                                                    </a>
+                                                                    <div class="modal fade" id="editDues<?= $rdd['rdid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog">
+                                                                            <div class="modal-content dark">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE</h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                </div>
+                                                                                <?= form_open('rates/dues/update/'.$rdd['rdid']); ?>
+                                                                                <div class="modal-body" style="text-align: left;">
+                                                                                    <div class="form-group">
+                                                                                        <label for="email" class="form-label"><?= $rdd['name']; ?></label>
+                                                                                        <input type="date" name="due" class="form-control" value="<?php echo $rdd['due']; ?>">
+                                                                                    </div>
+                                                                                    <br>
+                                                                                    <div class="text-start">
+                                                                                        <button type="submit" name="update" class="btn btn-primary">Update</button>
+                                                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <?= form_close(); ?>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
                                                     <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">LABORATORY:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control" 
-                                                    name="laboratory"
-                                                    <?php if($ratesda['laboratory'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['laboratory']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">ATHLETICS:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="athletics"
-                                                    <?php if($ratesda['athletics'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['athletics']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">MEDICAL & DENTAL:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="medical"
-                                                    <?php if($ratesda['medical'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['medical']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">GUIDANCE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="guidance"
-                                                    <?php if($ratesda['guidance'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['guidance']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">SCHOOL ORGAN:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="schoolorgan"
-                                                    <?php if($ratesda['schoolorgan'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['schoolorgan']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">ID:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="id"
-                                                    <?php if($ratesda['id'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['id']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">AUDIO VISUAL:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="av"
-                                                    <?php if($ratesda['av'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['av']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">PRISAA SPORTS DEV'T:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="prisaa"
-                                                    <?php if($ratesda['prisaa'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['prisaa']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">INTERNET FEE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="internetfee"
-                                                    <?php if($ratesda['internetfee'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['internetfee']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">STUDENT HANDBOOK:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="studenthb"
-                                                    <?php if($ratesda['studenthb'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['studenthb']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">INSURANCE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="insurance"
-                                                    <?php if($ratesda['insurance'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['insurance']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">RSO:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="rso"
-                                                    <?php if($ratesda['rso'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['rso']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">CULTURAL FEE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="cultural"
-                                                    <?php if($ratesda['cultural'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['cultural']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">STUDENT COUNCIL FEE:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="studentcouncil"
-                                                    <?php if($ratesda['studentcouncil'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['studentcouncil']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="form-group row" style="text-align: right;">
-                                            <label class="control-label col-sm-4 align-self-center mb-0">FLEXIBLE/BLENDED LEARNING SYSTEM:</label>
-                                            <div class="col-sm-8">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="learningsystem"
-                                                    <?php if($ratesda['learningsystem'] == '0.00'): ?>
-                                                        placeholder="Enter Fee"
-                                                    <?php else: ?>
-                                                        value="<?= $ratesda['learningsystem']; ?>"
-                                                    <?php endif; ?>
-                                                >
-                                            </div>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
-                            <?= form_close(); ?>
+                                <div class="col-lg-1 col-sm-12" style="text-align: center;"></div>
+                                <div class="col-lg-5 col-sm-12" style="text-align: center;">
+                                    <?= form_open('rates/rof/'.$ratesda['rateid']); ?>
+                                        <h5><strong>OTHER FEES</strong><br>PARTICULARS</h5>
+                                        <br>
+                                        <div class="form-group row" style="text-align: right;">
+                                            <div class="col-sm-1"></div>
+                                            <div class="col-sm-5" style="text-align: left;">
+                                                <label class="form-label">NAME</label>
+                                                <input type="text" class="form-control col-sm-4" name="ratename" required>
+                                            </div>
+                                            <div class="col-sm-3" style="text-align: left;">
+                                                <label class="form-label">FEE</label>
+                                                <input type="number" step="0.01" class="form-control" name="otherfees" required>
+                                            </div>
+                                            <div class="col-sm-3" style="text-align: left;">
+                                                <label class="form-label">ACTION</label>
+                                                <button class="btn btn-primary" style="width: 100%">ADD</button>
+                                            </div>
+                                        </div>
+                                    <?= form_close(); ?>
+                                    <div class="form-group row" style="text-align: right;">
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-11" style="text-align: left;">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <?php if(empty($rofdata)): ?>
+                                                        <tr>
+                                                            <td>-</td>
+                                                            <td>No other fees set.</td>
+                                                        </tr>
+                                                    <?php else : ?>
+                                                        <?php foreach($rofdata as $rofd) :?>
+                                                            <tr>
+                                                                <td><?= $rofd['name']; ?></td>
+                                                                <td>₱<?= $rofd['otherfees']; ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <a class="btn btn-sm btn-icon btn-info" title="Edit"
+                                                                        href="#" data-bs-toggle="modal" data-bs-target="#editROF<?= $rofd['rofid']; ?>">
+                                                                        <span class="btn-inner">
+                                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.82812 10.921L16.3011 3.44799C17.2321 2.51799 18.7411 2.51799 19.6721 3.44799L20.8891 4.66499C21.8201 5.59599 21.8201 7.10599 20.8891 8.03599L13.3801 15.545C12.9731 15.952 12.4211 16.181 11.8451 16.181H8.09912L8.19312 12.401C8.20712 11.845 8.43412 11.315 8.82812 10.921Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                            <path d="M15.1655 4.60254L19.7315 9.16854" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                        </svg>
+                                                                        </span>
+                                                                    </a>
+                                                                    <div class="modal fade" id="editROF<?= $rofd['rofid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog">
+                                                                            <div class="modal-content dark">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="staticBackdropLabel">UPDATE</h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                </div>
+                                                                                <?= form_open('rates/rof/update/'.$rofd['rofid']); ?>
+                                                                                <div class="modal-body" style="text-align: left;">
+                                                                                    <div class="form-group">
+                                                                                        <label for="email" class="form-label">Name</label>
+                                                                                        <input type="text" name="name" class="form-control" value="<?php echo $rofd['name']; ?>">
+                                                                                    </div>
+                                                                                    <div class="form-group">
+                                                                                        <label for="email" class="form-label">Fee</label>
+                                                                                        <input type="number" name="otherfee" class="form-control" value="<?php echo $rofd['otherfees']; ?>">
+                                                                                    </div>
+                                                                                    <br>
+                                                                                    <div class="text-start">
+                                                                                        <button type="submit" name="update" class="btn btn-primary">Update</button>
+                                                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <?= form_close(); ?>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         <?php endforeach; ?>
                     </div>
                 </div>
