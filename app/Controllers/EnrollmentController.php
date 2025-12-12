@@ -742,19 +742,45 @@ class EnrollmentController extends BaseController
         foreach($COURSEData as $courd) {    
             $COURCODE = $courd['courcode'];
         }
-        $ratesData = $this->ratesModel
+        $data['ratesData'] = $this->ratesModel
         ->where('sy', $SY)
         ->where('sem', $SEM)
         ->where('year', $LEVEL)
         ->where('course', $COURCODE)->findAll();
-        foreach($ratesData as $ratesD) {
+        foreach($data['ratesData'] as $ratesD) {
             $RATESID = $ratesD['rateid'];
         }
         $data['rofdata'] = $this->rofModel->where('rateid', $RATESID)->findAll();
         $data['duedata'] = $this->rateDuesModel->where('rateid', $RATESID)->findAll();
         
+        $data['totalmajorunits'] = $this->colgradesModel->select('
+            SUM(subjects.units) as totalmajorunits, SUM(subjects.hours) as totalmajorhours
+            ')->join('subjects', 'subjects.subid = collegegrades.subid')
+            ->where('collegegrades.assid', $ASSID)
+            ->where('subjects.major', 1)
+            ->where('subjects.subcode !=', "NSTP01")
+            ->where('subjects.subcode !=', "NSTP02")
+            ->findAll();
+
+        $data['totalminorunits'] = $this->colgradesModel->select('
+            SUM(subjects.units) as totalminorunits, SUM(subjects.hours) as totalminorhours
+            ')->join('subjects', 'subjects.subid = collegegrades.subid')
+            ->where('collegegrades.assid', $ASSID)
+            ->where('subjects.major', 0)
+            ->where('subjects.subcode !=', "NSTP01")
+            ->where('subjects.subcode !=', "NSTP02")
+            ->findAll();
 
         return view('assessmentcorresultview', $data);
+    }
+    public function assessmentToPay($id=null) {
+        $data = [
+                'status' => 'Payment',
+            ];
+            
+            $this->etdModel->where('etdid', $id)->update($id, $data);
+            session()->setTempdata('updatesuccess', 'Assessment Process Successful!', 2);
+            return redirect()->to(base_url()."assessment-cor");
     }
     public function assessmentCORprint($id=null) {
         
@@ -941,19 +967,21 @@ class EnrollmentController extends BaseController
                 </tr>';
         }
         // GET TOTAL UNITS
-        $gettotalunits = $db->query("SELECT subjectsid, SUM(units) AS TOTALUNITS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalunits->getRow(0);
-        $TOTALUNITS = $result->TOTALUNITS;
-        $TOTALUNITSFORMATED = number_format($TOTALUNITS, 2);
+        $gettotalunits = $this->colgradesModel->select('
+            SUM(subjects.units) as totalunits, SUM(subjects.hours) as totalhours
+            ')->join('subjects', 'subjects.subid = collegegrades.subid')
+            ->where('collegegrades.assid', $ASSID)
+            ->findAll(); 
+        foreach($gettotalunits as $gtu) {
+            $TOTALUNITS = number_format($gtu['totalunits'], 2);
+            $TOTALHOURS = number_format($gtu['totalhours'], 2);
+        }
         // GET TOTAL HOURS
-        $gettotalhours = $db->query("SELECT subjectsid, SUM(hours) AS TOTALHOURS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalhours->getRow(0);
-        $TOTALHOURS = $result->TOTALHOURS;
-        $TOTALHOURSSFORMATED = number_format($TOTALHOURS, 2);
+    
         $html .= '<tr>
                 <td style="width: 50%; text-align: right;"><strong>TOTAL</strong></td>
-                <td style="width: 7%; text-align: center"><strong>'.$TOTALUNITSFORMATED.'</strong></td>
-                <td style="width: 7%; text-align: center;"><strong>'.$TOTALHOURSSFORMATED.'</strong></td>
+                <td style="width: 7%; text-align: center"><strong>'.$TOTALUNITS.'</strong></td>
+                <td style="width: 7%; text-align: center;"><strong>'.$TOTALHOURS.'</strong></td>
                 <td style="width: 26%; text-align: center;"></td>
                 <td style="width: 10%; text-align: center;"></td>
             </tr>';
@@ -975,46 +1003,53 @@ class EnrollmentController extends BaseController
                     <td style="width: 100%; font-size: 14px; text-align: center;"><strong>A S S E S S M E N T &nbsp; O F &nbsp; F E E S</strong></td>
                 </tr>   
             </table><br>';
-        // GET TOTAL UNITS MAJOR
-        $gettotalmajorunits = $db->query("SELECT subjectsid, major, SUM(units) AS TOTALMAJORUNITS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND major = '1' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalmajorunits->getRow(0);
-        $TOTALMAJOR = $result->TOTALMAJORUNITS;
-        $TOTALMAJORFORMATED = number_format($TOTALMAJOR, 2);
-        if(empty($TOTALMAJORFORMATED)){
+        // GET TOTAL UNITS & HOURS MAJOR
+        $gettotalmajorunits = $this->colgradesModel->select('
+            SUM(subjects.units) as totalmajorunits, SUM(subjects.hours) as totalmajorhours
+            ')->join('subjects', 'subjects.subid = collegegrades.subid')
+            ->where('collegegrades.assid', $ASSID)
+            ->where('subjects.major', 1)
+            ->where('subjects.subcode !=', "NSTP01")
+            ->where('subjects.subcode !=', "NSTP02")
+            ->findAll();
+        foreach($gettotalmajorunits as $gtmu) {
+            $TOTALMAJORUNITS = number_format($gtmu['totalmajorunits'], 2);
+            $TOTALMAJORHOURS = number_format($gtmu['totalmajorhours'], 2);
+        }
+        if(empty($TOTALMAJORUNITS)){
             $MAJOR = "-";
         } else {
-            $MAJOR = $TOTALMAJORFORMATED;
+            $MAJOR = $TOTALMAJORUNITS;
         }
-        // GET TOTAL HOURS MAJOR
-        $gettotalmajorhours = $db->query("SELECT subjectsid, major, SUM(hours) AS TOTALMAJORHOURS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND major = '1' AND subcode != 'NSTP01' AND subcode != 'NSTP02' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalmajorhours->getRow(0);
-        $TOTALMAJORHOURS = $result->TOTALMAJORHOURS;
-        $TOTALMAJORHOURSFORMATED = number_format($TOTALMAJORHOURS, 2);
-        if(empty($TOTALMAJORHOURSFORMATED)){
-            $MAJORHOURS = "-";
+        if(empty($TOTALMAJORHOURS)){
+            $MAJORHOURS = 0;
         } else {
-            $MAJORHOURS = $TOTALMAJORHOURSFORMATED;
+            $MAJORHOURS = $TOTALMAJORHOURS;
         }
         // GET TOTAL UNITS MINOR
-        $gettotalminorunits = $db->query("SELECT subjectsid, major, subcode, SUM(units) AS TOTALMINORUNITS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND major = '0' AND subcode != 'NSTP01' AND subcode != 'NSTP02' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalminorunits->getRow(0);
-        $TOTALMINORUNITS = $result->TOTALMINORUNITS;
-        $TOTALMAJORFORMATED = number_format($TOTALMINORUNITS, 2);
-        if(empty($TOTALMAJORFORMATED)){
+        $gettotalminorunits = $this->colgradesModel->select('
+            SUM(subjects.units) as totalminorunits, SUM(subjects.hours) as totalminorhours
+            ')->join('subjects', 'subjects.subid = collegegrades.subid')
+            ->where('collegegrades.assid', $ASSID)
+            ->where('subjects.major', 0)
+            ->where('subjects.subcode !=', "NSTP01")
+            ->where('subjects.subcode !=', "NSTP02")
+            ->findAll();
+        foreach($gettotalminorunits as $gtmu2) {
+            $TOTALMINORUNITS = number_format($gtmu2['totalminorunits'], 2);
+            $TOTALMINORHOURS = number_format($gtmu2['totalminorhours'], 2);
+        }
+        if(empty($TOTALMINORUNITS)){
             $MINOR = "-";
         } else {
-            $MINOR = $TOTALMAJORFORMATED;
+            $MINOR = $TOTALMINORUNITS;
         }
-        // GET TOTAL HOURS MINOR
-        $gettotalminorhours = $db->query("SELECT subjectsid, major, subcode, SUM(hours) AS TOTALMINORHOURS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND major = '0' AND subcode != 'NSTP01' AND subcode != 'NSTP02' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalminorhours->getRow(0);
-        $TOTALMINORHOURS = $result->TOTALMINORHOURS;
-        $TOTALMINORHOURSFORMATED = number_format($TOTALMINORHOURS, 2);
-        if(empty($TOTALMINORHOURSFORMATED)){
-            $MINORHOURS = "-";
+        if(empty($TOTALMINORHOURS)){
+            $MINORHOURS = 0;
         } else {
-            $MINORHOURS = $TOTALMINORHOURSFORMATED;
+            $MINORHOURS = $TOTALMINORHOURS;
         }
+        
         // GET RATE
         $rateDataCondition = array('sy' => $SY, 'sem' => $SEM, 'course' => $COURSECODE, 'year' => $LEVEL);
         $rateData = $this->ratesModel->where($rateDataCondition)->findAll();
@@ -1036,12 +1071,8 @@ class EnrollmentController extends BaseController
         $MINORAMOUNT = $RATEMINOR * $MINORHOURS;
         //TOTAL TUITION FEE
         $TOTALTUITIONFEE = $MAJORAMOUNT + $MINORAMOUNT + $NSTP;
-        // GET TOTAL HOURS
-        $gettotalhours = $db->query("SELECT subjectsid, SUM(hours) AS TOTALHOURS FROM currdata LEFT JOIN subjects ON subjectsid = subid WHERE level = '1st Year' AND sem = '1st Semester' AND curriculumid = ".$CURRICULUM);
-        $result = $gettotalhours->getRow(0);
-        $TOTALHOURS = $result->TOTALHOURS;
-        $TOTALHOURSSFORMATED = number_format($TOTALHOURS, 2);
-
+        
+        //TOTAL OTHER FEES
         $gettotalrof = $db->query("SELECT rateid, SUM(otherfees) AS TOTALROFFEES FROM rateotherfees WHERE rateid =".$RATESID);
         $result = $gettotalrof->getRow(0);
         $TOTALROF = $result->TOTALROFFEES;

@@ -5,12 +5,14 @@ use App\Models\UsersModel;
 use App\Models\SemesterModel;
 use App\Models\StudentsModel;
 use App\Models\EmployeesModel;
+use App\Models\EnrollmentTempDataModel;
 class ProfileController extends BaseController
 {
     public $usersModel;
     public $semModel;
     public $studentModel;
     public $employeesModel;
+    public $etdModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -18,6 +20,7 @@ class ProfileController extends BaseController
         $this->semModel = new SemesterModel();
         $this->studentModel = new StudentsModel();
         $this->employeesModel = new EmployeesModel();
+        $this->etdModel = new EnrollmentTempDataModel();
         $this->session = session();
     }
     public function index()
@@ -51,6 +54,14 @@ class ProfileController extends BaseController
             }
         }
         $data['studdata'] = $this->studentModel->where('studentno', $useraccountid)->findAll();
+        foreach($data['studdata'] as $sd) {
+            $studid = $sd['studid'];
+        }
+        if($userstudent == '1') {
+            $data['etddata'] = $this->etdModel->where('studno', $studid)->orderBy('etdid', 'DESC')->LIMIT(1)->findAll();
+        } else {
+            
+        }
         return view('profileview', $data);
     }
     public function changepassword($id=null){

@@ -15,11 +15,7 @@
     <?= $this->include("partials/sidebar"); ?>  
     <!-- ----------- END OF SIDEBAR ------------------ --> 
     <?php foreach($usersaccess as $access) : ?>
-        <?php if($access['uemployee'] == '1') : ?>
-            <div class="conatiner-fluid content-inner mt-n5 py-0">
-                
-            </div>
-        <?php else: ?>
+        <?php if($access['uadmin'] == '1' || $access['uregistrar'] == '1') : ?>
             <div class="conatiner-fluid content-inner mt-n5 py-0">
                 <div class="row">
                     <div class="col-md-12 col-lg-12">
@@ -402,6 +398,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        <?php else: ?>
+            <div class="conatiner-fluid content-inner mt-n5 py-0">
+                
             </div>
         <?php endif; ?>
     <?php endforeach; ?>

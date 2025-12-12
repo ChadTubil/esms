@@ -45,11 +45,7 @@ class DashboardController extends BaseController
         $data['bsit4th'] = $this->etdModel->where('isdel', '0')->where('level', '4th Year')->where('course', '1')->countAllResults();
         $data['BSITTOTAL'] = $data['bsit1st'] + $data['bsit2nd'] + $data['bsit3rd'] + $data['bsit4th']; //TOTAL BSIT STUDENTS
 
-        $data['total1st'] = $this->etdModel
-        ->where('isdel', '0')
-        ->where('level', '1st Year')
-        ->where('course', '1')
-        ->countAllResults(); //TOTAL 1ST YEAR STUDENTS
+        $data['total1st'] = $this->etdModel->where('isdel', '0')->where('level', '1st Year')->where('course', '1')->countAllResults(); //TOTAL 1ST YEAR STUDENTS
         $data['total2nd'] = $this->etdModel->where('isdel', '0')->where('level', '2nd Year')->countAllResults(); //TOTAL 2ND YEAR STUDENTS
         $data['total3rd'] = $this->etdModel->where('isdel', '0')->where('level', '3rd Year')->countAllResults(); //TOTAL 3RD YEAR STUDENTS
         $data['total4th'] = $this->etdModel->where('isdel', '0')->where('level', '4th Year')->countAllResults(); //TOTAL 4TH YEAR STUDENTS

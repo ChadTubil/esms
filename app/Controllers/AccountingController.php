@@ -172,4 +172,19 @@ class AccountingController extends BaseController
             return redirect()->to(base_url()."rates/setup/".$id);
         }
     }
+    public function chartofAccounts() {
+        $data = [
+            'page_title' => 'Holy Cross College | Chart Of Accounts',
+            'page_heading' => 'CHART OF ACCOUNTS! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        return view('accounting\chartsofaccountsview', $data);
+    }
 }

@@ -238,14 +238,17 @@
                                                                 $SEMESTRAL = $PRELIM + $MIDTERM + $FINALS;
                                                                 $FORMATED = round($SEMESTRAL, 0);
                                                                 if($account['studstatus'] == 3) {
-                                                                    if($FORMATED >= '75' && $FORMATED <= '100'){
+                                                                    
+                                                                    if($FORMATED >= '75' || $FORMATED == '100'){
                                                                         echo 'PASSED';
-                                                                    }else if($FORMATED <= '74'){
-                                                                        echo 'FAILED';
-                                                                    }else if($PRELIM == 'INC' || $MIDTERM == 'INC' || $FINALS == 'INC'){
+                                                                    }else if($igd['prelim'] == 'INC' || $igd['prelim'] == 'inc' || $igd['midterm'] == 'INC' || $igd['midterm'] == 'inc' || $igd['final'] == 'INC' || $igd['final'] == 'inc'){
                                                                         echo 'INC';
-                                                                    }else{
+                                                                    }else if($igd['prelim'] == 'UW' || $igd['midterm'] == 'UW' || $igd['final'] == 'UW' || $igd['prelim'] == 'uw' || $igd['midterm'] == 'uw' || $igd['final'] == 'uw'){
                                                                         echo 'UW';
+                                                                    }else if($igd['prelim'] == 'DRP' || $igd['midterm'] == 'DRP' || $igd['final'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['midterm'] == 'drp' || $igd['final'] == 'drp'){
+                                                                        echo 'DRP';
+                                                                    }else{
+                                                                        echo 'FAILED';
                                                                     }
                                                                 } else {
                                                                     echo 

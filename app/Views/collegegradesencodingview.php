@@ -72,7 +72,13 @@
                                     <?= session()->getTempdata('updatesuccess');?>
                                 </div>
                             <?php endif; ?>
+                            
                             <table id="datatable" class="table table-striped">
+                                <h6>INCOMPLETE - <strong style="color: red">INC or inc</strong></h6>
+                                <h6>Failure due to Absences - <strong style="color: red">FA or fa</strong></h6>
+                                <h6>Unauthorized Withdrawal - <strong style="color: red">UW or uw</strong></h6>
+                                <h6>Authorized Withdrawal - <strong style="color: red">DRP or drp</strong></h6>
+                                <br>
                                 <thead>
                                     <tr>
                                         <th>STUDENT NO</th>
@@ -102,22 +108,22 @@
                                                     style="width: 100px; height: 30px; text-align: center; color: white;" value="<?= $igd['midterm']; ?>"></td>
                                                 <td><input type="text" name="final[]" class="form-control" 
                                                     style="width: 100px; height: 30px; text-align: center; color: white;" value="<?= $igd['final']; ?>"></td>
-                                                <td style="text-align: center;"><strong><?= $igd['semestral']; ?></strong></td>
+                                                <td style="text-align: center;"><strong><?= round($igd['semestral']); ?></strong></td>
                                                 <td style="text-align: center;"><strong>
                                                     <?php 
-                                                        if($igd['prelim'] == 'INC' || $igd['prelim'] == 'UW' || $igd['prelim'] == 'FA' || $igd['prelim'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'fa'){
+                                                        if($igd['prelim'] == 'INC' || $igd['prelim'] == 'UW' || $igd['prelim'] == 'FA' || $igd['prelim'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
                                                             $PRELIM = '0';
                                                         }else{
                                                             $PRELIM = $igd['prelim'] * .3;
                                                         }
                                         
-                                                        if($igd['midterm'] == 'INC' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'FA' || $igd['midterm'] == '' || $igd['midterm'] == 'inc' || $igd['midterm'] == 'uw' || $igd['midterm'] == 'fa'){
+                                                        if($igd['midterm'] == 'INC' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'FA' || $igd['midterm'] == '' || $igd['midterm'] == 'inc' || $igd['midterm'] == 'uw' || $igd['midterm'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
                                                             $MIDTERM = '0';
                                                         }else{
                                                             $MIDTERM = $igd['midterm'] * .3;
                                                         }
                                                         
-                                                        if($igd['final'] == 'INC' || $igd['final'] == 'UW' || $igd['final'] == 'FA' || $igd['final'] == '' || $igd['final'] == 'inc' || $igd['final'] == 'uw' || $igd['final'] == 'fa'){
+                                                        if($igd['final'] == 'INC' || $igd['final'] == 'UW' || $igd['final'] == 'FA' || $igd['final'] == '' || $igd['final'] == 'inc' || $igd['final'] == 'uw' || $igd['final'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
                                                             $FINALS = '0';
                                                         }else{
                                                             $FINALS = $igd['final'] * .4;
@@ -148,6 +154,10 @@
                                                             echo '5.00';
                                                         }else if($igd['prelim'] == 'INC' || $igd['prelim'] == 'inc' || $igd['midterm'] == 'INC' || $igd['midterm'] == 'inc' || $igd['final'] == 'INC' || $igd['final'] == 'inc'){
                                                             echo 'INC';
+                                                        }else if($igd['prelim'] == 'UW' || $igd['prelim'] == 'uw' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'uw' || $igd['final'] == 'UW' || $igd['final'] == 'uw'){
+                                                            echo 'UW';
+                                                        }else if($igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['midterm'] == 'DRP' || $igd['midterm'] == 'drp' || $igd['final'] == 'DRP' || $igd['final'] == 'drp'){
+                                                            echo 'DRP';
                                                         }else{
                                                             echo 'FA';
                                                         }
@@ -155,19 +165,19 @@
                                                 </td>
                                                 <td style="text-align: center;"><strong>
                                                     <?php 
-                                                        if($igd['prelim'] == 'INC' || $igd['prelim'] == 'UW' || $igd['prelim'] == 'FA' || $igd['prelim'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'fa'){
+                                                        if($igd['prelim'] == 'INC' || $igd['prelim'] == 'UW' || $igd['prelim'] == 'FA' || $igd['prelim'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp'){
                                                             $PRELIM = '0';
                                                         }else{
                                                             $PRELIM = $igd['prelim'] * .3;
                                                         }
                                         
-                                                        if($igd['midterm'] == 'INC' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'FA' || $igd['midterm'] == '' || $igd['midterm'] == 'inc' || $igd['midterm'] == 'uw' || $igd['midterm'] == 'fa'){
+                                                        if($igd['midterm'] == 'INC' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'FA' || $igd['midterm'] == '' || $igd['midterm'] == 'inc' || $igd['midterm'] == 'uw' || $igd['midterm'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp'){
                                                             $MIDTERM = '0';
                                                         }else{
                                                             $MIDTERM = $igd['midterm'] * .3;
                                                         }
                                                         
-                                                        if($igd['final'] == 'INC' || $igd['final'] == 'UW' || $igd['final'] == 'FA' || $igd['final'] == '' || $igd['final'] == 'inc' || $igd['final'] == 'uw' || $igd['final'] == 'fa'){
+                                                        if($igd['final'] == 'INC' || $igd['final'] == 'UW' || $igd['final'] == 'FA' || $igd['final'] == '' || $igd['final'] == 'inc' || $igd['final'] == 'uw' || $igd['final'] == 'fa' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp' || $igd['prelim'] == 'drp'){
                                                             $FINALS = '0';
                                                         }else{
                                                             $FINALS = $igd['final'] * .4;
@@ -180,8 +190,10 @@
                                                             echo 'PASSED';
                                                         }else if($igd['prelim'] == 'INC' || $igd['prelim'] == 'inc' || $igd['midterm'] == 'INC' || $igd['midterm'] == 'inc' || $igd['final'] == 'INC' || $igd['final'] == 'inc'){
                                                             echo 'INC';
-                                                        }else if($igd['prelim'] == 'UW' || $igd['midterm'] == 'UW' || $igd['final'] == 'UW'){
+                                                        }else if($igd['prelim'] == 'UW' || $igd['midterm'] == 'UW' || $igd['final'] == 'UW' || $igd['prelim'] == 'uw' || $igd['midterm'] == 'uw' || $igd['final'] == 'uw'){
                                                             echo 'UW';
+                                                        }else if($igd['prelim'] == 'DRP' || $igd['midterm'] == 'DRP' || $igd['final'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['midterm'] == 'drp' || $igd['final'] == 'drp'){
+                                                            echo 'DRP';
                                                         }else{
                                                             echo 'FAILED';
                                                         }

@@ -146,6 +146,7 @@ $routes->get('assessment-cor', 'EnrollmentController::assessmentCOR');
 $routes->post('assessment-cor', 'EnrollmentController::assessmentCOR');
 $routes->get('assessment-cor/view/(:segment)', 'EnrollmentController::assessmentCORview/$1');
 $routes->add('assessment-cor/print/(:segment)', 'EnrollmentController::assessmentCORprint/$1');
+$routes->add('assessment-topay/(:segment)', 'EnrollmentController::assessmentToPay/$1');
 // STUDENT FPA
 $routes->get('studentfar', 'FARController::index');
 $routes->get('studentfar/evaluation/(:segment)', 'FARController::farStudent/$1');
@@ -179,12 +180,27 @@ $routes->post('rates/dues/(:segment)', 'AccountingController::ratedues/$1');
 $routes->post('rates/rof/(:segment)', 'AccountingController::raterof/$1');
 $routes->post('rates/dues/update/(:segment)', 'AccountingController::rateduesupdate/$1');
 $routes->post('rates/rof/update/(:segment)', 'AccountingController::raterofupdate/$1');
+$routes->get('chartofaccounts', 'AccountingController::chartofAccounts');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');
 $routes->get('grades-college-result', 'GradeController::gradesCollegeResult');
 $routes->get('grades-college-encoding/(:segment)', 'GradeController::gradesCollegeEncoding/$1');
 $routes->post('grades-college-encoding-submit', 'GradeController::gradesCollegeEncodingSubmit');
+$routes->add('grades-college-print/(:segment)', 'GradeController::gradesCollegePrint/$1');
+// REGISTRAR GRADES
+$routes->get('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
+$routes->post('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
+$routes->get('grades-college-faculty-result', 'GradeController::gradesCollegeFacultyResult');
+$routes->get('grades-college-faculty-subjects/(:segment)', 'GradeController::gradesCollegeFacultySubjects/$1');
+$routes->get('grades-college-faculty-students/(:segment)/(:segment)', 'GradeController::gradesCollegeFacultyStudents/$1/$2');
+$routes->post('grades-college-faculty-students-submit', 'GradeController::gradesCollegeFacultyStudentsSubmit');
+// CASHIER 
+$routes->get('cashier-transaction', 'CashierController::index');
+$routes->post('cashier-transaction', 'CashierController::index');
+$routes->get('cashier-transaction-view/(:segment)', 'CashierController::transactionView/$1');
+$routes->get('cashier-transaction-view/open/(:segment)', 'CashierController::transactionViewOpen/$1');
+
 
 
 $routes->set404Override(function() {

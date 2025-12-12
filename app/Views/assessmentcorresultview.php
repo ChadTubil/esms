@@ -25,7 +25,9 @@
                         <?php foreach($ETDData as $etd): ?>
                             <div class="row">
                                 <div class="col-lg-6 col-sm-12">
-                                    <button class="btn btn-success" style="width: 100%;">PROCESS</button>
+                                    <button class="btn btn-success" style="width: 100%;"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="PROCESS ASSESSMENT"
+                                    onclick="window.location.href='<?= base_url(); ?>assessment-topay/<?= $etd['etdid']; ?>'">PROCESS</button>
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
                                     <button class="btn btn-primary" style="width: 100%;"
@@ -135,55 +137,108 @@
                                                 <tr>
                                                     <th>Tuition Fees</th>
                                                     <th>Subject</th>
-                                                    <th>Total Units</th>
-                                                    <th>Rate per Hour</th>
+                                                    <th>Units</th>
+                                                    <th>Hours</th>
+                                                    <th>Rate</th>
                                                     <th>Amount</th>
                                                 </tr>
                                             </thead> 
-                                            <tbody>
-                                                <tr>
-                                                    <td>Regular Subjects</td>
-                                                    <td>Major</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Regular Subjects</td>
-                                                    <td>Minor</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Fixed Amount</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Total Tuition Fees</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Less Discount(0.00%)</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>TUITION FEES - NET</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                            </tbody>      
+                                            <?php foreach($ratesData as $ratesD): ?>
+                                                <tbody>
+                                                    <?php foreach($totalmajorunits as $tmu): ?>
+                                                        <tr>
+                                                            <td>Regular Subjects</td>
+                                                            <td>Major</td>
+                                                            <td><?= $tmu['totalmajorunits']; ?></td>
+                                                            <td><?= $tmu['totalmajorhours']; ?></td>
+                                                            <td><?= $ratesD['major']; ?></td>
+                                                            <td><?php
+                                                                $amount = $tmu['totalmajorhours'] * $ratesD['major'];
+                                                                echo '₱' . number_format($amount, 2);
+                                                            ?></td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                    <?php foreach($totalminorunits as $tmu2): ?>
+                                                        <tr>
+                                                            <td>Regular Subjects</td>
+                                                            <td>Minor</td>
+                                                            <td><?= $tmu2['totalminorunits']; ?></td>
+                                                            <td><?= $tmu2['totalminorhours']; ?></td>
+                                                            <td><?= $ratesD['minor']; ?></td>
+                                                            <td><?php
+                                                                $amount2 = $tmu2['totalminorhours'] * $ratesD['minor'];
+                                                                echo '₱' . number_format($amount2, 2);
+                                                            ?></td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                    <tr>
+                                                        <td>Fixed Amount</td>
+                                                        <td><?php
+                                                            if($ratesD['nstp02'] == 0.00){
+                                                                echo 'NSTP01';
+                                                            } else {
+                                                                echo 'NSTP02';
+                                                            }
+                                                        ?></td>
+                                                        <td><?php
+                                                            if($ratesD['nstp02'] == 0.00){
+                                                                echo '3';
+                                                            } else {
+                                                                echo '3';
+                                                            }
+                                                        ?></td>
+                                                        <td><?php
+                                                            if($ratesD['nstp02'] == 0.00){
+                                                                echo '3';
+                                                            } else {
+                                                                echo '3';
+                                                            }
+                                                        ?></td>
+                                                        <td>-</td>
+                                                        <td><?php
+                                                            if($ratesD['nstp02'] == 0.00){
+                                                                echo '₱' . number_format($ratesD['nstp01'], 2);
+                                                            } else {
+                                                                echo '₱' . number_format($ratesD['nstp02'], 2);
+                                                            }
+                                                        ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Total Tuition Fees</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td><?php
+                                                            $totalTuition = $amount + $amount2;
+                                                            if($ratesD['nstp02'] == 0.00){
+                                                                $totalTuition += $ratesD['nstp01'];
+                                                            } else {
+                                                                $totalTuition += $ratesD['nstp02'];
+                                                            }
+                                                            echo '₱' . number_format($totalTuition, 2);
+                                                        ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Less Discount(0.00%)</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>-</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>TUITION FEES - NET</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td><?php
+                                                            echo '₱' . number_format($totalTuition, 2);
+                                                        ?></td>
+                                                    </tr>
+                                                </tbody>  
+                                            
                                         </table>
                                     </div>
                                     <br>
@@ -200,7 +255,7 @@
                                                     <?php foreach($duedata as $dued) :?>
                                                         <tr>
                                                             <td><?= $dued['name']; ?></td>
-                                                            <td>₱<?= $dued['due']; ?></td>
+                                                            <td><?= date('F j, Y', strtotime($dued['due'])); ?></td>
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
@@ -228,6 +283,31 @@
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
                                             </tbody>
+                                        </table>
+                                    </div>
+                                    <br>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" style="font-size: 11px">
+                                                <tbody>
+                                                    <tr>
+                                                        <td ><strong>TOTAL OTHER FEES</strong></td>
+                                                        <td><strong><?php
+                                                                $totalOtherFees = 0;
+                                                                foreach($rofdata as $rofd) {
+                                                                    $totalOtherFees += $rofd['otherfees'];
+                                                                }
+                                                                echo '₱' . number_format($totalOtherFees, 2);
+                                                        ?></strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td ><strong>GRAND TOTAL</strong></td>
+                                                        <td><strong><?php
+                                                            $grandTotal = $totalTuition + $totalOtherFees;
+                                                            echo '₱' . number_format($grandTotal, 2);
+                                                        ?></strong></td>
+                                                    </tr>
+                                                </tbody>  
+                                            <?php endforeach; ?>    
                                         </table>
                                     </div>
                                 </div>
