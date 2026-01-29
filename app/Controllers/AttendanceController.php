@@ -26,7 +26,7 @@ class AttendanceController extends BaseController
     public function index()
     {
         $DATETODAY = date('Y-m-d');
-        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
+        $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('timein', 'DESC')->limit(5)->findall();
         $data['empdata'] = $this->employeesModel->findall();
         $data['attendancedata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();
         $LastAttendance = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->first();
@@ -135,6 +135,7 @@ class AttendanceController extends BaseController
         $DATETODAY = date('Y-m-d');
         $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
         $data['empdata'] = $this->employeesModel->findall();
+        
         
         $data['attendancedata'] = $this->attendancesModel->where('date', $DATETODAY)->where('attid', $id)->first();
         $LastAttendance = $this->attendancesModel->where('date', $DATETODAY)->where('attid', $id)->first();

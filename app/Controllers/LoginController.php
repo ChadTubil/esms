@@ -60,7 +60,7 @@ class LoginController extends BaseController
                     }
                 }else{
                     $this->session->setTempdata('error', 'Sorry! Wrong password', 3);
-                        return redirect()->to(current_url());
+                    return redirect()->to(current_url());
                 }
             }else{
                 $this->session->setTempdata('error','Sorry! User does not exists', 3);

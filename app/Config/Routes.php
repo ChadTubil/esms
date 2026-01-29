@@ -181,6 +181,9 @@ $routes->post('rates/rof/(:segment)', 'AccountingController::raterof/$1');
 $routes->post('rates/dues/update/(:segment)', 'AccountingController::rateduesupdate/$1');
 $routes->post('rates/rof/update/(:segment)', 'AccountingController::raterofupdate/$1');
 $routes->get('chartofaccounts', 'AccountingController::chartofAccounts');
+$routes->post('chartofaccounts', 'AccountingController::chartofAccounts');
+$routes->add('chartofaccounts/delete/(:segment)', 'AccountingController::deleteCOA/$1');
+$routes->post('chartofaccounts/update/(:segment)', 'AccountingController::updateCOA/$1');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');

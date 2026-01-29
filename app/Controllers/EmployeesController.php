@@ -132,8 +132,7 @@ class EmployeesController extends BaseController
     public function updateImage($id=null) {
         if($this->request->is('post')) {
             $file = $this->request->getFile('bioimage');
-            if($file->isValid() && !$file->hasMoved())
-            {
+            if($file->isValid() && !$file->hasMoved()){
                 if($file->move(FCPATH.'public\uploads\id', $file->getRandomName()))
                 {
                     $imagepath = base_url().'public/uploads/id/'.$file->getName();

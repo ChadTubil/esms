@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta http-equiv="refresh" content="10;url=<?= base_url(); ?>biometrics-blank">
+        <!-- REFRESH HERE -->
         <title>Holy Cross College | Biometrics</title>
         <!-- Favicon -->
         <link rel="shortcut icon" href="<?= base_url(); ?>/public/assets/images/hccicon.ico">
@@ -21,6 +21,28 @@
         <link rel="stylesheet" href="<?= base_url(); ?>/public/assets/css/rtl.min.css">
     </head>
     <body class="" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+        <!-- =========== ADDED: REAL-TIME CLOCK DISPLAY =========== -->
+        <div id="realtime-clock" style="
+            position: fixed;
+            top: 20px;
+            left: 30px;
+            background-color: #263A56;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 40px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 5px solid #fecc09;
+            text-align: center;
+            min-width: 30%;
+        ">
+            <div id="clock-time">--:--:--</div>
+            <div id="clock-date" style="font-size: 25px; margin-top: 8px; line-height: 1.2;">- - - -</div>
+        </div>
+        <!-- =========== END OF ADDED CODE =========== -->
         <div class="wrapper">
             <section class="login-content">
                 <div class="row m-0 align-items-center vh-100" style="background-color: #263A56">  
@@ -163,6 +185,42 @@
             }
         </style>
         <script>
+            // =========== ADDED: REAL-TIME CLOCK FUNCTION ===========
+            function updateRealTimeClock() {
+                const now = new Date();
+                
+                // Format time in 12-hour format with AM/PM
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                
+                // Convert to 12-hour format
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Convert 0 to 12
+                hours = String(hours).padStart(2, '0');
+                
+                const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+                
+                // Format date
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                const dateString = now.toLocaleDateString('en-US', options);
+                
+                // Update display
+                document.getElementById('clock-time').textContent = timeString;
+                document.getElementById('clock-date').textContent = dateString;
+            }
+            
+            // Initialize and update clock every second
+            updateRealTimeClock();
+            setInterval(updateRealTimeClock, 1000);
+            // =========== END OF ADDED CODE ===========
+            
             // Access the webcam
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {

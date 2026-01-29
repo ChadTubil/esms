@@ -559,7 +559,8 @@ class GradeController extends BaseController
         
         $importedGradeCondition = array('sy' => $syid, 'sem' => $semid, 'teacherid' => $IMPNO);
         $data['importedGradeData'] = $this->importedGradeModel->where($importedGradeCondition)->groupBy('scheduleid')->findAll();
-        $data['sectionTempData'] = $this->stModel->findAll();
+        $data['importedGradeCount'] = $this->importedGradeModel->
+        $data['sectionTempData'] = $this->stModel->where('schedid', $SCHEDULEIDS)->findAll();
         return view('collegegradesresultview', $data);
     }
     public function gradesCollegeEncoding($id=null) {
