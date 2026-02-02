@@ -171,6 +171,9 @@ $routes->get('hrd-attendance', 'AttendanceController::attendanceview');
 $routes->post('hrd-attendance', 'AttendanceController::attendanceview');
 $routes->get('hrd-attendance-generate', 'AttendanceController::attendancegenerate');
 $routes->add('hrd-attendanc-download-excel/(:segment)/(:segment)', 'AttendanceController::downloadExcel/$1/$2');
+$routes->get('hrd-schedule', 'AttendanceController::scheduleview');
+$routes->post('hrd-schedule-save', 'AttendanceController::schedulesave');
+
 // ACCOUNTING
 $routes->get('rates', 'AccountingController::index');
 $routes->post('rates', 'AccountingController::index');

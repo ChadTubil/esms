@@ -52,44 +52,14 @@
                                 <?= session()->getTempdata('message');?>
                             </div>
                         <?php endif; ?>
-                        <h1 style="color: white"><strong>EMPLOYEE TIME LOGS</strong></h1>
+                        <h1 style="color: white"><strong>ANNOUNCEMENTS</strong></h1>
                         <div class="card">
                             <!-- <div class="card-body"> -->
                                 <div class="table-responsive">
                                     <table class="table table">
-                                        <thead>
-                                            <tr>
-                                                <th style="color: black; text-align: center;">NAME</th>
-                                                <th style="color: black; text-align: center;">TIME IN</th>
-                                                <th style="color: black; text-align: center;">TIME OUT</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
-                                            <?php foreach($attdata as $attd):?>
-                                                <?php foreach($empdata as $empd):?>
-                                                    <?php if($attd['employeeno'] == $empd['empnum']): ?>
-                                                        <tr>
-                                                            <td style="text-align: left; color: black;"><?= $empd['empfullname']; ?></td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEIN = $attd['timein']; 
-                                                                    echo $formattedTime = date('h:i A', strtotime($TIMEIN));
-                                                                ?>
-                                                            </td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEOUT = $attd['timeout'];
-                                                                    if($TIMEOUT == '00:00:00' || empty($TIMEOUT)){
-                                                                        echo '--:-- --';
-                                                                    } else {
-                                                                        echo $formattedTime = date('h:i A', strtotime($TIMEOUT));
-                                                                    }
-                                                                ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            <?php endforeach; ?>
+                                            <td></td>
+                                            <td></td>
                                         </tbody>
                                     </table>
                                 </div>
@@ -309,5 +279,49 @@
                 document.getElementById('image').value = dataUrl;
             }
         </script>
+        <?php if (session()->has('play_late_sound')): ?>
+            <script>
+                // Remove the session flag after playing sound
+                fetch('<?= base_url("clearSoundFlag") ?>');
+                
+                // Play sound
+                function playLateSound() {
+                    // Option 1: Text-to-Speech (Browser-based)
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance('Youre late!');
+                        utterance.lang = 'fil-PH'; // Filipino language
+                        utterance.rate = 0.3;
+                        speechSynthesis.speak(utterance);
+                    }
+                    
+                }
+                
+                // Play when page loads
+                window.addEventListener('load', playLateSound);
+            </script>
+            <?php session()->remove('play_late_sound'); ?>
+        <?php endif; ?>
+        <?php if (session()->has('play_early_sound')): ?>
+            <script>
+                // Remove the session flag after playing sound
+                fetch('<?= base_url("clearSoundFlag") ?>');
+                
+                // Play sound
+                function playLateSound() {
+                    // Option 1: Text-to-Speech (Browser-based)
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance('Welcome!');
+                        utterance.lang = 'fil-PH'; // Filipino language
+                        utterance.rate = 0.5;
+                        speechSynthesis.speak(utterance);
+                    }
+                    
+                }
+                
+                // Play when page loads
+                window.addEventListener('load', playLateSound);
+            </script>
+            <?php session()->remove('play_early_sound'); ?>
+        <?php endif; ?>
     </body>
 </html>

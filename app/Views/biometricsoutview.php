@@ -46,56 +46,26 @@
         <div class="wrapper">
             <section class="login-content">
                 <div class="row m-0 align-items-center vh-100" style="background-color: #263A56">  
-                    <div div class="col-md-4" style="text-align: center;">
+                    <div class="col-md-4" style="text-align: center;">
                         <?php if(session()->getTempdata('message')) :?>
                             <div class="alert alert-danger">
                                 <?= session()->getTempdata('message');?>
                             </div>
                         <?php endif; ?>
-                        <h1 style="color: white"><strong>EMPLOYEE TIME LOGS</strong></h1>
+                        <h1 style="color: white"><strong>ANNOUNCEMENTS</strong></h1>
                         <div class="card">
                             <!-- <div class="card-body"> -->
                                 <div class="table-responsive">
                                     <table class="table table">
-                                        <thead>
-                                            <tr>
-                                                <th>NAME</th>
-                                                <th>TIME IN</th>
-                                                <th>TIME OUT</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
-                                            <?php foreach($attdata as $attd):?>
-                                                <?php foreach($empdata as $empd):?>
-                                                    <?php if($attd['employeeno'] == $empd['empnum']): ?>
-                                                        <tr>
-                                                            <td style="text-align: left; color: black;"><?= $empd['empfullname']; ?></td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEIN = $attd['timein']; 
-                                                                    echo $formattedTime = date('h:i A', strtotime($TIMEIN));
-                                                                ?>
-                                                            </td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEOUT = $attd['timeout'];
-                                                                    if($TIMEOUT == '00:00:00' || empty($TIMEOUT)){
-                                                                        echo '--:-- --';
-                                                                    } else {
-                                                                        echo $formattedTime = date('h:i A', strtotime($TIMEOUT));
-                                                                    }
-                                                                ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            <?php endforeach; ?>
+                                            <td></td>
+                                            <td></td>
                                         </tbody>
                                     </table>
                                 </div>
                             <!-- </div> -->
                         </div>
-                    </div>          
+                    </div>           
                     <div class="col-md-8" style="border-left-style: solid;">
                         <div class="row justify-content-center">
                             <div style="background-color: #263A56; text-align: center;">
@@ -309,5 +279,27 @@
                 document.getElementById('image').value = dataUrl;
             }
         </script>
+        <?php if (session()->has('play_undertime_sound')): ?>
+            <script>
+                // Remove the session flag after playing sound
+                fetch('<?= base_url("clearSoundFlag") ?>');
+                
+                // Play sound
+                function playUndertimeSound() {
+                    // Option 1: Text-to-Speech (Browser-based)
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance('Youre early!');
+                        utterance.lang = 'fil-PH'; // Filipino language
+                        utterance.rate = 0.3;
+                        speechSynthesis.speak(utterance);
+                    }
+                    
+                }
+                
+                // Play when page loads
+                window.addEventListener('load', playUndertimeSound);
+            </script>
+            <?php session()->remove('play_undertime_sound'); ?>
+        <?php endif; ?>
     </body>
 </html>

@@ -8,6 +8,7 @@ class AttendancesModel extends Model
     protected $primaryKey = 'attid';
     protected $allowedFields = [
         'employeeno', 'rfid', 'sy', 'date', 'timein', 'timeout',
+        'late', 'undertime', 'renderhour', 'overtime',
         'image', 'status', 'isdel',
     ];
     protected $returnType = 'array';

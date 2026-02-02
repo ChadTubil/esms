@@ -9,7 +9,7 @@ class EmployeesModel extends Model
     protected $allowedFields = [
         'empnum', 'impno', 'empfn', 'empmn', 'empln', 'empextension',
         'empfullname', 'emphiringdate', 'empresignationdate', 'empposition', 
-        'rfidno', 'image', 'empstatus', 'empisdel',
+        'rfidno', 'image', 'timein', 'timeout', 'empstatus', 'empisdel',
     ];
     protected $returnType = 'array';
     

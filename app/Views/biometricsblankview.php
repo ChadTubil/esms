@@ -52,50 +52,20 @@
                                 <?= session()->getTempdata('message');?>
                             </div>
                         <?php endif; ?>
-                        <h1 style="color: white"><strong>EMPLOYEE TIME LOGS</strong></h1>
+                        <h1 style="color: white"><strong>ANNOUNCEMENTS</strong></h1>
                         <div class="card">
                             <!-- <div class="card-body"> -->
                                 <div class="table-responsive">
                                     <table class="table table">
-                                        <thead>
-                                            <tr>
-                                                <th style="color: black; text-align: center;">NAME</th>
-                                                <th style="color: black; text-align: center;">TIME IN</th>
-                                                <th style="color: black; text-align: center;">TIME OUT</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
-                                            <?php foreach($attdata as $attd):?>
-                                                <?php foreach($empdata as $empd):?>
-                                                    <?php if($attd['employeeno'] == $empd['empnum']): ?>
-                                                        <tr>
-                                                            <td style="text-align: left; color: black;"><?= $empd['empfullname']; ?></td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEIN = $attd['timein']; 
-                                                                    echo $formattedTime = date('h:i A', strtotime($TIMEIN));
-                                                                ?>
-                                                            </td>
-                                                            <td style="text-align: center; color: black;">
-                                                                <?php 
-                                                                    $TIMEOUT = $attd['timeout'];
-                                                                    if($TIMEOUT == '00:00:00' || empty($TIMEOUT)){
-                                                                        echo '--:-- --';
-                                                                    } else {
-                                                                        echo $formattedTime = date('h:i A', strtotime($TIMEOUT));
-                                                                    }
-                                                                ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            <?php endforeach; ?>
+                                            <td></td>
+                                            <td></td>
                                         </tbody>
                                     </table>
                                 </div>
                             <!-- </div> -->
                         </div>
-                    </div>          
+                    </div>           
                     <div class="col-md-8" style="border-left-style: solid;">
                         <div class="row justify-content-center">
                             <div style="background-color: #263A56; text-align: center;">
