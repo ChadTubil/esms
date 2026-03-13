@@ -24,7 +24,8 @@
     <link rel="stylesheet" href="<?= base_url(); ?>/public/assets/css/rtl.min.css">
 
     <link href="<?= base_url(); ?>/public/assets/dist/css/select2.min.css" rel="stylesheet" />
-    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     
 </head>

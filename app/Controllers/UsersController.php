@@ -114,6 +114,7 @@ class UsersController extends BaseController
             $pc = $this->request->getVar('cpc');
             $hrd = $this->request->getVar('chrd');
             $employee = $this->request->getVar('cemployee');
+            $cashier = $this->request->getVar('ccashier');
 
             if($admin == '') {
                 $ADMIN = 0;
@@ -140,6 +141,11 @@ class UsersController extends BaseController
             }else{
                 $EMPLOYEE = 1;
             }
+            if($cashier == ''){
+                $CASHIER = 0;
+            }else{
+                $CASHIER = 1;
+            }
             
             $udata = [
                 'uaccountid' => $this->request->getVar('account'),
@@ -150,6 +156,7 @@ class UsersController extends BaseController
                 'uprogramchair' => $PC,
                 'uhrd' => $HRD,
                 'uemployee' => $EMPLOYEE,
+                'ucashier' => $CASHIER,
                 'ustatus' => '0',
                 'uisdel' => '0',
             ];

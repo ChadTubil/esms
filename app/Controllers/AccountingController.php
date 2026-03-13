@@ -253,4 +253,79 @@ class AccountingController extends BaseController
             return redirect()->to(base_url()."chartofaccounts");
         }
     }
+    public function feeStructure() {
+        $data = [
+            'page_title' => 'Holy Cross College | Fee Structure',
+            'page_heading' => 'FEE STRUCTURE! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semdata'] = $this->semModel->where('semisdel', 0)->findAll();
+        $data['coursedata'] = $this->coursesModel->where('courisdel', 0)->findAll();
+        $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'code' => [
+                    'rules' => 'required|is_unique[feestructure.feecode]',
+                    'errors' => [
+                        'required' => 'Fee code is required.',
+                        'is_unique' => 'This fee code is already exists.'
+                    ],
+                ],
+                'name' => [
+                    'rules' => 'required|is_unique[feestructure.feename]',
+                    'errors' => [
+                        'required' => 'Account name is required.',
+                        'is_unique' => 'This account name is already exists.'
+                    ],
+                ],
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'sem' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+                'coa' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Chart of Account is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $feedata = [
+                    'feecode' => $this->request->getVar('code'),
+                    'feename' => $this->request->getVar('name'),
+                    'feedescription' => $this->request->getVar('type'),
+                    'amount' => $this->request->getVar('parentaccount'),
+                    'accountid' => $this->request->getVar('description'),
+                    'course' => $this->request->getVar('description'),
+                    'sy' => $this->request->getVar('description'),
+                    'semester' => $this->request->getVar('description'),
+                    'ismandatory' => $this->request->getVar('description'),
+                    'isdel' => 0,
+                ];
+                $this->feestructureModel->save($feedata);
+                session()->setTempdata('addsuccess','Fee added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('accounting/feestructureview', $data);
+    }
 }

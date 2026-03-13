@@ -11,6 +11,21 @@ $routes->post('/', 'LoginController::index');
 $routes->get('dashboard', 'DashboardController::index');
 $routes->get('logout', 'DashboardController::logout');
 $routes->add('students/login/(:segment)', 'LoginController::loginStudent/$1');
+
+//ONLINE REGISTRATION
+$routes->get('online-registration', 'OnlineRegController::index');
+$routes->get('online-registration-2', 'OnlineRegController::stage2');
+    // GS
+    $routes->get('online-registration-gs', 'OnlineRegController::gsregistration');
+    $routes->post('online-registration-gs', 'OnlineRegController::gsregistration');
+    // SHS
+    $routes->get('online-registration-shs', 'OnlineRegController::shsregistration');
+    $routes->post('online-registration-shs', 'OnlineRegController::shsregistration');
+    // COLLEGE
+    $routes->get('online-registration-college', 'OnlineRegController::collegeregistration');
+    $routes->post('online-registration-college', 'OnlineRegController::collegeregistration');
+$routes->get('online-registration-3', 'OnlineRegController::stage3');
+
 // ATTENDANCE
 $routes->get('biometrics', 'AttendanceController::index');
 $routes->post('biometrics', 'AttendanceController::index');
@@ -187,6 +202,7 @@ $routes->get('chartofaccounts', 'AccountingController::chartofAccounts');
 $routes->post('chartofaccounts', 'AccountingController::chartofAccounts');
 $routes->add('chartofaccounts/delete/(:segment)', 'AccountingController::deleteCOA/$1');
 $routes->post('chartofaccounts/update/(:segment)', 'AccountingController::updateCOA/$1');
+$routes->get('feestructure', 'AccountingController::feeStructure');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');
@@ -194,20 +210,30 @@ $routes->get('grades-college-result', 'GradeController::gradesCollegeResult');
 $routes->get('grades-college-encoding/(:segment)', 'GradeController::gradesCollegeEncoding/$1');
 $routes->post('grades-college-encoding-submit', 'GradeController::gradesCollegeEncodingSubmit');
 $routes->add('grades-college-print/(:segment)', 'GradeController::gradesCollegePrint/$1');
-// REGISTRAR GRADES
+// REGISTRAR
 $routes->get('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
 $routes->post('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
 $routes->get('grades-college-faculty-result', 'GradeController::gradesCollegeFacultyResult');
 $routes->get('grades-college-faculty-subjects/(:segment)', 'GradeController::gradesCollegeFacultySubjects/$1');
 $routes->get('grades-college-faculty-students/(:segment)/(:segment)', 'GradeController::gradesCollegeFacultyStudents/$1/$2');
 $routes->post('grades-college-faculty-students-submit', 'GradeController::gradesCollegeFacultyStudentsSubmit');
+$routes->get('registrar-onlineregistration-reports', 'RegistrarController::onlineregreports');
+$routes->get('registrar-onlineregistration-reports/export', 'RegistrarController::exportPDF');
+$routes->post('registrar-onlineregistration-update/(:segment)', 'RegistrarController::registrarOnlineRegUpdate/$1');
 // CASHIER 
 $routes->get('cashier-transaction', 'CashierController::index');
 $routes->post('cashier-transaction', 'CashierController::index');
 $routes->get('cashier-transaction-view/(:segment)', 'CashierController::transactionView/$1');
 $routes->get('cashier-transaction-view/open/(:segment)', 'CashierController::transactionViewOpen/$1');
 
+$routes->get('cashier-onlineregistration', 'CashierController::cashierOnlineRegistration');
+$routes->get('cashier-onlineregistration-payment/(:segment)', 'CashierController::cashierOnlineRegistrationPayment/$1');
+$routes->post('cashier/onlineregistration-process-payment/(:segment)', 'CashierController::cashierOnlineRegistrationprocessPayment/$1');
 
+$routes->add('cashier-onlineregistration-print/(:segment)', 'CashierController::onlineregPrint/$1');
+$routes->get('cashier-dailytransactions', 'CashierController::cashierDailyTransactions');
+$routes->get('cashier-dailytransactions-pdf', 'CashierController::cashierDailyTransactionsPDF');
+$routes->post('cashier-dailytransactions-update/(:segment)', 'CashierController::cashierDailyTransactionsUpdate/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

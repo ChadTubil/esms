@@ -94,6 +94,7 @@ class PayslipController extends BaseController
                                 'peraaloan' => $data['peraaloan'],
                                 'advancestoemployees' => $data['advancestoemployees'],
                                 'cbsloan' => $data['cbsloan'],
+                                'lbploan' => $data['lbploan'],
                                 'otherdeduction' => $data['otherdeduction'],
                                 'grossdeduction' => $data['grossdeduction'],
                                 'netpay' => $data['netpay'],

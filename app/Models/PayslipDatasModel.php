@@ -16,7 +16,7 @@ class PayslipDatasModel extends Model
         'ot', 'grossincome', 'sss', 'philhealth', 'pagibig',
         'peraa', 'absences', 'absencesOL', 'deductionOL', 'tax',
         'ssssalary', 'ssscalamity', 'mpl', 'pagibigcalamity', 'peraaloan',
-        'advancestoemployees', 'cbsloan', 'otherdeduction', 'grossdeduction',
+        'advancestoemployees', 'cbsloan', 'lbploan', 'otherdeduction', 'grossdeduction',
         'netpay', 'status', 'isdel',
     ];
     protected $returnType = 'array';

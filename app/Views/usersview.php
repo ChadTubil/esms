@@ -185,6 +185,9 @@
                                                                         <br>
                                                                         <input class="form-check-input" type="checkbox" name="cemployee" value="1"
                                                                             <?php if($user['uemployee'] == 1){ echo 'checked'; }else{ } ?>><span> Employee</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="ccashier" value="1"
+                                                                            <?php if($user['ucashier'] == 1){ echo 'checked'; }else{ } ?>><span> Cashier</span>
                                                                     </div>
                                                                     <div class="text-start">
                                                                         <button type="submit" name="update" class="btn btn-primary">Update</button>

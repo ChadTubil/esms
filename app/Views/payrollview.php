@@ -65,6 +65,7 @@
                                         <th style="text-align: center;">PERAA LOAN</th>
                                         <th style="text-align: center;">ADVANCES TO EMPLOYEES</th>
                                         <th style="text-align: center;">BANK LOAN CBS</th>
+                                        <th style="text-align: center;">BANK LOAN LBP</th>
                                         <th style="text-align: center;">OTHER DEDUCTION</th>
                                         <th style="text-align: center;">GROSS DEDUCTION</th>
                                         <th style="text-align: center;">NET PAY</th>
@@ -106,6 +107,7 @@
                                             <td style="text-align: center;">₱<?= $payslipdatad['peraaloan']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['advancestoemployees']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['cbsloan']; ?></td>
+                                            <td style="text-align: center;">₱<?= $payslipdatad['lbploan']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['otherdeduction']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['grossdeduction']; ?></td>
                                             <td style="text-align: center;">₱<?= $payslipdatad['netpay']; ?></td>
