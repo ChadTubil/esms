@@ -9,7 +9,8 @@ use App\Models\CoursesModel;
 use App\Models\LevelsModel;
 use App\Models\RateDuesModel;
 use App\Models\RateOtherFeesModel;
-use App\Models\chartofAccountsModel;
+use App\Models\ChartofAccountsModel;
+use App\Models\FeeStructureModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -21,6 +22,7 @@ class AccountingController extends BaseController
     public $rdModel;
     public $rofModel;
     public $coaModel;
+    public $feeStructureModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -33,6 +35,7 @@ class AccountingController extends BaseController
         $this->rdModel = new RateDuesModel();
         $this->rofModel = new RateOtherFeesModel();
         $this->coaModel = new ChartofAccountsModel();
+        $this->feeStructureModel = new FeeStructureModel();
         $this->session = session();
     }
     public function index()
@@ -256,7 +259,7 @@ class AccountingController extends BaseController
     public function feeStructure() {
         $data = [
             'page_title' => 'Holy Cross College | Fee Structure',
-            'page_heading' => 'FEE STRUCTURE! ',
+            'page_heading' => 'FEE STRUCTURE MANAGEMENT',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -269,6 +272,8 @@ class AccountingController extends BaseController
         $data['semdata'] = $this->semModel->where('semisdel', 0)->findAll();
         $data['coursedata'] = $this->coursesModel->where('courisdel', 0)->findAll();
         $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
+
+        $data['feestructuredata'] = $this->feeStructureModel->where('isdel', 0)->findAll();
 
         if($this->request->is('post')) {
             $rules = [

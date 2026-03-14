@@ -119,7 +119,38 @@
                                     <?= session()->getTempdata('updatesuccess');?>
                                 </div>
                             <?php endif; ?>
-
+                            <table id="datatable" class="table table-striped" data-toggle="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>CODE</th>
+                                        <th>FEE</th>
+                                        <th>AMOUNT</th>
+                                        <th>SY</th>
+                                        <th>SEM</th>
+                                        <th>STATUS</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach($feestructuredata as $feestructured):?>
+                                        <tr>
+                                            <td><?= $feestructured['feecode']; ?></td>
+                                            <td><?= $feestructured['feename']; ?></td>
+                                            <td><?= $feestructured['amount']; ?></td>
+                                            <td><?= $feestructured['sy']; ?></td>
+                                            <td><?= $feestructured['semester']; ?></td>
+                                            <td>
+                                                <?php if($feestructured['isactive'] == 1): ?>
+                                                    <?= "Not Active"; ?>
+                                                <?php else: ?>
+                                                    <?= "Active"; ?>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
