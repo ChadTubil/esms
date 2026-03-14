@@ -314,16 +314,17 @@ class AccountingController extends BaseController
                 $feedata = [
                     'feecode' => $this->request->getVar('code'),
                     'feename' => $this->request->getVar('name'),
-                    'feedescription' => $this->request->getVar('type'),
-                    'amount' => $this->request->getVar('parentaccount'),
-                    'accountid' => $this->request->getVar('description'),
-                    'course' => $this->request->getVar('description'),
-                    'sy' => $this->request->getVar('description'),
-                    'semester' => $this->request->getVar('description'),
-                    'ismandatory' => $this->request->getVar('description'),
+                    'feedescription' => $this->request->getVar('description'),
+                    'amount' => $this->request->getVar('amount'),
+                    'accountid' => $this->request->getVar('coa'),
+                    'course' => $this->request->getVar('course'),
+                    'sy' => $this->request->getVar('sy'),
+                    'semester' => $this->request->getVar('sem'),
+                    'ismandatory' => $this->request->getVar('mandatory'),
+                    'createdate' => date('Y-m-d'),
                     'isdel' => 0,
                 ];
-                $this->feestructureModel->save($feedata);
+                $this->feeStructureModel->save($feedata);
                 session()->setTempdata('addsuccess','Fee added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -332,5 +333,50 @@ class AccountingController extends BaseController
         }
 
         return view('accounting/feestructureview', $data);
+    }
+    public function deleteFEE($id=null) {
+        $data = [
+            'isdel' => '1',
+        ];
+
+        $this->feeStructureModel->where('feeid', $id)->update($id, $data);
+        session()->setTempdata('deletesuccess', 'Fee is deleted!', 2);
+        return redirect()->to(base_url()."feestructure");
+    }
+    public function updateFEE($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'feecode' => $this->request->getVar('code'),
+                'feename' => $this->request->getVar('name'),
+                'feedescription' => $this->request->getVar('description'),
+                'amount' => $this->request->getVar('amount'),
+                'accountid' => $this->request->getVar('coa'),
+                'course' => $this->request->getVar('course'),
+                'sy' => $this->request->getVar('sy'),
+                'semester' => $this->request->getVar('sem'),
+                'ismandatory' => $this->request->getVar('mandatory'),
+                'createdate' => date('Y-m-d'),
+                'isdel' => 0,
+            ];
+
+            $this->feeStructureModel->where('feeid', $id)->update($id, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."feestructure");
+        }
+    }
+    public function studentAccounts() {
+        $data = [
+            'page_title' => 'Holy Cross College | Student Accounts',
+            'page_heading' => 'STUDENT ACCOUNTS MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        return view('accounting/studentaccountsview', $data);
     }
 }
