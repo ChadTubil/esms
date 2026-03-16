@@ -58,6 +58,10 @@ class UsersController extends BaseController
                 $pc = $this->request->getVar('cpc');
                 $hrd = $this->request->getVar('chrd');
                 $employee = $this->request->getVar('cemployee');
+                $cashier = $this->request->getVar('ccashier');
+                $college = $this->request->getVar('ccollege');
+                $shs = $this->request->getVar('cshs');
+                $ibed = $this->request->getVar('cibed');
 
                 if($admin == ''){
                     $ADMIN = 0;
@@ -84,6 +88,26 @@ class UsersController extends BaseController
                 }else{
                     $EMPLOYEE = 1;
                 }
+                if($cashier == ''){
+                    $CASHIER = 0;
+                }else{
+                    $CASHIER = 1;
+                }
+                if($college == ''){
+                    $COLLEGE = 0;
+                }else{
+                    $COLLEGE = 1;
+                }
+                if($shs == ''){
+                    $SHS = 0;
+                }else{
+                    $SHS = 1;
+                }
+                if($ibed == ''){
+                    $IBED = 0;
+                }else{
+                    $IBED = 1;
+                }
                 
                 $udata = [
                     'uaccountid' => $this->request->getVar('account'),
@@ -94,6 +118,10 @@ class UsersController extends BaseController
                     'uprogramchair' => $PC,
                     'uhrd' => $HRD,
                     'uemployee' => $EMPLOYEE,
+                    'ucashier' => $CASHIER,
+                    'ucollege' => $COLLEGE,
+                    'ushs' => $SHS,
+                    'uibed' => $IBED,
                     'ustatus' => '0',
                     'uisdel' => '0',
                 ];
@@ -115,6 +143,9 @@ class UsersController extends BaseController
             $hrd = $this->request->getVar('chrd');
             $employee = $this->request->getVar('cemployee');
             $cashier = $this->request->getVar('ccashier');
+            $college = $this->request->getVar('ccollege');
+            $shs = $this->request->getVar('cshs');
+            $ibed = $this->request->getVar('cibed');
 
             if($admin == '') {
                 $ADMIN = 0;
@@ -146,7 +177,21 @@ class UsersController extends BaseController
             }else{
                 $CASHIER = 1;
             }
-            
+            if($college == ''){
+                $COLLEGE = 0;
+            }else{
+                $COLLEGE = 1;
+            }
+            if($shs == ''){
+                $SHS = 0;
+            }else{
+                $SHS = 1;
+            }
+            if($ibed == ''){
+                $IBED = 0;
+            }else{
+                $IBED = 1;
+            }
             $udata = [
                 'uaccountid' => $this->request->getVar('account'),
                 'username' => $this->request->getVar('username'),
@@ -157,6 +202,9 @@ class UsersController extends BaseController
                 'uhrd' => $HRD,
                 'uemployee' => $EMPLOYEE,
                 'ucashier' => $CASHIER,
+                'ucollege' => $COLLEGE,
+                'ushs' => $SHS,
+                'uibed' => $IBED,
                 'ustatus' => '0',
                 'uisdel' => '0',
             ];

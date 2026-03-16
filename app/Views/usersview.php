@@ -59,6 +59,14 @@
                                     <input class="form-check-input" type="checkbox" name="chrd" value="1"><span> HRD</span>
                                     <br>
                                     <input class="form-check-input" type="checkbox" name="cemployee" value="1"><span> Employee</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="ccashier" value="1"><span> Cashier</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="ccollege" value="1"><span> College Department</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="cshs" value="1"><span> SHS Department</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="cibed" value="1"><span> IBED Department</span>
                                 </div>
                             </div>
                             <br>
@@ -188,6 +196,15 @@
                                                                         <br>
                                                                         <input class="form-check-input" type="checkbox" name="ccashier" value="1"
                                                                             <?php if($user['ucashier'] == 1){ echo 'checked'; }else{ } ?>><span> Cashier</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="ccollege" value="1"
+                                                                            <?php if($user['ucollege'] == 1){ echo 'checked'; }else{ } ?>><span> College Department</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="cshs" value="1"
+                                                                            <?php if($user['ushs'] == 1){ echo 'checked'; }else{ } ?>><span> SHS Department</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="cibed" value="1"
+                                                                            <?php if($user['uibed'] == 1){ echo 'checked'; }else{ } ?>><span> IBED Department</span>
                                                                     </div>
                                                                     <div class="text-start">
                                                                         <button type="submit" name="update" class="btn btn-primary">Update</button>

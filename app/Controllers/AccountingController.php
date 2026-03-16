@@ -453,34 +453,24 @@ class AccountingController extends BaseController
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
         $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
 
-        foreach($data['studentaccountsdata'] as $studentaccount) {
-            $ACCOUNTSY = $studentaccount['sy'];
-            $ACCOUNTSEM = $studentaccount['sem'];
-            $ACCOUNTCOURSE = $studentaccount['course'];
-
-            if($ACCOUNTSY != '' && $ACCOUNTSEM != '' && $ACCOUNTCOURSE != '') {
-                $SELECTEDSY = $ACCOUNTSY;
-                $SELECTEDSEM = $ACCOUNTSEM;
-                $SELECTEDCOURSE = $ACCOUNTCOURSE;
-            } else {
-                $SELECTEDSY = '';
-                $SELECTEDSEM = '';
-                $SELECTEDCOURSE = '';
-            }
+        $data['allfeestructuredata'] = $this->feeStructureModel
+            ->where('isdel', 0)
+            ->findAll();
+        if (!empty($data['studentaccountsdata'])) {
+            $studentaccount = $data['studentaccountsdata'][0];
+            
+            
+            $data['filteredfeestructuredata'] = $this->feeStructureModel
+                ->where('course', $studentaccount['course'])
+                ->orwhere('sy', $studentaccount['sy'])
+                ->orwhere('semester', $studentaccount['sem'])
+                ->findAll();
         }
 
-        $data['feestructuredata'] = $this->feeStructureModel
-        ->where('sy', $SELECTEDSY)->where('semester', $SELECTEDSEM)
-        ->orwhere('sy', '')->orwhere('semester', '')
-        ->where('isdel', 0)->findAll();
-
-        // Get student assessments with fee details
         $assessments = $this->studentAccountsAssessmentModel
             ->where('said', $studentaccountno)
             ->where('isdel', 0)
             ->findAll();
-        
-        // Enhance assessments with fee details
         foreach($assessments as $key => $assessment) {
             // Get fee details from feestructure table
             $feeDetails = $this->feeStructureModel
@@ -498,7 +488,55 @@ class AccountingController extends BaseController
         }
         
         $data['studentaccountsassessmentdata'] = $assessments;
-
+        // GET TOTAL ASSESSMENT, TOTAL PAYMENTS, TOTAL BALANCE
+        $data['studacctotalassessment'] = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
         return view('accounting/studentaccountassessmentview', $data);
+    }
+    public function viewStudentAccountsDetailsAdd()
+    {
+        if($this->request->is('post')) {
+            $studentno = $this->request->getVar('studentno');
+            $studentaccountno = $this->request->getVar('accountno');
+            $feeid = $this->request->getVar('selectedfeeid');
+            $checkExisting = $this->studentAccountsAssessmentModel
+                ->where('said', $studentaccountno)
+                ->where('feeid', $feeid)
+                ->where('isdel', 0)
+                ->first();
+            if($checkExisting) {
+                session()->setTempdata('message','This fee is already added to the assessment.', 3);
+                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
+            } else {
+                $FEES = $this->feeStructureModel->where('feeid', $feeid)->findAll();
+                $STUDENTACCOUNT = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
+                foreach($STUDENTACCOUNT as $account) {
+                    $TOTALASSESSMENT = $account['totalassessment'];
+                    $TOTALBALANCE = $account['totalbalance'];
+                }
+                foreach($FEES as $fee) {
+                    $amount = $fee['amount'];
+                    $discount = $fee['discount'] ?? 0;
+                }
+                $data = [
+                    'said' => $studentaccountno,
+                    'studentno' => $studentno,
+                    'feeid' => $this->request->getVar('selectedfeeid'),
+                    'amount' => $amount,
+                    'discountamount' => $discount,
+                    'createddate' => date('Y-m-d'),
+                    'isdel' => 0,
+                ];
+                $studAccData = [
+                    'totalassessment' => $TOTALASSESSMENT + $amount,
+                    'totalbalance' => $TOTALBALANCE + $amount,
+                    'updateddate' => date('Y-m-d'),
+                ];
+                $this->studentAccountsAssessmentModel->save($data);
+                $this->studentAccountsModel->where('said', $studentaccountno)->set($studAccData)->update();
+                session()->setTempdata('message','Fee added successfully', 3);
+                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
+            }
+            
+        }
     }
 }

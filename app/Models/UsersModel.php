@@ -9,7 +9,7 @@ class UsersModel extends Model
     protected $allowedFields = [
         'uaccountid', 'username', 'upassword', 'uadmin',
         'ustudent', 'uregistrar', 'uprogramchair', 'uhrd', 'uemployee', 'ucashier',
-        'ustatus', 'uisdel',
+        'ustatus', 'ucollege', 'ushs', 'uibed', 'uisdel',
     ];
     protected $returnType = 'array';
     

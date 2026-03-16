@@ -210,6 +210,7 @@ $routes->get('student-accounts', 'AccountingController::studentAccounts');
 $routes->post('student-accounts', 'AccountingController::studentAccounts');
 $routes->get('student-accounts/view/(:segment)', 'AccountingController::viewStudentAccounts/$1');
 $routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetails/$1/$2');
+$routes->post('student-accounts/view/details-add', 'AccountingController::viewStudentAccountsDetailsAdd');
 
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
