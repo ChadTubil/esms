@@ -54,8 +54,17 @@
                 <div class="card">
                     <div class="card-body">
                         <?php foreach($studentdata as $studentd): ?>
-                            <h2 style="text-transform: uppercase;"><?= $studentd['studfullname']; ?></h2>
-                            <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h2 style="text-transform: uppercase;"><?= $studentd['studfullname']; ?></h2>
+                                    <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a href="<?= base_url(); ?>student-accounts/view/<?= $studentd['studentno']; ?>" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Back to Accounts
+                                    </a>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -108,7 +117,87 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h4>Please select an account to view its details.</h4>
+                        <?php if(empty($studentaccountsassessmentdata)): ?>
+                            <div class="alert alert-info">
+                                No assessment found for this account.
+                            </div>
+                        <?php else: ?>
+                            <div class="form-group">
+                                <label for="email" class="form-label">CODE</label>
+                                <select name="" id="">
+                                    <?php foreach($feestructuredata as $feestructured): ?>
+                                        <option value="<?= $feestructured['feecode']; ?>"><?= $feestructured['feecode']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>CODE</th>
+                                            <th>FEE</th>
+                                            <th class="text-end">AMOUNT</th>
+                                            <th class="text-end">DISCOUNT</th>
+                                            <th class="text-end">NET AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                            $totalAmount = 0;
+                                            $totalDiscount = 0;
+                                            $totalNet = 0;
+                                            foreach($studentaccountsassessmentdata as $studentaccountsassessmentd): 
+                                                $totalAmount += $studentaccountsassessmentd['amount'];
+                                                $totalDiscount += $studentaccountsassessmentd['discountamount'];
+                                                $totalNet += $studentaccountsassessmentd['netamount'];
+                                            ?>
+                                            <tr>
+                                                <td ><?= $studentaccountsassessmentd['feecode'] ?? 'N/A'; ?></td>
+                                                <td><?= $studentaccountsassessmentd['feename'] ?? 'Unknown Fee'; ?></td>
+                                                <td class="text-end">₱<?= number_format($studentaccountsassessmentd['amount'], 2); ?></td>
+                                                <td class="text-end">₱<?= number_format($studentaccountsassessmentd['discountamount'], 2); ?></td>
+                                                <td class="text-end">₱<?= number_format($studentaccountsassessmentd['netamount'], 2); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>    
+                                    </tbody>
+                                    <tfoot>
+                                            <tr>
+                                                <th colspan="2" class="text-end"><strong>TOTALS:</strong></th>
+                                                <th class="text-end" style="color: #007bff;">₱<?= number_format($totalAmount, 2); ?></th>
+                                                <th class="text-end" style="color: #28a745;">₱<?= number_format($totalDiscount, 2); ?></th>
+                                                <th class="text-end" style="color: #dc3545;">₱<?= number_format($totalNet, 2); ?></th>
+                                            </tr>
+                                        </tfoot>
+                                </table>
+                            </div>
+                            <!-- Assessment Summary Cards -->
+                            <div class="row mt-4">
+                                <div class="col-md-4">
+                                    <div class="card" style="background-color: #f8f9fa;">
+                                        <div class="card-body text-center">
+                                            <h6>Total Assessment</h6>
+                                            <h3 class="text-primary">₱<?= number_format($totalAmount, 2); ?></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card" style="background-color: #f8f9fa;">
+                                        <div class="card-body text-center">
+                                            <h6>Total Discount</h6>
+                                            <h3 class="text-success">₱<?= number_format($totalDiscount, 2); ?></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card" style="background-color: #f8f9fa;">
+                                        <div class="card-body text-center">
+                                            <h6>Net Amount Due</h6>
+                                            <h3 class="text-danger">₱<?= number_format($totalNet, 2); ?></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>                
             </div>

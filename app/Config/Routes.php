@@ -206,7 +206,10 @@ $routes->get('feestructure', 'AccountingController::feeStructure');
 $routes->post('feestructure', 'AccountingController::feeStructure');
 $routes->add('feestructure/delete/(:segment)', 'AccountingController::deleteFEE/$1');
 $routes->post('feestructure/update/(:segment)', 'AccountingController::updateFEE/$1');
-$routes->get('stdent-accounts', 'AccountingController::studentAccounts');
+$routes->get('student-accounts', 'AccountingController::studentAccounts');
+$routes->post('student-accounts', 'AccountingController::studentAccounts');
+$routes->get('student-accounts/view/(:segment)', 'AccountingController::viewStudentAccounts/$1');
+$routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetails/$1/$2');
 
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');

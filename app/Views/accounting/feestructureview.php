@@ -200,7 +200,7 @@
                                                                     <div class="col-lg-6 col-sm-12">
                                                                         <div class="form-group">
                                                                             <label for="email" class="form-label">SEMESTER</label>
-                                                                            <select name="sy" class="form-select">
+                                                                            <select name="sem" class="form-select">
                                                                                 <option value="<?php echo $feestructured['semester']; ?>"><?php echo $feestructured['semester']; ?></option>
                                                                                 <option value="">-</option>
                                                                                 <?php foreach($semdata as $semd): ?>

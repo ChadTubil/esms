@@ -11,6 +11,9 @@ use App\Models\RateDuesModel;
 use App\Models\RateOtherFeesModel;
 use App\Models\ChartofAccountsModel;
 use App\Models\FeeStructureModel;
+use App\Models\StudentsModel;
+use App\Models\StudentAccountsModel;
+use App\Models\StudentAccountAssessmentModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -23,6 +26,9 @@ class AccountingController extends BaseController
     public $rofModel;
     public $coaModel;
     public $feeStructureModel;
+    public $studentsModel;
+    public $studentAccountsModel;
+    public $studentAccountsAssessmentModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -36,6 +42,9 @@ class AccountingController extends BaseController
         $this->rofModel = new RateOtherFeesModel();
         $this->coaModel = new ChartofAccountsModel();
         $this->feeStructureModel = new FeeStructureModel();
+        $this->studentsModel = new StudentsModel();
+        $this->studentAccountsModel = new StudentAccountsModel();
+        $this->studentAccountsAssessmentModel = new StudentAccountAssessmentModel();
         $this->session = session();
     }
     public function index()
@@ -226,7 +235,7 @@ class AccountingController extends BaseController
                 ];
                 $this->coaModel->save($coadata);
                 session()->setTempdata('addsuccess','Account added successfully', 3);
-                return redirect()->to(current_url());
+                return redirect()->to(base_url('chartofaccounts'));
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -291,18 +300,6 @@ class AccountingController extends BaseController
                         'is_unique' => 'This account name is already exists.'
                     ],
                 ],
-                'sy' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'School year is required.',
-                    ],
-                ],
-                'sem' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Semester is required.',
-                    ],
-                ],
                 'coa' => [
                     'rules' => 'required',
                     'errors' => [
@@ -326,7 +323,7 @@ class AccountingController extends BaseController
                 ];
                 $this->feeStructureModel->save($feedata);
                 session()->setTempdata('addsuccess','Fee added successfully', 3);
-                return redirect()->to(current_url());
+                return redirect()->to(base_url('feestructure'));
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -376,7 +373,132 @@ class AccountingController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $StudentsCondition = array('studisdel' => 0);
+        $data['studentdata'] = $this->studentsModel->where($StudentsCondition)->findAll();
+
+        if($this->request->is('post')){
+            $searchStudent = $this->request->getVar('searchstud');
+
+            if($searchStudent == ''){
+                $StudentsCondition = array('studisdel' => 0);
+                $resultStudent = $this->studentsModel->where($StudentsCondition)->findAll();
+                // Add account count for each student
+                foreach($resultStudent as $key => $student) {
+                    $accountCount = $this->studentAccountsModel
+                        ->where('studentno', $student['studentno'])
+                        ->where('isdel', 0)
+                        ->countAllResults();
+                    $resultStudent[$key]['account_count'] = $accountCount;
+                }
+                $data['resultStudent'] = $resultStudent;
+                return view('accounting/studentaccountssearchresultview', $data);
+            }
+            else{
+                $StudentsCondition = array('studisdel' => 0);
+                $resultStudent = $this->studentsModel->where($StudentsCondition)
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->findAll();
+
+                // Add account count for each student
+                foreach($resultStudent as $key => $student) {
+                    $accountCount = $this->studentAccountsModel
+                        ->where('studentno', $student['studentno'])
+                        ->where('isdel', 0)
+                        ->countAllResults();
+                    $resultStudent[$key]['account_count'] = $accountCount;
+                }
+                
+                $data['resultStudent'] = $resultStudent;
+                return view('accounting/studentaccountssearchresultview', $data);
+            }
+        }
+
+        return view('accounting/studentaccountssearchview', $data);
+    }
+    public function viewStudentAccounts($id=null)
+    {
+        $data = [
+            'page_title' => 'Holy Cross College | Student Accounts',
+            'page_heading' => 'STUDENT ACCOUNTS MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentdata'] = $this->studentsModel->where('studentno', $id)->findAll();
+        $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $id)->where('isdel', 0)->findAll();
 
         return view('accounting/studentaccountsview', $data);
+    }
+    public function viewStudentAccountsDetails($studentno=null, $studentaccountno=null)
+    {
+        $data = [
+            'page_title' => 'Holy Cross College | Student Accounts',
+            'page_heading' => 'STUDENT ACCOUNTS MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentdata'] = $this->studentsModel->where('studentno', $studentno)->findAll();
+        $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
+        $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
+
+        foreach($data['studentaccountsdata'] as $studentaccount) {
+            $ACCOUNTSY = $studentaccount['sy'];
+            $ACCOUNTSEM = $studentaccount['sem'];
+            $ACCOUNTCOURSE = $studentaccount['course'];
+
+            if($ACCOUNTSY != '' && $ACCOUNTSEM != '' && $ACCOUNTCOURSE != '') {
+                $SELECTEDSY = $ACCOUNTSY;
+                $SELECTEDSEM = $ACCOUNTSEM;
+                $SELECTEDCOURSE = $ACCOUNTCOURSE;
+            } else {
+                $SELECTEDSY = '';
+                $SELECTEDSEM = '';
+                $SELECTEDCOURSE = '';
+            }
+        }
+
+        $data['feestructuredata'] = $this->feeStructureModel
+        ->where('sy', $SELECTEDSY)->where('semester', $SELECTEDSEM)
+        ->orwhere('sy', '')->orwhere('semester', '')
+        ->where('isdel', 0)->findAll();
+
+        // Get student assessments with fee details
+        $assessments = $this->studentAccountsAssessmentModel
+            ->where('said', $studentaccountno)
+            ->where('isdel', 0)
+            ->findAll();
+        
+        // Enhance assessments with fee details
+        foreach($assessments as $key => $assessment) {
+            // Get fee details from feestructure table
+            $feeDetails = $this->feeStructureModel
+                ->where('feeid', $assessment['feeid'])
+                ->where('isdel', 0)
+                ->first();
+            
+            if($feeDetails) {
+                $assessments[$key]['feecode'] = $feeDetails['feecode'];
+                $assessments[$key]['feename'] = $feeDetails['feename'];
+            } else {
+                $assessments[$key]['feecode'] = 'N/A';
+                $assessments[$key]['feename'] = 'Unknown Fee';
+            }
+        }
+        
+        $data['studentaccountsassessmentdata'] = $assessments;
+
+        return view('accounting/studentaccountassessmentview', $data);
     }
 }
