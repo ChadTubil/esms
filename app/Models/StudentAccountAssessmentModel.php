@@ -8,7 +8,8 @@ class StudentAccountAssessmentModel extends Model
     protected $primaryKey = 'sadid';
     protected $allowedFields = [
         'said', 'studentno', 'feeid', 'amount', 'discountamount',
-        'netamount', 'assessmentdate', 'isbilled', 'createddate', 'isdel',
+        'netamount', 'paidamount', 'balance', 'assessmentdate', 'isbilled', 
+        'createddate', 'isdel',
     ];
     protected $returnType = 'array';
     

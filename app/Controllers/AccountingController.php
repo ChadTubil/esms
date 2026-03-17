@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use App\Models\UsersModel;
+use App\Models\EmployeesModel;
 use App\Models\RatesModel;
 use App\Models\SYModel;
 use App\Models\SemesterModel;
@@ -14,9 +15,12 @@ use App\Models\FeeStructureModel;
 use App\Models\StudentsModel;
 use App\Models\StudentAccountsModel;
 use App\Models\StudentAccountAssessmentModel;
+use App\Models\PaymentTransactionsModel;
+use App\Models\PaymentAllocationModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
+    public $empModel;
     public $ratesModel;
     public $syModel;
     public $semModel;
@@ -29,10 +33,13 @@ class AccountingController extends BaseController
     public $studentsModel;
     public $studentAccountsModel;
     public $studentAccountsAssessmentModel;
+    public $paymentransactionsModel;
+    public $paymentAllocationModel;
     public $session;
     public function __construct() {
         helper('form');
         $this->usersModel = new UsersModel();
+        $this->empModel = new EmployeesModel();
         $this->ratesModel = new RatesModel();
         $this->syModel = new SYModel();
         $this->semModel = new SemesterModel();
@@ -45,6 +52,8 @@ class AccountingController extends BaseController
         $this->studentsModel = new StudentsModel();
         $this->studentAccountsModel = new StudentAccountsModel();
         $this->studentAccountsAssessmentModel = new StudentAccountAssessmentModel();
+        $this->paymentransactionsModel = new PaymentTransactionsModel();
+        $this->paymentAllocationModel = new PaymentAllocationModel();
         $this->session = session();
     }
     public function index()
@@ -452,6 +461,7 @@ class AccountingController extends BaseController
         $data['studentdata'] = $this->studentsModel->where('studentno', $studentno)->findAll();
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
         $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
+        $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
 
         $data['allfeestructuredata'] = $this->feeStructureModel
             ->where('isdel', 0)
@@ -481,9 +491,11 @@ class AccountingController extends BaseController
             if($feeDetails) {
                 $assessments[$key]['feecode'] = $feeDetails['feecode'];
                 $assessments[$key]['feename'] = $feeDetails['feename'];
+                $assessments[$key]['accountid'] = $feeDetails['accountid'];
             } else {
                 $assessments[$key]['feecode'] = 'N/A';
                 $assessments[$key]['feename'] = 'Unknown Fee';
+                $assessments[$key]['accountid'] = 'N/A';
             }
         }
         
@@ -537,6 +549,80 @@ class AccountingController extends BaseController
                 return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
             }
             
+        }
+    }
+    public function viewStudentAccountsDetailsPayment($studentno=null, $studentaccountno=null, $sadid=null)
+    {
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+        if($this->request->is('post')) {
+            $NETAMOUNT = $this->request->getVar('netamount');
+            $BALANCE = $NETAMOUNT - $this->request->getVar('amountpaid');
+            if($BALANCE < 0) {
+                session()->setTempdata('message','Payment amount exceeds the net amount.', 3);
+                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
+            }else{
+                $studentaccassdata = [
+                    'paidamount' => $this->request->getVar('amountpaid'),
+                    'balance' => $BALANCE,
+                    'isbilled' => 1,
+                ];
+                $this->studentAccountsAssessmentModel->where('sadid', $sadid)->update($sadid, $studentaccassdata);
+
+                $paymenttransactionsdata = [
+                    'studentno' => $this->request->getVar('studentno'),
+                    'studfullname' => $this->request->getVar('studentname'),
+                    'accountno' => $this->request->getVar('accountno'),
+                    'paymentmethod' => $this->request->getVar('paymentmethod'),
+                    'paymentdate' => $this->request->getVar('paymentdate'),
+                    'paymenttime' => $this->request->getVar('paymenttime'),
+                    'amountpaid' => $this->request->getVar('amountpaid'),
+                    'checknumber' => $this->request->getVar('checknumber'),
+                    'checkdate' => $this->request->getVar('checkdate'),
+                    'bankname' => $this->request->getVar('bankname'),
+                    'particulars' => $this->request->getVar('particulars'),
+                    'ornumber' => $this->request->getVar('ornumber'),
+                    'receivedby' => $FULLNAME,
+                    'paymentstatus' => "Paid",
+                    'createddate' => date('Y-m-d'),
+                    'isdel' => 0,
+                ];
+                $this->paymentransactionsModel->save($paymenttransactionsdata);
+                
+                $paymentid = $this->paymentransactionsModel->getInsertID();
+
+                $CHECKSTUDENTACCOUNT = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
+                foreach($CHECKSTUDENTACCOUNT as $account) {
+                    $TOTALPAYMENTS = $account['totalpayments'];
+                    $TOTALBALANCE = $account['totalbalance'];
+                }
+                $studAccData = [
+                    'totalpayments' => $TOTALPAYMENTS + $this->request->getVar('amountpaid'),
+                    'totalbalance' => $TOTALBALANCE - $this->request->getVar('amountpaid'),
+                    'updateddate' => date('Y-m-d'),
+                ];
+                $this->studentAccountsModel->where('said', $studentaccountno)->set($studAccData)->update();
+
+                $paymentallocationdata = [
+                    'paymentid' => $paymentid,
+                    'sadid' => $sadid,
+                    'amountallocated' => $this->request->getVar('amountpaid'),
+                    'allocatteddate' => date('Y-m-d'),
+                    'allocatedby' => $FULLNAME,
+                    'isdel' => 0,
+                ];
+                $this->paymentAllocationModel->save($paymentallocationdata);
+
+                session()->setTempdata('message','Payment added successfully', 3);
+                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
+            }
         }
     }
 }

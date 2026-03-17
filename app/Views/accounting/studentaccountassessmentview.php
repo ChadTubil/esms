@@ -201,6 +201,8 @@
                                             <th class="text-end">AMOUNT</th>
                                             <th class="text-end">DISCOUNT</th>
                                             <th class="text-end">NET AMOUNT</th>
+                                            <th class="text-end">PAID</th>
+                                            <th class="text-end">BALANCE</th>
                                             <th class="text-center">BILLED</th>
                                             <th class="text-center">ACTION</th>
                                         </tr>
@@ -210,10 +212,14 @@
                                             $totalAmount = 0;
                                             $totalDiscount = 0;
                                             $totalNet = 0;
+                                            $totalPaid = 0;
+                                            $totalBalance = 0;
                                             foreach($studentaccountsassessmentdata as $studentaccountsassessmentd): 
                                                 $totalAmount += $studentaccountsassessmentd['amount'];
                                                 $totalDiscount += $studentaccountsassessmentd['discountamount'];
                                                 $totalNet += $studentaccountsassessmentd['netamount'];
+                                                $totalPaid += $studentaccountsassessmentd['paidamount'];
+                                                $totalBalance += $studentaccountsassessmentd['balance'];
                                             ?>
                                             <tr>
                                                 <td ><?= $studentaccountsassessmentd['feecode'] ?? 'N/A'; ?></td>
@@ -241,6 +247,8 @@
                                                             </span>
                                                         </a></td>
                                                 <td class="text-end">₱<?= number_format($studentaccountsassessmentd['netamount'], 2); ?></td>
+                                                <td class="text-end">₱<?= number_format($studentaccountsassessmentd['paidamount'], 2); ?></td>
+                                                <td class="text-end">₱<?= number_format($studentaccountsassessmentd['balance'], 2); ?></td>
                                                 <td class="text-center"><?php
                                                     if($studentaccountsassessmentd['isbilled'] == 1) {
                                                         echo '<span class="badge bg-success">BILLED</span>';
@@ -249,7 +257,8 @@
                                                     }
                                                 ?></td>
                                                 <td class="text-center">
-                                                    <a href="" class="btn btn-sm btn-icon btn-primary" title="Make Payment" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                    <a href="#" class="btn btn-sm btn-icon btn-primary" title="Make Payment" data-bs-toggle="modal" 
+                                                        data-bs-target="#paymentModal<?= $studentaccountsassessmentd['studentno']; ?>" 
                                                         <?php if($studentaccountsassessmentd['isbilled'] == 1) { echo 'hidden'; } else { echo '';} ?>>
                                                         <span class="btn-inner"> 
                                                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -260,36 +269,200 @@
                                                             </svg>                            
                                                         </span>
                                                     </a>
-                                                    <a href="" class="btn btn-sm btn-icon btn-info" title="Print Receipt" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                        <?php if($studentaccountsassessmentd['isbilled'] == 1) { echo ''; } else { echo 'hidden';} ?>>
-                                                        <span class="btn-inner">
-                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7379 2.76175H8.08493C6.00493 2.75375 4.29993 4.41175 4.25093 6.49075V17.2037C4.20493 19.3167 5.87993 21.0677 7.99293 21.1147C8.02393 21.1147 8.05393 21.1157 8.08493 21.1147H16.0739C18.1679 21.0297 19.8179 19.2997 19.8029 17.2037V8.03775L14.7379 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path d="M14.4751 2.75V5.659C14.4751 7.079 15.6231 8.23 17.0431 8.234H19.7981" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path d="M14.2882 15.3584H8.88818" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path d="M12.2432 11.606H8.88721" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            </svg>
-                                                        </span>
-                                                    </a>
+                                                    <div class="modal fade" id="paymentModal<?= $studentaccountsassessmentd['studentno']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                            <div class="modal-content dark">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">Make Payment - <?= $studentaccountsassessmentd['feename']; ?></h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body" style="text-align: left;">
+                                                                    <form method="post" action="<?= base_url('student-accounts/view/details-payment/'.$studentaccountsd['studentno'].'/'.$studentaccountsd['said'].'/'.$studentaccountsassessmentd['sadid']) ?>">
+                                                                        <div class="row">
+                                                                            <div class="col-lg-4 col-sm-12">
+                                                                                <label class="form-label" style="color: white;">Student No:</label>
+                                                                                <input type="text" name="studentno" class="form-control" style="color: white;" value="<?= $studentaccountsassessmentd['studentno']; ?>" readonly>
+                                                                            </div>
+                                                                            <div class="col-lg-8 col-sm-12">
+                                                                                <label class="form-label" style="color: white;">Student Name:</label>
+                                                                                <input type="text" name="studentname" class="form-control" style="color: white;" value="<?= $studentd['studfullname']; ?>" readonly>
+                                                                            </div>
+                                                                            <div class="col-lg-8 col-sm-12">
+                                                                                <label class="form-label" style="color: white;">Account:</label>
+                                                                                <input type="hidden" name="accountno" value="<?= $studentaccountsassessmentd['accountid']; ?>">
+                                                                                <input type="text" class="form-control" style="color: white;" value="<?php 
+                                                                                    $studentaccountsassessmentd['accountid']; 
+                                                                                    foreach($coadata as $coad) {
+                                                                                        if($coad['accountid'] == $studentaccountsassessmentd['accountid']) {
+                                                                                            echo $coad['accountcode'] . ' - ' . $coad['accountname'];
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                ?>" readonly>
+                                                                            </div>
+                                                                            <div class="col-lg-4 col-sm-12">
+                                                                                <label class="form-label" style="color: white;">Amount To Pay:</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">₱</span>
+                                                                                    <input type="number" name="netamount" class="form-control" style="color: white;" value="<?= $studentaccountsassessmentd['netamount']; ?>" readonly>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    
+                                                                        <div class="row">
+                                                                            <!-- Payment Method -->
+                                                                            <div class="col-md-6 mb-3">
+                                                                                <label class="form-label">Payment Method *</label>
+                                                                                <select class="form-select" name="paymentmethod" id="paymentMethod" required>
+                                                                                    <option value="">Select Method</option>
+                                                                                    <option value="Cash">Cash</option>
+                                                                                    <option value="Check">Check</option>
+                                                                                    <option value="Bank Transfer">Bank Transfer</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <!-- Payment Date -->
+                                                                            <div class="col-md-6 mb-3">
+                                                                                <label class="form-label">Payment Date *</label>
+                                                                                <input type="date" class="form-control" name="paymentdate" 
+                                                                                    value="<?php echo date('Y-m-d'); ?>" required>
+                                                                            </div>
+                                                                            <!-- Payment Time -->
+                                                                            <div class="col-md-6 mb-3">
+                                                                                <label class="form-label">Payment Time *</label>
+                                                                                <input type="time" class="form-control" name="paymenttime" 
+                                                                                    value="<?php echo date('H:i'); ?>" required>
+                                                                            </div>
+                                                                            <!-- Amount Paid -->
+                                                                            <div class="col-md-6 mb-3">
+                                                                                <label class="form-label">Amount Paid *</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">₱</span>
+                                                                                    <input type="number" class="form-control" name="amountpaid" step="0.01" min="0" required>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!-- Check Details (Show only if Check is selected) -->
+                                                                            <div id="checkDetails" style="display: none;">
+                                                                                <div class="col-md-6 mb-3">
+                                                                                    <label class="form-label">Check Number</label>
+                                                                                    <input type="text" class="form-control" name="checknumber">
+                                                                                </div>
+                                                                                <div class="col-md-6 mb-3">
+                                                                                    <label class="form-label">Check Date</label>
+                                                                                    <input type="date" class="form-control" name="checkdate">
+                                                                                </div>
+                                                                                <div class="col-md-12 mb-3">
+                                                                                    <label class="form-label">Bank Name</label>
+                                                                                    <input type="text" class="form-control" name="bankname">
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <!-- Bank Details (Show only if Bank Transfer is selected) -->
+                                                                            <div id="bankDetails" style="display: none;">
+                                                                                <div class="col-md-12 mb-3">
+                                                                                    <label class="form-label">Bank Name (for Bank Transfer)</label>
+                                                                                    <input type="text" class="form-control" name="bankname">
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!-- Particulars -->
+                                                                            <div class="col-md-12 mb-3">
+                                                                                <label class="form-label">Particulars *</label>
+                                                                                <textarea class="form-control" name="particulars" rows="2" required><?= $studentaccountsassessmentd['feename'] ?? '' ?></textarea>
+                                                                            </div>
+                                                                            <!-- OR Number -->
+                                                                            <div class="col-md-6 mb-3">
+                                                                                <label class="form-label">OR Number *</label>
+                                                                                <input type="text" class="form-control" name="ornumber" required>
+                                                                            </div>
+                                                                            <!-- Action Buttons -->
+                                                                            <div class="col-md-12">
+                                                                                <div class="d-flex justify-content-between">
+                                                                                    <a data-bs-dismiss="modal" class="btn btn-info">
+                                                                                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                                                                                    </a>
+                                                                                    <div>
+                                                                                        <button type="submit" name="action" value="save" class="btn btn-success">
+                                                                                            <i class="fas fa-save me-2"></i>SUBMIT
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>    
                                     </tbody>
                                     <tfoot>
-                                            <tr>
-                                                <th colspan="2" class="text-end"><strong>TOTALS:</strong></th>
-                                                <th class="text-end" style="color: #007bff;">₱<?= number_format($totalAmount, 2); ?></th>
-                                                <th class="text-end" style="color: #28a745;">₱<?= number_format($totalDiscount, 2); ?></th>
-                                                <th class="text-end" style="color: #dc3545;">₱<?= number_format($totalNet, 2); ?></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tfoot>
+                                        <tr>
+                                            <th colspan="2" class="text-end"><strong>TOTALS:</strong></th>
+                                            <th class="text-end" style="color: #007bff;">₱<?= number_format($totalAmount, 2); ?></th>
+                                            <th class="text-end" style="color: #28a745;">₱<?= number_format($totalDiscount, 2); ?></th>
+                                            <th class="text-end" style="color: #dc3545;">₱<?= number_format($totalNet, 2); ?></th>
+                                            <th class="text-end" style="color: #007bff;">₱<?= number_format($totalPaid, 2); ?></th>
+                                            <th class="text-end" style="color: #dc3545;">₱<?= number_format($totalBalance, 2); ?></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         <?php endif; ?>
                     </div>
-                </div>                
+                </div>  
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="header-title">
+                            <h4 class="card-title">PAYMENT HISTORY</h4>
+                        </div>
+                    </div>
+                    <div class="card-body"> 
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-striped" data-toggle="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>OR #</th>
+                                        <th class="text-center">DATE</th>
+                                        <th>PARTICULARS</th>
+                                        <th class="text-end">AMOUNT</th>
+                                        <th>CASHIER</th>
+                                        <th class="text-center">STATUS</th>
+                                        <th class="text-center">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-center"></td>
+                                        <td></td>
+                                        <td class="text-end"></td>
+                                        <td></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-info" title="Print Receipt" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                onclick="printReceipt('<?= base_url(); ?>student-accounts/view/details-print/')"
+                                                >
+                                                <span class="btn-inner">
+                                                    <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7379 2.76175H8.08493C6.00493 2.75375 4.29993 4.41175 4.25093 6.49075V17.2037C4.20493 19.3167 5.87993 21.0677 7.99293 21.1147C8.02393 21.1147 8.05393 21.1157 8.08493 21.1147H16.0739C18.1679 21.0297 19.8179 19.2997 19.8029 17.2037V8.03775L14.7379 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        <path d="M14.4751 2.75V5.659C14.4751 7.079 15.6231 8.23 17.0431 8.234H19.7981" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        <path d="M14.2882 15.3584H8.88818" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        <path d="M12.2432 11.606H8.88721" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    </svg>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -309,6 +482,92 @@
         document.getElementById('data-amount').value = amount;
         document.getElementById('data-discount').value = discount;
     });
+    </script>
+    <script>
+        // Toggle payment fields based on payment mode
+        function togglePaymentFields() {
+            var paymentMode = document.getElementById('paymentmode').value;
+            var checkFields = document.getElementById('checkFields');
+            var referenceFields = document.getElementById('referenceFields');
+            
+            if (paymentMode === 'Check') {
+                checkFields.style.display = 'flex';
+                referenceFields.style.display = 'none';
+            } else if (paymentMode === 'Bank Transfer' || paymentMode === 'Online') {
+                checkFields.style.display = 'none';
+                referenceFields.style.display = 'flex';
+            } else {
+                checkFields.style.display = 'none';
+                referenceFields.style.display = 'none';
+            }
+        }
+
+        // Payment table search functionality
+        document.getElementById('searchPayment').addEventListener('keyup', function() {
+            var input = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#paymentTable tbody tr');
+            
+            rows.forEach(function(row) {
+                var orNumber = row.cells[0].textContent.toLowerCase();
+                if (orNumber.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Payment filter
+        document.getElementById('paymentFilter').addEventListener('change', function() {
+            var filter = this.value;
+            // Implement filter logic here
+            console.log('Filter by:', filter);
+        });
+
+        // Export payments
+        function exportPayments() {
+            window.location.href = '<?= base_url(); ?>student-accounts/export-payments/<?= $studentd['studentno'] ?? '' ?>';
+        }
+
+        // Print payment history
+        function printPaymentHistory() {
+            var printWindow = window.open('<?= base_url(); ?>student-accounts/print-payments/<?= $studentd['studentno'] ?? '' ?>', '_blank');
+            printWindow.print();
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethod = document.getElementById('paymentMethod');
+            const checkDetails = document.getElementById('checkDetails');
+            const bankDetails = document.getElementById('bankDetails');
+            
+            function togglePaymentDetails() {
+                const method = paymentMethod.value;
+                
+                // Hide all details first
+                checkDetails.style.display = 'none';
+                bankDetails.style.display = 'none';
+                
+                // Show relevant details
+                if (method === 'Check') {
+                    checkDetails.style.display = 'block';
+                } else if (method === 'Bank Transfer') {
+                    bankDetails.style.display = 'block';
+                }
+            }
+            
+            // Initial toggle based on current value
+            togglePaymentDetails();
+            
+            // Toggle on change
+            paymentMethod.addEventListener('change', togglePaymentDetails);
+        });
     </script>
 
 <?= $this->endSection(); ?>
