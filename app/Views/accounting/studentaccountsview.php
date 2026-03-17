@@ -62,7 +62,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-sm-12">
+            <div class="col-lg-3 col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-sm-12">
+            <div class="col-lg-9 col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">

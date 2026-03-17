@@ -502,6 +502,15 @@ class AccountingController extends BaseController
         $data['studentaccountsassessmentdata'] = $assessments;
         // GET TOTAL ASSESSMENT, TOTAL PAYMENTS, TOTAL BALANCE
         $data['studacctotalassessment'] = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
+        // PAYMENT TRANSACTIONS HISTORY
+        $data['paymenthistorydata'] = $this->paymentAllocationModel
+            ->select('paymentallocation.*, paymenttransactions.*, studentassessment.*, studentsaccounts.*')
+            ->join('paymenttransactions', 'paymentallocation.paymentid = paymenttransactions.paymentid')
+            ->join('studentassessment', 'studentassessment.sadid = paymentallocation.sadid')
+            ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
+            ->where('studentsaccounts.said', $studentaccountno)
+            ->where('paymentallocation.isdel', 0)
+            ->findAll();
         return view('accounting/studentaccountassessmentview', $data);
     }
     public function viewStudentAccountsDetailsAdd()

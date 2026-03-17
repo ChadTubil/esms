@@ -60,6 +60,9 @@
                                     <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
                                 </div>
                                 <div class="col-md-4 text-end">
+                                    <a href="<?= base_url(); ?>student-accounts/ledger/<?= $studentd['studentno']; ?>" class="btn btn-info me-2">
+                                        <i class="bi bi-journal-text"></i> Student Ledger
+                                    </a>
                                     <a href="<?= base_url(); ?>student-accounts/view/<?= $studentd['studentno']; ?>" class="btn btn-secondary">
                                         <i class="bi bi-arrow-left"></i> Back to Accounts
                                     </a>
@@ -436,28 +439,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td class="text-center"></td>
-                                        <td></td>
-                                        <td class="text-end"></td>
-                                        <td></td>
-                                        <td class="text-center"></td>
-                                        <td class="text-center">
-                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-info" title="Print Receipt" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                onclick="printReceipt('<?= base_url(); ?>student-accounts/view/details-print/')"
-                                                >
-                                                <span class="btn-inner">
-                                                    <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7379 2.76175H8.08493C6.00493 2.75375 4.29993 4.41175 4.25093 6.49075V17.2037C4.20493 19.3167 5.87993 21.0677 7.99293 21.1147C8.02393 21.1147 8.05393 21.1157 8.08493 21.1147H16.0739C18.1679 21.0297 19.8179 19.2997 19.8029 17.2037V8.03775L14.7379 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        <path d="M14.4751 2.75V5.659C14.4751 7.079 15.6231 8.23 17.0431 8.234H19.7981" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        <path d="M14.2882 15.3584H8.88818" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        <path d="M12.2432 11.606H8.88721" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    </svg>
-                                                </span>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    <?php foreach($paymenthistorydata as $paymenthistoryd): ?>
+                                        <tr>
+                                            <td><?= $paymenthistoryd['ornumber']; ?></td>
+                                            <td class="text-center"><?= date('F j, Y', strtotime($paymenthistoryd['paymentdate'])); ?></td>
+                                            <td><?= $paymenthistoryd['particulars']; ?></td>
+                                            <td class="text-end">₱<?= $paymenthistoryd['amountpaid']; ?></td>
+                                            <td><?= $paymenthistoryd['receivedby']; ?></td>
+                                            <td class="text-center"><?= $paymenthistoryd['paymentstatus']; ?></td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-info" title="Print Receipt" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                    onclick="printReceipt('<?= base_url(); ?>cashier-onlineregistration-print/<?= $paymenthistoryd['paymentid']; ?>')"
+                                                    >
+                                                    <span class="btn-inner">
+                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7379 2.76175H8.08493C6.00493 2.75375 4.29993 4.41175 4.25093 6.49075V17.2037C4.20493 19.3167 5.87993 21.0677 7.99293 21.1147C8.02393 21.1147 8.05393 21.1157 8.08493 21.1147H16.0739C18.1679 21.0297 19.8179 19.2997 19.8029 17.2037V8.03775L14.7379 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M14.4751 2.75V5.659C14.4751 7.079 15.6231 8.23 17.0431 8.234H19.7981" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M14.2882 15.3584H8.88818" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M12.2432 11.606H8.88721" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        </svg>
+                                                    </span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -569,5 +574,16 @@
             paymentMethod.addEventListener('change', togglePaymentDetails);
         });
     </script>
-
+    <script>
+        function printReceipt(url) {
+            // Open in new window
+            var printWindow = window.open(url, 'PrintReceipt', 'width=800,height=600');
+            
+            // Wait for window to load then trigger print
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+            };
+        }
+    </script>
 <?= $this->endSection(); ?>

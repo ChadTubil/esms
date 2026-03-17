@@ -339,7 +339,7 @@ class CashierController extends BaseController
             <table>
                 <tr>
                     <td style="width: 70%;"></td>
-                    <td style="width: 30%;">'.$PAYMENTDATE.'</td>
+                    <td style="width: 30%;">'.date('F j, Y', strtotime($PAYMENTDATE)).'</td>
                 </tr>
             </table>
             <br>
