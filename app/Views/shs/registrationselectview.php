@@ -29,7 +29,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
-                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="New Student"
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="New Registration"
                                     onclick="window.location.href='<?= base_url(); ?>shs-registerstudent'">
                                     <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 50px 0;">
                                         <div class="card-body" style="text-align: center;">
@@ -39,7 +39,7 @@
                                 </a>
                             </div>
                             <div class="col-lg-6 col-sm-12">
-                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Old Student"
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Registered Student"
                                     onclick="window.location.href='<?= base_url(); ?>shs-registeredstudent'">
                                     <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 50px 0;">
                                         <div class="card-body" style="text-align: center;">

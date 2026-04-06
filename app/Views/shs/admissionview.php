@@ -34,14 +34,7 @@
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php foreach($regstudentdata as $regstudentd):?>
-                                        <tr>
-                                            <td><?= $regstudentd['studfullname']; ?></td>
-                                            <td></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
+                                
                             </table>
                         </div>
                     </div>

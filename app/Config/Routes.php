@@ -263,7 +263,7 @@ $routes->post('shs-curriculum/setup/(:segment)', 'SHSDepartmentController::setup
 $routes->get('shs-registration-select', 'SHSDepartmentController::registrationselect');
 $routes->get('shs-registerstudent', 'SHSDepartmentController::newregistration');
 $routes->get('shs-registeredstudent', 'SHSDepartmentController::registeredstudent');
-$routes->get('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
+$routes->add('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
 
 $routes->get('shs-admission', 'SHSDepartmentController::admission');
 

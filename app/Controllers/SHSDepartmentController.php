@@ -9,6 +9,9 @@ use App\Models\SHSCurriculumModel;
 use App\Models\SHSCurriculumDataModel;
 use App\Models\RegStudentsModel;
 use App\Models\PaymentTransactionsModel;
+use App\Models\EnrollmentHistorySHSModel;
+use App\Models\SHSStudentsModel;
+use App\Models\SHSPermanentRecordModel;
 class SHSDepartmentController extends BaseController
 {
     public $usersModel;
@@ -19,6 +22,9 @@ class SHSDepartmentController extends BaseController
     public $shsCurriculumDataModel;
     public $regStudentsModel;
     public $paymentTransactionsModel;
+    public $enrollmentHistorySHSModel;
+    public $shsStudentsModel;
+    public $shsPermanentRecordModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -30,6 +36,9 @@ class SHSDepartmentController extends BaseController
         $this->shsCurriculumDataModel = new SHSCurriculumDataModel();
         $this->regStudentsModel = new RegStudentsModel();
         $this->paymentTransactionsModel = new PaymentTransactionsModel();
+        $this->enrollmentHistorySHSModel = new EnrollmentHistorySHSModel();
+        $this->shsStudentsModel = new SHSStudentsModel();
+        $this->shsPermanentRecordModel = new SHSPermanentRecordModel();
         $this->session = session();
     }
     public function cluster(){
@@ -331,20 +340,72 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['registeredstudents'] = $this->paymentTransactionsModel->findAll();
+
+        $data['registeredstudents'] = $this->regStudentsModel
+        ->select('regstudents.*')
+        ->join('paymenttransactions', 'paymenttransactions.studfullname = regstudents.studfullname')
+        ->join('enrollmenthistory_shs', 'enrollmenthistory_shs.studid = regstudents.studid AND enrollmenthistory_shs.isdel = 0', 'left')
+        ->where('enrollmenthistory_shs.studid IS NULL') // Only those NOT in enrollment history
+        ->groupBy('regstudents.studid')
+        ->findAll();
+
 
         return view('shs/registeredstudentview', $data);
     }
     public function registeredstudentProcess($id=null){
-        $registeredstudent = $this->regStudentsModel->where('studfullname', $id)->findAll();
+        $registeredstudent = $this->regStudentsModel->where('studid', $id)->findAll();
         foreach($registeredstudent as $rs){
-            $STUDID = $rs['studid'];
+            $STUDLN = $rs['studln'];
+            $STUDFN = $rs['studfn'];
+            $STUDMN = $rs['studmn'];
+            $STUDEXT = $rs['studextension'];
+            $STUDFULLNAME = $rs['studfullname'];
+            $STUDBIRTHDAY = $rs['studbirthday'];
+            $STUDAGE = $rs['studage'];
+            $STUDGENDER = $rs['studgender'];
+            $STUDBARANGAY = $rs['studstbarangay'];
+            $STUDCITY = $rs['studcity'];
+            $STUDPROVINCE = $rs['studprovince'];
+            $STUDCONTACT = $rs['studcontact'];
+            $STUDICITIZENSHIP = $rs['studcitizenship'];
+            $STUDRELIGION = $rs['studreligion'];
+            $STUDEMAIL = $rs['studemail'];
+            $STUDBIRTHPLACE = $rs['studbirthplace'];
         }
-
-        $ehdata = [
+        $shsstuddata = [
+            'studln' => $STUDLN,
+            'studfn' => $STUDFN,
+            'studmn' => $STUDMN,
+            'studextension' => $STUDEXT,
+            'studfullname' => $STUDFULLNAME,
+            'studbirthday' => $STUDBIRTHDAY,
+            'studage' => $STUDAGE,
+            'studgender' => $STUDGENDER,
+            'studstbarangay' => $STUDBARANGAY,
+            'studcity' => $STUDCITY,
+            'studprovince' => $STUDPROVINCE,
+            'studcontact' => $STUDCONTACT,
+            'studcitizenship' => $STUDICITIZENSHIP,
+            'studreligion' => $STUDRELIGION,
+            'studemail' => $STUDEMAIL,
+            'studbirthplace' => $STUDBIRTHPLACE,
+        ];
+        $this->shsStudentsModel->save($shsstuddata);
+        $registeredstudentpr = $this->shsStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
+        foreach($registeredstudentpr as $rsp){
+            $STUDID = $rsp['studid'];
+        }
+        $shsprdata = [
             'studid' => $STUDID,
         ];
-        $this->shsCurriculumModel->save($curridata);
+        $this->shsPermanentRecordModel->where('studid', $id)->update($id, $shsprdata);
+        $ehdata = [
+            'studid' => $STUDID,
+            'date' => date('Y-m-d'),
+            'status' => 'Registered',
+        ];
+        $this->enrollmentHistorySHSModel->save($ehdata);
+        return redirect()->to(base_url()."shs-admission");
     }
     public function admission(){
         $data = [
@@ -358,7 +419,6 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['regstudentdata'] = $this->regStudentsModel->where('studstatus', 'SHS')->where('studisdel', '0')->findAll();
 
         return view('shs/admissionview', $data);
     }

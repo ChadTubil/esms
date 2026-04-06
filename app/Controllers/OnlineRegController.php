@@ -4,18 +4,21 @@ namespace App\Controllers;
 use App\Models\RegStudentsModel;
 use App\Models\PaymentTransactionsModel;
 use App\Models\PermanentRecordModel;
+use App\Models\SHSPermanentRecordModel;
 class OnlineRegController extends BaseController
 {
     public $session;
     public $regstudModel;
     public $paymentransactionsModel;
     public $permanentrecordModel;
+    public $shspermanentrecordModel;
     public function __construct() {
         helper('form');
         $this->session = session();
         $this->regstudModel = new RegStudentsModel();
         $this->paymentransactionsModel = new PaymentTransactionsModel();
         $this->permanentrecordModel = new PermanentRecordModel();
+        $this->shspermanentrecordModel = new SHSPermanentRecordModel();
     }
     public function index()
     {
@@ -336,7 +339,7 @@ class OnlineRegController extends BaseController
                         'jhschool' => $this->request->getVar('jhsschool'),
                         'jhyeargraduate' => $this->request->getVar('jhsyear'),
                     ];
-                    $this->permanentrecordModel->save($PRdata);
+                    $this->shspermanentrecordModel->save($PRdata);
                     $PTdata = [
                         'paymentreference' => $referenceNumber,
                         'studfullname' => $lastname.', '.$firstname.' '.$middlename,
