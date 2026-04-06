@@ -245,6 +245,28 @@ $routes->get('cashier-dailytransactions', 'CashierController::cashierDailyTransa
 $routes->get('cashier-dailytransactions-pdf', 'CashierController::cashierDailyTransactionsPDF');
 $routes->post('cashier-dailytransactions-update/(:segment)', 'CashierController::cashierDailyTransactionsUpdate/$1');
 
+// SHS DEPARTMENT
+$routes->get('shs-cluster', 'SHSDepartmentController::cluster');
+$routes->post('shs-cluster', 'SHSDepartmentController::cluster');
+$routes->add('shs-cluster/delete/(:segment)', 'SHSDepartmentController::deletecluster/$1');
+$routes->post('shs-cluster/update/(:segment)', 'SHSDepartmentController::updatecluster/$1');
+$routes->get('shs-subjects', 'SHSDepartmentController::subjects');
+$routes->post('shs-subjects', 'SHSDepartmentController::subjects');
+$routes->add('shs-subjects/delete/(:segment)', 'SHSDepartmentController::deletesubjects/$1');
+$routes->post('shs-subjects/update/(:segment)', 'SHSDepartmentController::updatesubjects/$1');
+$routes->get('shs-curriculum', 'SHSDepartmentController::curriculum');
+$routes->post('shs-curriculum', 'SHSDepartmentController::curriculum');
+$routes->add('shs-curriculum/delete/(:segment)', 'SHSDepartmentController::deletecurriculum/$1');
+$routes->post('shs-curriculum/update/(:segment)', 'SHSDepartmentController::updatecurriculum/$1');
+$routes->get('shs-curriculum/setup/(:segment)', 'SHSDepartmentController::setupcurriculum/$1');
+$routes->post('shs-curriculum/setup/(:segment)', 'SHSDepartmentController::setupcurriculum/$1');
+$routes->get('shs-registration-select', 'SHSDepartmentController::registrationselect');
+$routes->get('shs-registerstudent', 'SHSDepartmentController::newregistration');
+$routes->get('shs-registeredstudent', 'SHSDepartmentController::registeredstudent');
+$routes->get('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
+
+$routes->get('shs-admission', 'SHSDepartmentController::admission');
+
 $routes->set404Override(function() {
     echo view('errors/custom_error');
 });

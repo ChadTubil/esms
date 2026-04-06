@@ -340,7 +340,7 @@ class GradeController extends BaseController
                     </tr>
                     <tr>
                         <td></td> 
-                        <td><h3 style="color: red;"><strong>GWA: '.round($SEMXUNIT / $SUMUNITS, 2).'</strong></h3></td>
+                        <td><h3 style="color: red;"><strong>GWA: '.round($SEMXUNIT / $SUMUNITS, 0).'</strong></h3></td>
                     </tr>
             </table><br><br>
 
