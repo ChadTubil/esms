@@ -17,6 +17,10 @@ use App\Models\StudentAccountsModel;
 use App\Models\StudentAccountAssessmentModel;
 use App\Models\PaymentTransactionsModel;
 use App\Models\PaymentAllocationModel;
+use App\Models\ClustersModel;
+use App\Models\SHSRatesModel;
+use App\Models\SHSRateDuesModel;
+use App\Models\SHSRateOtherFeesModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -35,6 +39,10 @@ class AccountingController extends BaseController
     public $studentAccountsAssessmentModel;
     public $paymentransactionsModel;
     public $paymentAllocationModel;
+    public $clustersModel;
+    public $shsRatesModel;
+    public $shsRateDuesModel;
+    public $shsRateOtherFeesModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -54,10 +62,13 @@ class AccountingController extends BaseController
         $this->studentAccountsAssessmentModel = new StudentAccountAssessmentModel();
         $this->paymentransactionsModel = new PaymentTransactionsModel();
         $this->paymentAllocationModel = new PaymentAllocationModel();
+        $this->clustersModel = new ClustersModel();
+        $this->shsRatesModel = new SHSRatesModel();
+        $this->shsRateDuesModel = new SHSRateDuesModel();
+        $this->shsRateOtherFeesModel = new SHSRateOtherFeesModel();
         $this->session = session();
     }
-    public function index()
-    {
+    public function index() {
         $data = [
             'page_title' => 'Holy Cross College | College Rates',
             'page_heading' => 'COLLEGE RATES! ',
@@ -427,8 +438,7 @@ class AccountingController extends BaseController
 
         return view('accounting/studentaccountssearchview', $data);
     }
-    public function viewStudentAccounts($id=null)
-    {
+    public function viewStudentAccounts($id=null){
         $data = [
             'page_title' => 'Holy Cross College | Student Accounts',
             'page_heading' => 'STUDENT ACCOUNTS MANAGEMENT',
@@ -445,8 +455,7 @@ class AccountingController extends BaseController
 
         return view('accounting/studentaccountsview', $data);
     }
-    public function viewStudentAccountsDetails($studentno=null, $studentaccountno=null)
-    {
+    public function viewStudentAccountsDetails($studentno=null, $studentaccountno=null) {
         $data = [
             'page_title' => 'Holy Cross College | Student Accounts',
             'page_heading' => 'STUDENT ACCOUNTS MANAGEMENT',
@@ -513,8 +522,7 @@ class AccountingController extends BaseController
             ->findAll();
         return view('accounting/studentaccountassessmentview', $data);
     }
-    public function viewStudentAccountsDetailsAdd()
-    {
+    public function viewStudentAccountsDetailsAdd(){
         if($this->request->is('post')) {
             $studentno = $this->request->getVar('studentno');
             $studentaccountno = $this->request->getVar('accountno');
@@ -560,8 +568,7 @@ class AccountingController extends BaseController
             
         }
     }
-    public function viewStudentAccountsDetailsPayment($studentno=null, $studentaccountno=null, $sadid=null)
-    {
+    public function viewStudentAccountsDetailsPayment($studentno=null, $studentaccountno=null, $sadid=null){
         $uid = session()->get('logged_user');
         $userdata = $this->usersModel->where('uid', $uid)->findAll();
         foreach($userdata as $userd){
@@ -632,6 +639,150 @@ class AccountingController extends BaseController
                 session()->setTempdata('message','Payment added successfully', 3);
                 return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
             }
+        }
+    }
+    public function shsRates() {
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Rates',
+            'page_heading' => 'SHS RATES! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
+        $data['shsratesdata'] = $this->shsRatesModel
+        ->select('rates_shs.*, clusters.*')
+        ->join('clusters', 'rates_shs.cluster = clusters.cluid')
+        ->where('rates_shs.isdel', '0')->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'level' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Level is required.',
+                    ],
+                ],
+                'cluster' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Cluster is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $data = [
+                    'sy' => $this->request->getVar('sy'),
+                    'level' => $this->request->getVar('level'),
+                    'cluster' => $this->request->getVar('cluster'),
+                ];
+                $this->shsRatesModel->save($data);
+                session()->setTempdata('success','Rate added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('accounting/shs-rates', $data);
+    }
+    public function shsratesSetup($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Rates Setup',
+            'page_heading' => 'SHS RATES SETUP! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['shsratesdata'] = $this->shsRatesModel
+        ->select('rates_shs.*, clusters.*')
+        ->join('clusters', 'rates_shs.cluster = clusters.cluid')
+        ->where('rates_shs.isdel', '0')->findAll();
+
+        $data['shsrddata'] = $this->shsRateDuesModel->where('rateid', $id)->findAll();
+        $data['shsrofdata'] = $this->shsRateOtherFeesModel->where('rateid', $id)->findAll();
+
+        if($this->request->is('post')) {
+            $data = [
+                'tf' => $this->request->getVar('tf'),
+            ];
+            $this->shsRatesModel->where('rateid', $id)->update($id, $data);
+            session()->setTempdata('addsuccess','Save successfully', 3);
+            return redirect()->to(current_url());
+        }
+
+        return view('accounting/shs-ratessetup', $data);
+    }
+    public function shsratesDues($id=null) {
+        if($this->request->is('post')) {
+            $numberofdues = $this->shsRateDuesModel->where('rateid', $id)->countAllResults();
+            $newcount = $numberofdues + 1;
+            // print_r($newcount);
+            $data = [
+                'rateid' => $id,
+                'name' => "Due Date ".$newcount,
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->shsRateDuesModel->save($data);
+            return redirect()->to(base_url()."shs-rates/setup/".$id);
+        }
+    }
+    public function shsratesRof($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'rateid' => $id,
+                'name' => $this->request->getVar('ratename'),
+                'otherfees' => $this->request->getVar('otherfees'),
+            ];
+
+            $this->shsRateOtherFeesModel->save($data);
+            return redirect()->to(base_url()."shs-rates/setup/".$id);
+        }
+    }
+    public function shsratesDuesUpdate($id=null) {
+        $LocateRateID = $this->shsRateDuesModel->where('rdid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
+        if($this->request->is('post')) {
+            $data = [
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->shsRateDuesModel->where('rdid', $id)->update($id, $data);
+            return redirect()->to(base_url()."shs-rates/setup/".$rateID);
+        }
+    }
+    public function shsratesRofUpdate($id=null) {
+        $LocateRateID = $this->shsRateOtherFeesModel->where('rofid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
+        if($this->request->is('post')) {
+            $data = [
+                'name' => $this->request->getVar('name'),
+                'otherfees' => $this->request->getVar('otherfee'),
+            ];
+
+            $this->shsRateOtherFeesModel->where('rofid', $id)->update($id, $data);
+            return redirect()->to(base_url()."shs-rates/setup/".$rateID);
         }
     }
 }

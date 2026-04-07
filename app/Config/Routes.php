@@ -213,6 +213,14 @@ $routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingC
 $routes->post('student-accounts/view/details-add', 'AccountingController::viewStudentAccountsDetailsAdd');
 $routes->post('student-accounts/view/details-payment/(:segment)/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2/$3');
 $routes->add('student-accounts/view/details-print/(:segment)', 'AccountingController::viewStudentAccountsDetailsPrint/$1');
+$routes->get('shs-rates', 'AccountingController::shsRates');
+$routes->post('shs-rates', 'AccountingController::shsRates');
+$routes->get('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
+$routes->post('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
+$routes->post('shs-rates/dues/(:segment)', 'AccountingController::shsratesDues/$1');
+$routes->post('shs-rates/rof/(:segment)', 'AccountingController::shsratesRof/$1');
+$routes->post('shs-rates/dues/update/(:segment)', 'AccountingController::shsratesDuesUpdate/$1');
+$routes->post('shs-rates/rof/update/(:segment)', 'AccountingController::shsratesRofUpdate/$1');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');
@@ -260,12 +268,21 @@ $routes->add('shs-curriculum/delete/(:segment)', 'SHSDepartmentController::delet
 $routes->post('shs-curriculum/update/(:segment)', 'SHSDepartmentController::updatecurriculum/$1');
 $routes->get('shs-curriculum/setup/(:segment)', 'SHSDepartmentController::setupcurriculum/$1');
 $routes->post('shs-curriculum/setup/(:segment)', 'SHSDepartmentController::setupcurriculum/$1');
+$routes->get('shs-sections', 'SHSDepartmentController::sections');
+$routes->post('shs-sections', 'SHSDepartmentController::sections');
+$routes->add('shs-sections/delete/(:segment)', 'SHSDepartmentController::deletesections/$1');
+$routes->post('shs-sections/update/(:segment)', 'SHSDepartmentController::updatesections/$1');
 $routes->get('shs-registration-select', 'SHSDepartmentController::registrationselect');
 $routes->get('shs-registerstudent', 'SHSDepartmentController::newregistration');
 $routes->get('shs-registeredstudent', 'SHSDepartmentController::registeredstudent');
 $routes->add('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
-
 $routes->get('shs-admission', 'SHSDepartmentController::admission');
+$routes->get('shs-admission/process/(:segment)', 'SHSDepartmentController::admissionProcess/$1');
+$routes->post('shs-admission/process/(:segment)', 'SHSDepartmentController::admissionProcess/$1');
+$routes->get('shs-admission/process-cancel/(:segment)', 'SHSDepartmentController::admissionProcessCancel/$1');
+$routes->add('shs-admission/process-generate/(:segment)', 'SHSDepartmentController::admissionProcessGenerate/$1');
+$routes->get('shs-advising', 'SHSDepartmentController::advising');
+$routes->get('shs-advising/process/(:segment)', 'SHSDepartmentController::advisingProcess/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

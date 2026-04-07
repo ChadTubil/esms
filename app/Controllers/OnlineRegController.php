@@ -327,13 +327,8 @@ class OnlineRegController extends BaseController
                         'studstatus' => "SHS",
                     ];
                     $this->regstudModel->save($data);
-                    $regdata = $this->regstudModel->where('studln', $lastname)->where('studfn', $firstname)->where('studmn', $middlename)
-                    ->findAll();
-                    foreach($regdata as $rdata){
-                        $studid = $rdata['studid'];
-                    }
                     $PRdata = [
-                        'studid' => $studid,
+                        'studfullname' => $lastname.', '.$firstname.' '.$middlename,
                         'eschool' => $this->request->getVar('elementaryschool'),
                         'eyeargraduate' => $this->request->getVar('elementaryyear'),
                         'jhschool' => $this->request->getVar('jhsschool'),

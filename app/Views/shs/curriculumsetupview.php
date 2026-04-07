@@ -22,7 +22,7 @@
                 <div class="card">
                     <div class="card-body">
                         <?php foreach($shscurriculumdata as $shscurriculumd): ?>
-                            <h1><?= $shscurriculumd['cluster']; ?> - <?= $shscurriculumd['sy']; ?> - <?= $shscurriculumd['level']; ?></h1>
+                            <h1><?= $shscurriculumd['code']; ?> - <?= $shscurriculumd['sy']; ?> - <?= $shscurriculumd['level']; ?></h1>
                         <?php endforeach; ?>
                         <h5>CURRICULUM</h5>
                         <br>

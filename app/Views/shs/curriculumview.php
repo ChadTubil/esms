@@ -38,7 +38,7 @@
                                     <select name="cluster" class="form-select" id="Course" style="width: 100%;">
                                         <option selected="" disabled=""></option>
                                         <?php foreach ($clusterdata as $clusterd): ?>
-                                            <option value="<?php echo $clusterd['code']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['cluster']; ?></option>
+                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['cluster']; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -102,7 +102,7 @@
                                 <tbody>
                                     <?php foreach($shscurriculumdata as $shscurriculumd):?>
                                         <tr>
-                                            <td><?= $shscurriculumd['cluster']; ?></td>
+                                            <td><?= $shscurriculumd['code']; ?></td>
                                             <td><?= $shscurriculumd['level']; ?></td>
                                             <td><?= $shscurriculumd['sy']; ?></td>
                                             <td>

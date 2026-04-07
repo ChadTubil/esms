@@ -247,7 +247,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>assessment">
+                                    <a class="nav-link " href="<?= base_url(); ?>shs-advising">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -629,7 +629,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>rates">
+                                    <a class="nav-link " href="<?= base_url(); ?>shs-rates">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -638,7 +638,7 @@
                                             </svg>
                                         </i>
                                         <i class="sidenav-mini-icon"> SHS </i>
-                                        <span class="item-name"> Senior High School </span>
+                                        <span class="item-name"> SHS </span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -650,21 +650,8 @@
                                                 </g>
                                             </svg>
                                         </i>
-                                        <i class="sidenav-mini-icon"> JHS </i>
-                                        <span class="item-name"> Junior High School </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>rates">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> GS </i>
-                                        <span class="item-name"> Grade School </span>
+                                        <i class="sidenav-mini-icon"> IBED </i>
+                                        <span class="item-name"> IBED </span>
                                     </a>
                                 </li>
                             </ul>
@@ -914,6 +901,19 @@
                                         </i>
                                         <i class="sidenav-mini-icon"> S </i>
                                         <span class="item-name"> Subjects </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>shs-sections">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> S </i>
+                                        <span class="item-name"> Sections </span>
                                     </a>
                                 </li>
                             </ul>

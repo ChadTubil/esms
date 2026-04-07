@@ -7,7 +7,7 @@ class SHSPermanentRecordModel extends Model
     protected $table = 'permanentrecord_shs';
     protected $primaryKey = 'prid';
     protected $allowedFields = [
-        'studid', 'eschool', 'eyeargraduate',
+        'studid', 'studfullname', 'eschool', 'eyeargraduate',
         'jhschool', 'jhyeargraduate', 'shschool', 'shyeargraduate',
     ];
     protected $returnType = 'array';
