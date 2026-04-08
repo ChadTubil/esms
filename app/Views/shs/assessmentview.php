@@ -22,7 +22,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
-                            <h4 class="card-title">SELECT STUDENT TO PROCESS ADVISING</h4>
+                            <h4 class="card-title">SELECT STUDENT TO ASSESS</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -87,24 +87,18 @@
                                             <td style="text-align: center;"><?php echo $formattedDate = date('F j, Y', strtotime($enrollmenthistoryshsd['date'])); ?>
                                             </td>
                                             <td style="text-align: center;">
-                                                <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="ADVISE"
-                                                    onclick="window.location.href='<?= base_url(); ?>shs-advising/process/<?= $enrollmenthistoryshsd['studid']; ?>';">
+                                                <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Assessment"
+                                                    onclick="window.location.href='<?= base_url(); ?>shs-assessment/view/<?= $enrollmenthistoryshsd['studid']; ?>';">
                                                     <span class="btn-inner">
-                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M12.0001 8.32739V15.6537" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path d="M15.6668 11.9904H8.3335" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.6857 2H7.31429C4.04762 2 2 4.31208 2 7.58516V16.4148C2 19.6879 4.0381 22 7.31429 22H16.6857C19.9619 22 22 19.6879 22 16.4148V7.58516C22 4.31208 19.9619 2 16.6857 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        </svg> ADVISE
-                                                    </span>
-                                                </a>
-                                                <a class="btn btn-sm btn-icon btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="CANCEL"
-                                                    onclick="window.location.href='<?= base_url(); ?>shs-admission/process-cancel/<?= $enrollmenthistoryshsd['ehid']; ?>'">
-                                                    <span class="btn-inner">
-                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M14.3955 9.59497L9.60352 14.387" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path d="M14.3971 14.3898L9.60107 9.59277" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        </svg> CANCEL                        
+                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                                            <path d="M22.4541 11.3918C22.7819 11.7385 22.7819 12.2615 22.4541 12.6082C21.0124 14.1335 16.8768 18 12 18C7.12317 18 2.98759 14.1335 1.54586 12.6082C1.21811 12.2615 1.21811 11.7385 1.54586 11.3918C2.98759 9.86647 7.12317 6 12 6C16.8768 6 21.0124 9.86647 22.4541 11.3918Z" stroke="currentColor"></path>                                    
+                                                            <circle cx="12" cy="12" r="5" stroke="currentColor"></circle>                                    
+                                                            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>                                    
+                                                            <mask mask-type="alpha" maskUnits="userSpaceOnUse" x="9" y="9" width="6" height="6">                                    
+                                                                <circle cx="12" cy="12" r="3" fill="currentColor"></circle>                                    
+                                                            </mask>                                    
+                                                            <circle opacity="0.89" cx="13.5" cy="10.5" r="1.5" fill="white"></circle>                                    
+                                                        </svg> VIEW
                                                     </span>
                                                 </a>
                                             </td>

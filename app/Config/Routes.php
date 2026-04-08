@@ -283,6 +283,11 @@ $routes->get('shs-admission/process-cancel/(:segment)', 'SHSDepartmentController
 $routes->add('shs-admission/process-generate/(:segment)', 'SHSDepartmentController::admissionProcessGenerate/$1');
 $routes->get('shs-advising', 'SHSDepartmentController::advising');
 $routes->get('shs-advising/process/(:segment)', 'SHSDepartmentController::advisingProcess/$1');
+$routes->post('shs-advising/process/(:segment)', 'SHSDepartmentController::advisingProcess/$1');
+$routes->add('shs-advising/submit-account/(:segment)', 'SHSDepartmentController::advisingSubmitAccount/$1');
+$routes->get('shs-assessment', 'SHSDepartmentController::assessment');
+$routes->get('shs-assessment/view/(:segment)', 'SHSDepartmentController::assessmentView/$1');
+$routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assessmentPrint/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

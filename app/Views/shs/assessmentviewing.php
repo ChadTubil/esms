@@ -21,138 +21,34 @@
             <div class="col-lg-12 col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
-                        <div class="header-title" >
-                            <h4 class="card-title">ADVISING PROCESS</h4>
+                        <div class="header-title">
+                            <h4 class="card-title">ACTION</h4>
                         </div>
                     </div>
                     <div class="card-body">
-                        <?php if(session()->getTempdata('success')) :?>
-                                <div class="alert alert-success">
-                                    <?= session()->getTempdata('success');?>
-                                </div>
-                            <?php endif; ?>
-                        <div class="row">
-                            <?php foreach($enrollmenthistoryshsdata as $stud): ?>
-                            <div class="col-lg-12 col-sm-12">
-                                <h5>NAME: <strong><?= $stud['studfullname']; ?></strong></h5>
-                                <br>
-                                <?= form_open('shs-advising/process/'.$stud['studid']); ?>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">STUDENT NO.</label>
-                                                <input type="text" name="studnum" class="form-control" value="<?= $stud['studentno']; ?>" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">SCHOOL YEAR</label>
-                                                <input type="text" name="sy" class="form-control" value="<?= $stud['sy']; ?>" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">LEVEL</label>
-                                                <input type="text" name="level" class="form-control" value="<?= $stud['level']; ?>" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">CLUSTER</label>
-                                                <input type="text" name="cluster" class="form-control" value="<?= $stud['code']; ?>" readonly>
-                                            </div>
-                                        </div>
-                                        <?php if(!empty($shsassessmentdata)): ?>
-                                            
-                                        <?php else: ?>
-                                            <div class="col-lg-3 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">CURRICULUM</label>
-                                                    <select name="curriculum" class="form-select" required>
-                                                        <?php foreach($shscurriculumdata as $shscurriculumd): ?>
-                                                            <option value="<?= $shscurriculumd['currid']; ?>"><?= $shscurriculumd['code']; ?> - <?= $shscurriculumd['sy']; ?> <?= $shscurriculumd['level']; ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        
-                                            <div class="col-lg-3 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">SECTION</label>
-                                                    <select name="section" class="form-select" required>
-                                                        <?php foreach($shssectiondata as $shssectiond): ?>
-                                                            <option value="<?= $shssectiond['secid']; ?>"><?= $shssectiond['section']; ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if(empty($shsassessmentdata)): ?>
-                                            <div class="col-lg-3 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">ACTION</label><br>
-                                                    <button type="submit" class="btn btn-success" style="width: 100%;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="PROCESS">
-                                                        <span class="btn-inner">
-                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path d="M12.0001 8.32739V15.6537" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path d="M15.6668 11.9904H8.3335" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.6857 2H7.31429C4.04762 2 2 4.31208 2 7.58516V16.4148C2 19.6879 4.0381 22 7.31429 22H16.6857C19.9619 22 22 19.6879 22 16.4148V7.58516C22 4.31208 19.9619 2 16.6857 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            </svg> PROCESS
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <?= form_close(); ?>
-                                        <?php else: ?>
-                                            <div class="col-lg-3 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">ACTION</label><br>
-                                                    <a class="btn btn-success" style="width: 100%;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE"
-                                                        onclick="window.location.href='<?= base_url(); ?>shs-advising/submit-account/<?= $stud['studid']; ?>'">
-                                                        <span class="btn-inner">
-                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
-                                                                <path d="M8.43994 12.0002L10.8139 14.3732L15.5599 9.6272" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
-                                                            </svg> FINALIZE  
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                    
-                                    <?php if(!empty($shsassessmentdata)): ?>
-                                    <?php else: ?>
-                                        <div class="col-lg-3 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="form-label">ACTION</label><br>
-                                                <a class="btn btn-danger" style="width: 100%;" data-bs-toggle="tooltip" data-bs-placement="top" title="CANCEL"
-                                                    onclick="window.location.href='<?= base_url(); ?>shs-admission/process-cancel/<?= $stud['ehid']; ?>'">
-                                                    <span class="btn-inner">
-                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M14.3955 9.59497L9.60352 14.387" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path d="M14.3971 14.3898L9.60107 9.59277" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                        </svg> CANCEL                        
-                                                    </span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
+                        <?php foreach($enrollmenthistoryshsdata as $ehshsd): ?>
+                            <a class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="PRINT COR"
+                            
+                            href="<?= base_url('shs-assessment/print/'.$ehshsd['studid']) ?>" 
+                            target="_blank">
+                                <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7379 2.76175H8.08493C6.00493 2.75375 4.29993 4.41175 4.25093 6.49075V17.2037C4.20493 19.3167 5.87993 21.0677 7.99293 21.1147C8.02393 21.1147 8.05393 21.1157 8.08493 21.1147H16.0739C18.1679 21.0297 19.8179 19.2997 19.8029 17.2037V8.03775L14.7379 2.76175Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                    <path d="M14.4751 2.75V5.659C14.4751 7.079 15.6231 8.23 17.0431 8.234H19.7981" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                    <path d="M14.2882 15.3584H8.88818" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                    <path d="M12.2432 11.606H8.88721" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                </svg> PRINT COR                           
+                            </a>
+                        <?php endforeach; ?>
+                        <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="BACK" onclick="window.history.back();">
+                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                            </svg> BACK                          
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <?php if(empty($shsassessmentdata)): ?>
-            <div class="alert alert-warning">
-                No assessment data found for this student.
-            </div>
-        <?php else: ?>
             <?php foreach($shsassessmentdata as $shsassessd): ?>
                 <div class="row">
                     <div class="col-lg-12 col-sm-12">
@@ -354,7 +250,6 @@
                     </div>
                 </div>
             <?php endforeach; ?>
-        <?php endif; ?>
     </div>
     <!-- End of Page Content -->
 

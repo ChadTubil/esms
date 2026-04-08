@@ -15,6 +15,12 @@ use App\Models\SHSPermanentRecordModel;
 use App\Models\SHSSchoolRecordModel;
 use App\Models\SHSFamilyBackgroundModel;
 use App\Models\SHSSectionsModel;
+use App\Models\SHSAssessmentModel;
+use App\Models\SHSRatesModel;
+use App\Models\SHSRateOtherFeesModel;
+use App\Models\SHSRateDuesModel;
+use App\Models\StudentAccountsModel;
+use TCPDF;
 class SHSDepartmentController extends BaseController
 {
     public $usersModel;
@@ -31,6 +37,11 @@ class SHSDepartmentController extends BaseController
     public $shsSchoolRecordModel;
     public $shsFamilyBackgroundModel;
     public $shsSectionsModel;
+    public $shsAssessmentModel;
+    public $shsRatesModel;
+    public $shsRateOtherFeesModel;
+    public $shsRateDuesModel;
+    public $studentAccountsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -48,6 +59,11 @@ class SHSDepartmentController extends BaseController
         $this->shsSchoolRecordModel = new SHSSchoolRecordModel();
         $this->shsFamilyBackgroundModel = new SHSFamilyBackgroundModel();
         $this->shsSectionsModel = new SHSSectionsModel();
+        $this->shsAssessmentModel = new SHSAssessmentModel();
+        $this->shsRatesModel = new SHSRatesModel();
+        $this->shsRateOtherFeesModel = new SHSRateOtherFeesModel();
+        $this->shsRateDuesModel = new SHSRateDuesModel();
+        $this->studentAccountsModel = new StudentAccountsModel();
         $this->session = session();
     }
     public function cluster(){
@@ -680,6 +696,7 @@ class SHSDepartmentController extends BaseController
             $CLUSTERID = $ehs['cluid'];
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
+            $STUDID = $ehs['studid'];
         }
 
         $data['shscurriculumdata'] = $this->shsCurriculumModel
@@ -698,6 +715,558 @@ class SHSDepartmentController extends BaseController
         ->where('sections_shs.sy', $SY)
         ->findAll();
 
+        if($this->request->is('post')) {
+            $SELECTEDCURRICULUM = $this->request->getVar('curriculum');
+            $SELECTEDSECTION = $this->request->getVar('section');
+            $ADVISINGCHECK = $this->shsAssessmentModel
+            ->where('studid', $STUDID)
+            ->where('sy', $SY)
+            ->where('level', $LEVEL)
+            ->findAll();
+            // print_r($ADVISINGCHECK);
+            if(!empty($ADVISINGCHECK)) {
+                session()->setTempdata('error', 'Student is already assessed!', 2);
+                return redirect()->to(current_url());
+            }else{
+                $shsassessmentdata = [
+                    'studid' => $STUDID,
+                    'sy' => $SY,
+                    'level' => $LEVEL,
+                    'cluster' => $CLUSTERID,
+                    'curriculum' => $SELECTEDCURRICULUM,
+                    'section' => $SELECTEDSECTION,
+                    'date' => date('Y-m-d'),
+                ];
+                // print_r($shsassessmentdata);
+                $this->shsAssessmentModel->save($shsassessmentdata);
+                session()->setTempdata('success', 'Student is processed successfully!', 2);
+                return redirect()->to(current_url());
+            }
+        }
+        $data['shsassessmentdata'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
+        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->findAll();
+
+        // SHS ASSESSED CURRICULUM DATA
+        $data['firstsemester'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '1st Semester')
+        ->findAll();
+        $data['secondsemester'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '2nd Semester')
+        ->findAll();
+
+        //SHS ASSESSED RATE DATA
+        $data['shsratedata'] = $this->shsRatesModel
+        ->where('rates_shs.cluster', $CLUSTERID)
+        ->findAll();
+
+        $data['shsrofdata'] = $this->shsRateOtherFeesModel->findAll();
+        $data['shsrddata'] = $this->shsRateDuesModel->findAll();
+
         return view('shs/advisingviewprocess', $data);
+    }
+    public function advisingSubmitAccount($id=null) {
+        $ASSESSMENTDATACHECKING = $this->shsAssessmentModel
+        ->select('assessment_shs.*, students_shs.*, clusters.*')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->join('clusters', 'clusters.cluid = assessment_shs.cluster')
+        ->where('assessment_shs.studid', $id)
+        ->findAll();
+        foreach($ASSESSMENTDATACHECKING as $adc) {
+            $STUDENTNO = $adc['studentno'];
+            $ASSESSMENTID = $adc['assid'];
+            $SY = $adc['sy'];
+            $CLUSTERID = $adc['code'];
+            $LEVEL = $adc['level'];
+        }
+
+        $studentsaccounts = [
+            'studentno' => $STUDENTNO,
+            'assessmentid' => $ASSESSMENTID,
+            'sy' => $SY,
+            'cluster' => $CLUSTERID,
+            'level' => $LEVEL,
+            'accountstatus' => 'Active',
+            'createddate' => date('Y-m-d'),
+        ];
+
+        $ehshsdata = [
+            'status' => 'Assessed',
+        ];
+        
+        $shsassessment = [
+            'status' => 'Finalized',
+        ];
+
+        $this->shsAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
+        $this->studentAccountsModel->save($studentsaccounts);
+        $this->enrollmentHistorySHSModel->where('studid', $id)->update($id, $ehshsdata);
+        session()->setTempdata('success', 'Student is assessed successfully!', 2);
+        return redirect()->to(base_url()."shs-advising");
+    }
+    public function assessment() {
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Assessment',
+            'page_heading' => 'SHS ASSESSMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
+        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
+        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
+        ->where('enrollmenthistory_shs.status', 'Assessed')->where('enrollmenthistory_shs.isdel', 0)->findAll();
+
+        return view('shs/assessmentview', $data);
+    }
+    public function assessmentView($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Assessment View',
+            'page_heading' => 'SHS ASSESSMENT VIEW!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
+        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
+        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
+        ->where('students_shs.studid', $id)->findAll();
+        foreach($data['enrollmenthistoryshsdata'] as $ehs) {
+            $CLUSTERID = $ehs['cluid'];
+            $LEVEL = $ehs['level'];
+            $SY = $ehs['sy'];
+            $STUDID = $ehs['studid'];
+        }
+        $data['shsassessmentdata'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
+        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->findAll();
+        // SHS ASSESSED CURRICULUM DATA
+        $data['firstsemester'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '1st Semester')
+        ->findAll();
+        $data['secondsemester'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '2nd Semester')
+        ->findAll();
+
+        //SHS ASSESSED RATE DATA
+        $data['shsratedata'] = $this->shsRatesModel
+        ->where('rates_shs.cluster', $CLUSTERID)
+        ->findAll();
+        $data['shsrofdata'] = $this->shsRateOtherFeesModel->findAll();
+        $data['shsrddata'] = $this->shsRateDuesModel->findAll();
+        
+        return view('shs/assessmentviewing', $data);
+    }
+    public function assessmentPrint($id=null) {
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Assessment of Fees');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $enrollmenthistoryshsdata = $this->enrollmentHistorySHSModel
+        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
+        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
+        ->where('students_shs.studid', $id)->findAll();
+        foreach($enrollmenthistoryshsdata as $ehs) {
+            $CLUSTERID = $ehs['cluid'];
+            $LEVEL = $ehs['level'];
+            $SY = $ehs['sy'];
+            $STUDID = $ehs['studid'];
+            $CLUSTER = $ehs['code'];
+        }
+        $shsassessmentdata = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
+        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->findAll();
+        foreach($shsassessmentdata as $sad) {
+            $STUDENTNO = $sad['studentno'];
+            $SY = $sad['sy'];
+            $STUDFULLNAME = $sad['studfullname'];
+            $LEVEL = $sad['level'];
+            $BARANGAY = $sad['studstbarangay'];
+            $MUNICIPALITY = $sad['studcity'];
+            $PROVINCE = $sad['studprovince'];
+            $ADDRESS = $BARANGAY .' '. $MUNICIPALITY .', '. $PROVINCE;
+            $SECTION = $sad['section'];
+        }
+        
+        // SHS ASSESSED CURRICULUM DATA
+        $firstsemester = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '1st Semester')
+        ->findAll();
+        $secondsemester = $this->shsAssessmentModel
+        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
+        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
+        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
+        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
+        ->where('assessment_shs.studid', $STUDID)
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('currdata_shs.sem', '2nd Semester')
+        ->findAll();
+
+        //SHS ASSESSED RATE DATA
+        $shsratedata = $this->shsRatesModel
+        ->where('rates_shs.cluster', $CLUSTERID)
+        ->findAll();
+        
+        $shsrofdata = $this->shsRateOtherFeesModel->findAll();
+        $shsrddata = $this->shsRateDuesModel->findAll();
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="width: 60%;"></td>
+                    <td><h3>SENIOR HIGH SCHOOL DEPARTMENT</h3></td>
+                </tr>   
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">ASSESSMENT OF FEES</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 65%;">STUDENT No.: <strong>'. $STUDENTNO .' </strong></td>
+                    <td>SCHOOL YEAR: <strong>'. $SY .'</strong></td>
+                </tr>
+                <tr>
+                    <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
+                    <td>LEVEL: <strong>'. $LEVEL .'</strong></td>
+                </tr>
+                <tr>
+                    <td>CLUSTER: <strong>'. strtoupper($CLUSTER) .'</strong></td>
+                    <td>SECTION: <strong>'. $SECTION .'</strong></td>
+                </tr>
+                <tr>
+                    <td>ADDRESS: <strong>'. strtoupper($ADDRESS) .'</strong></td>
+                    
+                </tr>
+            </table><br><br>
+
+            <table border="1" style="width: 100%; font-size: 10px;">
+                <tr>
+                    <td style="text-align: center;"><strong>FIRST SEMESTER</strong></td>
+                </tr>
+                <thead>
+                    <tr>
+                        <th style="width: 20%;text-align: center;"><strong>GROUPING</strong></th>
+                        <th style="width: 30%;text-align: center;"><strong>CODE</strong></th>
+                        <th style="width: 50%;text-align: center;"><strong>SUBJECT</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        foreach($firstsemester as $fs){
+            $TYPE = $fs['type'];
+            $CODE = $fs['code'];
+            $SUBJECT = $fs['subject'];
+            $html .= '<tr>
+                    <td style="width: 20%; text-align: left; font-size: 10px;">'.$TYPE.'</td>
+                    <td style="width: 30%; text-align: center; font-size: 10px;">'.$CODE.' </td>
+                    <td style="width: 50%; text-align: left; font-size: 10px;">'.$SUBJECT.'</td>
+                </tr>';
+        }
+        $html .='
+                </tbody>
+            </table><br><br>
+            <table border="1" style="width: 100%; font-size: 10px;">
+                <tr>
+                    <td style="text-align: center;"><strong>SECOND SEMESTER</strong></td>
+                </tr>
+                <thead>
+                    <tr>
+                        <th style="width: 20%;text-align: center;"><strong>GROUPING</strong></th>
+                        <th style="width: 30%;text-align: center;"><strong>CODE</strong></th>
+                        <th style="width: 50%;text-align: center;"><strong>SUBJECT</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        foreach($secondsemester as $ss){
+            $STYPE = $ss['type'];
+            $SCODE = $ss['code'];
+            $SSUBJECT = $ss['subject'];
+            $html .= '<tr>
+                    <td style="width: 20%; text-align: left; font-size: 10px;">'.$STYPE.'</td>
+                    <td style="width: 30%; text-align: center; font-size: 10px;">'.$SCODE.' </td>
+                    <td style="width: 50%; text-align: left; font-size: 10px;">'.$SSUBJECT.'</td>
+                </tr>';
+        }
+        foreach($shsratedata as $shsrated){
+            $TF = $shsrated['tf'];
+        }
+        $html .='
+                </tbody>
+            </table><br><br>
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="width: 50%;">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;"><strong>FEES:</strong></td>
+                                    </tr><br>
+                                    <tr>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;">Tuition Fee</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: left; font-size: 10px;">Tuition</td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($TF, 2).'</strong></td>
+                                        <td style="width: 5%;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: left; font-size: 10px;">QVR (Public)</td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;"><strong>-'.number_format($TF, 2).'</strong></td>
+                                        <td style="width: 5%;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;">Sub Total</td>
+                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
+                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>0.00</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table><br><br>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;">Miscellaneous Fees</td>
+                                    </tr>';
+                                    foreach($shsrofdata as $shsrofd){
+                                        if($shsrofd['rateid'] == $shsrated['rateid']){
+                                            $NAME = $shsrofd['name'];
+                                            $AMOUNT = $shsrofd['otherfees'];
+                                            $totalotherfees = 0;
+                                            foreach($shsrofdata as $shsrofd) {
+                                                if($shsrofd['rateid'] == $shsrated['rateid']) {
+                                                    $totalotherfees += $shsrofd['otherfees'];
+                                                }
+                                            }
+
+                                            $html .= '<tr>
+                                                <td style="width: 5%;"></td>
+                                                <td style="width: 45%; text-align: left; font-size: 10px;">'.$NAME.'</td>
+                                                <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($AMOUNT, 2).'</strong></td>
+                                                <td style="width: 5%;"></td>
+                                            </tr>';
+                                        }
+                                    }
+                            $html .='<tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;">Sub Total</td>
+                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
+                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>'.number_format($totalotherfees, 2).'</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="width: 50%;">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;"><strong>INSTALLMENT SCHEDULE:</strong></td>
+                                    </tr><br>';
+                                    foreach($shsrddata as $shsrdd){
+                                        if($shsrdd['rateid'] == $shsrated['rateid']){
+                                            $DNAME = $shsrdd['name'];
+                                            $DDATE = $shsrdd['due'];
+
+                                            $html .='<tr>
+                                                <td style="width: 5%;"></td>
+                                                <td style="width: 45%; text-align: left; font-size: 10px;">'.$DNAME.'</td>
+                                                <td style="width: 45%; text-align: left; font-size: 10px;"><strong>'.date("F j, Y", strtotime($DDATE)).'</strong></td>
+                                                <td style="width: 5%;"></td>
+                                            </tr>';
+                                        }
+                                    }
+                            $html .='</tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <br>
+            <br>
+            <br>';
+            $html .= '<table style="width: 100%;">
+            <br>
+            
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%; text-align: left;"><p style="font-size: 10px;">SIGNATURE OVER STUDENTS PRINTED NAME</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table  style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">REGISTRAR</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
+                        <br>
+                        <table  style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">CASHIER</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br>';
+        
+        $html .='
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center;">
+                            <p style="font-size: 6px;">THIS IS NOT OFFICIAL UNLESS SIGNED BY THE REGISTRAR</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        ';
+
+
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($STUDFULLNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
     }
 }
