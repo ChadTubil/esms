@@ -713,7 +713,7 @@ class AccountingController extends BaseController
         $data['shsratesdata'] = $this->shsRatesModel
         ->select('rates_shs.*, clusters.*')
         ->join('clusters', 'rates_shs.cluster = clusters.cluid')
-        ->where('rates_shs.isdel', '0')->findAll();
+        ->where('rates_shs.rateid', $id)->findAll();
 
         $data['shsrddata'] = $this->shsRateDuesModel->where('rateid', $id)->findAll();
         $data['shsrofdata'] = $this->shsRateOtherFeesModel->where('rateid', $id)->findAll();

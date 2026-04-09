@@ -363,7 +363,7 @@ class SHSDepartmentController extends BaseController
         if($this->request->is('post')) {
             $rules = [
                 'section' => [
-                    'rules' => 'required|is_unique[sections.section]',
+                    'rules' => 'required|is_unique[sections_shs.section]',
                     'errors' => [
                         'required' => 'Section is required.',
                         'is_unique' => 'This section is already exists.'
@@ -443,8 +443,8 @@ class SHSDepartmentController extends BaseController
 
         return view('shs/registrationselectview', $data);
     }
-    public function newregistration(){
-
+    public function oldstudent(){
+        
     }
     public function registeredstudent(){
         $data = [
@@ -779,9 +779,12 @@ class SHSDepartmentController extends BaseController
         $data['shsratedata'] = $this->shsRatesModel
         ->where('rates_shs.cluster', $CLUSTERID)
         ->findAll();
+        foreach($data['shsratedata'] as $rates){
+            $RATEID = $rates['rateid'];
+        }
 
-        $data['shsrofdata'] = $this->shsRateOtherFeesModel->findAll();
-        $data['shsrddata'] = $this->shsRateDuesModel->findAll();
+        $data['shsrofdata'] = $this->shsRateOtherFeesModel->where('rateid', $RATEID)->findAll();
+        $data['shsrddata'] = $this->shsRateDuesModel->where('rateid', $RATEID)->findAll();
 
         return view('shs/advisingviewprocess', $data);
     }
@@ -809,6 +812,14 @@ class SHSDepartmentController extends BaseController
             'accountstatus' => 'Active',
             'createddate' => date('Y-m-d'),
         ];
+        $FINDEHSHS = $this->enrollmentHistorySHSModel
+        ->where('studid', $id)
+        ->where('sy', $SY)
+        ->where('level', $LEVEL)
+        ->findAll();
+        foreach($FINDEHSHS as $findehshs){
+            $STUDENTID = $findehshs['studid'];
+        }
 
         $ehshsdata = [
             'status' => 'Assessed',
@@ -820,7 +831,7 @@ class SHSDepartmentController extends BaseController
 
         $this->shsAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
         $this->studentAccountsModel->save($studentsaccounts);
-        $this->enrollmentHistorySHSModel->where('studid', $id)->update($id, $ehshsdata);
+        $this->enrollmentHistorySHSModel->where('studid', $STUDENTID)->update($STUDENTID, $ehshsdata);
         session()->setTempdata('success', 'Student is assessed successfully!', 2);
         return redirect()->to(base_url()."shs-advising");
     }
@@ -1268,5 +1279,13 @@ class SHSDepartmentController extends BaseController
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
             ->setBody($pdfContent);
+    }
+    public function assessmentApproved($id=null) {
+        $ehshsdata = [
+            'status' => 'Payment',
+        ];
+        $this->enrollmentHistorySHSModel->where('ehid', $id)->update($id, $ehshsdata);
+        session()->setTempdata('success', 'Student is approved!', 2);
+        return redirect()->to(base_url()."shs-assessment");
     }
 }

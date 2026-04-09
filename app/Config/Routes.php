@@ -26,6 +26,20 @@ $routes->get('online-registration-2', 'OnlineRegController::stage2');
     $routes->post('online-registration-college', 'OnlineRegController::collegeregistration');
 $routes->get('online-registration-3', 'OnlineRegController::stage3');
 
+// KIOSK REGISTRATION
+$routes->get('kiosk-registration', 'OnlineRegController::kiosk1');
+$routes->get('kiosk-registration-2', 'OnlineRegController::kiosk2');
+    // GS
+    $routes->get('kiosk-registration-gs', 'OnlineRegController::kioskgsregistration');
+    $routes->post('kiosk-registration-gs', 'OnlineRegController::kioskgsregistration');
+    // SHS
+    $routes->get('kiosk-registration-shs', 'OnlineRegController::kioskshsregistration');
+    $routes->post('kiosk-registration-shs', 'OnlineRegController::kioskshsregistration');
+    // COLLEGE
+    $routes->get('kiosk-registration-college', 'OnlineRegController::kioskcollegeregistration');
+    $routes->post('kiosk-registration-college', 'OnlineRegController::kioskcollegeregistration');
+$routes->get('kiosk-registration-3', 'OnlineRegController::kiosk3');
+
 // ATTENDANCE
 $routes->get('biometrics', 'AttendanceController::index');
 $routes->post('biometrics', 'AttendanceController::index');
@@ -273,7 +287,7 @@ $routes->post('shs-sections', 'SHSDepartmentController::sections');
 $routes->add('shs-sections/delete/(:segment)', 'SHSDepartmentController::deletesections/$1');
 $routes->post('shs-sections/update/(:segment)', 'SHSDepartmentController::updatesections/$1');
 $routes->get('shs-registration-select', 'SHSDepartmentController::registrationselect');
-$routes->get('shs-registerstudent', 'SHSDepartmentController::newregistration');
+$routes->get('shs-oldstudent', 'SHSDepartmentController::oldstudent');
 $routes->get('shs-registeredstudent', 'SHSDepartmentController::registeredstudent');
 $routes->add('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
 $routes->get('shs-admission', 'SHSDepartmentController::admission');
@@ -288,6 +302,7 @@ $routes->add('shs-advising/submit-account/(:segment)', 'SHSDepartmentController:
 $routes->get('shs-assessment', 'SHSDepartmentController::assessment');
 $routes->get('shs-assessment/view/(:segment)', 'SHSDepartmentController::assessmentView/$1');
 $routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assessmentPrint/$1');
+$routes->add('shs-assessment/aprroved/(:segment)', 'SHSDepartmentController::assessmentApproved/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

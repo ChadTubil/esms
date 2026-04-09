@@ -29,11 +29,11 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
-                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="New Registration"
-                                    onclick="window.location.href='<?= base_url(); ?>shs-registerstudent'">
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="RE-ENROLLMENT"
+                                    onclick="window.location.href='<?= base_url(); ?>shs-oldstudent'" style="pointer-events: none;"> <!-- REMOVE pointer-events: none if u want to use the a -->
                                     <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 50px 0;">
                                         <div class="card-body" style="text-align: center;">
-                                            <h1 style="color: white;"><strong>NEW REGISTRATION</strong></h1>
+                                            <h1 style="color: white;"><strong>RE-ENROLLMENT</strong></h1>
                                         </div>
                                     </div>
                                 </a>
