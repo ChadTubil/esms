@@ -100,7 +100,7 @@ class SHSDepartmentController extends BaseController
             if($this->validate($rules)){
                 $clusterdata = [
                     'code' => $this->request->getVar('code'),
-                    'cluster' => $this->request->getVar('cluster'),
+                    'name' => $this->request->getVar('cluster'),
                 ];
                 $this->clustersModel->save($clusterdata);
                 session()->setTempdata('addsuccess','Cluster added successfully', 3);
@@ -124,7 +124,7 @@ class SHSDepartmentController extends BaseController
         if($this->request->is('post')) {
             $data = [
                 'code' => $this->request->getVar('code'),
-                'cluster' => $this->request->getVar('cluster'),
+                'name' => $this->request->getVar('cluster'),
             ];
 
             $this->clustersModel->where('cluid', $id)->update($id, $data);

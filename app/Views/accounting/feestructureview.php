@@ -68,7 +68,7 @@
                                     <select name="course" class="form-select">
                                         <option value="">-</option>
                                         <?php foreach($coursedata as $coursed): ?>
-                                            <option value="<?= $coursed['courcode']; ?>"><?= $coursed['course']; ?></option>
+                                            <option value="<?= $coursed['code']; ?>"><?= $coursed['code']; ?> - <?= $coursed['name']; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -216,7 +216,7 @@
                                                                         <option value="<?php echo $feestructured['course']; ?>"><?php echo $feestructured['course']; ?></option>
                                                                         <option value="">-</option>
                                                                         <?php foreach($coursedata as $coursed): ?>
-                                                                            <option value="<?= $coursed['courcode']; ?>"><?= $coursed['course']; ?></option>
+                                                                            <option value="<?= $coursed['code']; ?>"><?= $coursed['code']; ?> - <?= $coursed['name']; ?></option>
                                                                         <?php endforeach; ?>
                                                                     </select>
                                                                 </div>

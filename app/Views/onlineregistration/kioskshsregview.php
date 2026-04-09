@@ -219,87 +219,94 @@
                         <?= form_open('kiosk-registration-shs'); ?>
                             <div class="form-section">
                                 <h4 style="color: #263A56; border-bottom: 2px solid #263A56; padding-bottom: 10px; margin-bottom: 25px;">Personal Information</h4>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <!-- Name Section -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <label for="lastname" class="form-label required-field">Last Name</label>
+                                                <input type="text" class="form-control form-control-x" id="lastname" name="lastname" placeholder="Enter your last name"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('lastname'); ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="firstname" class="form-label required-field">First Name</label>
+                                                <input type="text" class="form-control form-control-x" id="firstname" name="firstname" placeholder="Enter your first name"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('firstname'); ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="middlename" class="form-label required-field">Middle Name</label>
+                                                <input type="text" class="form-control form-control-x" id="middlename" name="middlename" placeholder="Enter your middle name"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('middlename'); ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="extension" class="form-label">Name Extension</label>
+                                                <select class="form-control" id="extension" name="extension">
+                                                    <option value="">Select Extension</option>
+                                                    <option value="JR.">Jr.</option>
+                                                    <option value="SR.">Sr.</option>
+                                                    <option value="II">II</option>
+                                                    <option value="III">III</option>
+                                                    <option value="IV">IV</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Personal Details -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label for="birthday" class="form-label required-field">Birthday</label>
+                                                <input type="date" class="form-control" id="birthday" name="birthday"
+                                                value="<?php echo set_value('birthday'); ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="birthplace" class="form-label required-field">Birth Place</label>
+                                                <input type="text" class="form-control form-control-x" id="birthplace" name="birthplace" placeholder="City/Municipality, Province"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('birthplace'); ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="gender" class="form-label required-field">Gender</label>
+                                                <select class="form-control" id="gender" name="gender">
+                                                    <option value="">Select Gender</option>
+                                                    <option value="MALE">Male</option>
+                                                    <option value="FEMALE">Female</option>
+                                                    <option value="OTHER">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Contact Information -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="email" class="form-label required-field">Email Address</label>
+                                                <input type="email" class="form-control form-control-x" id="email" name="email" placeholder="example@email.com"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('email'); ?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="contact" class="form-label required-field">Contact Number</label>
+                                                <input type="text" class="form-control" id="contact" name="contact" placeholder="09XXXXXXXXX"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('contact'); ?>">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Citizenship & Religion -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="citizenship" class="form-label required-field">Citizenship</label>
+                                                <input type="text" class="form-control form-control-x" id="citizenship" name="citizenship" placeholder="Citizenship"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('citizenship'); ?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="religion" class="form-label required-field">Religion</label>
+                                                <input type="text" class="form-control form-control-x" id="religion" name="religion" placeholder="Enter your religion"
+                                                style="text-transform: uppercase;" value="<?php echo set_value('religion'); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
                                 
-                                <!-- Name Section -->
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="lastname" class="form-label required-field">Last Name</label>
-                                        <input type="text" class="form-control form-control-x" id="lastname" name="lastname" placeholder="Enter your last name"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('lastname'); ?>">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="firstname" class="form-label required-field">First Name</label>
-                                        <input type="text" class="form-control form-control-x" id="firstname" name="firstname" placeholder="Enter your first name"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('firstname'); ?>">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="middlename" class="form-label required-field">Middle Name</label>
-                                        <input type="text" class="form-control form-control-x" id="middlename" name="middlename" placeholder="Enter your middle name"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('middlename'); ?>">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="extension" class="form-label">Name Extension</label>
-                                        <select class="form-control" id="extension" name="extension">
-                                            <option value="">Select Extension</option>
-                                            <option value="JR.">Jr.</option>
-                                            <option value="SR.">Sr.</option>
-                                            <option value="II">II</option>
-                                            <option value="III">III</option>
-                                            <option value="IV">IV</option>
-                                        </select>
                                     </div>
                                 </div>
                                 
-                                <!-- Personal Details -->
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <label for="birthday" class="form-label required-field">Birthday</label>
-                                        <input type="date" class="form-control" id="birthday" name="birthday"
-                                        value="<?php echo set_value('birthday'); ?>">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="birthplace" class="form-label required-field">Birth Place</label>
-                                        <input type="text" class="form-control form-control-x" id="birthplace" name="birthplace" placeholder="City/Municipality, Province"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('birthplace'); ?>">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="gender" class="form-label required-field">Gender</label>
-                                        <select class="form-control" id="gender" name="gender">
-                                            <option value="">Select Gender</option>
-                                            <option value="MALE">Male</option>
-                                            <option value="FEMALE">Female</option>
-                                            <option value="OTHER">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <!-- Contact Information -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="email" class="form-label required-field">Email Address</label>
-                                        <input type="email" class="form-control form-control-x" id="email" name="email" placeholder="example@email.com"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('email'); ?>">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="contact" class="form-label required-field">Contact Number</label>
-                                        <input type="text" class="form-control" id="contact" name="contact" placeholder="09XXXXXXXXX"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('contact'); ?>">
-                                    </div>
-                                </div>
-                                
-                                <!-- Citizenship & Religion -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="citizenship" class="form-label required-field">Citizenship</label>
-                                        <input type="text" class="form-control form-control-x" id="citizenship" name="citizenship" placeholder="Citizenship"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('citizenship'); ?>">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="religion" class="form-label required-field">Religion</label>
-                                        <input type="text" class="form-control form-control-x" id="religion" name="religion" placeholder="Enter your religion"
-                                        style="text-transform: uppercase;" value="<?php echo set_value('religion'); ?>">
-                                    </div>
-                                </div>
                             </div>
                             
                             <!-- Address Section -->

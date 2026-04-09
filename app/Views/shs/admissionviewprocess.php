@@ -74,7 +74,7 @@
                                                     <select name="cluster" class="form-select" required>
                                                         <option></option>
                                                         <?php foreach ($clusterdata as $clusterd): ?>
-                                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['cluster']; ?></option>
+                                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['name']; ?></option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 </div>

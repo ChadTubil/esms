@@ -48,8 +48,8 @@ class CoursesController extends BaseController
             ];
             if($this->validate($rules)) {
                 $coursedata = [
-                    'courcode' => $this->request->getVar('coursecode'),
-                    'course' => $this->request->getVar('course'),
+                    'code' => $this->request->getVar('coursecode'),
+                    'name' => $this->request->getVar('course'),
                     'courisdel' => '0',
                 ];
                 $this->coursesModel->save($coursedata);
@@ -74,8 +74,8 @@ class CoursesController extends BaseController
         if($this->request->is('post'))
         {
             $data = [
-                'courcode' => $this->request->getVar('coursecode'),
-                'course' => $this->request->getVar('course'),
+                'code' => $this->request->getVar('coursecode'),
+                'name' => $this->request->getVar('course'),
             ];
 
             $this->coursesModel->where('courid', $id)->update($id, $data);

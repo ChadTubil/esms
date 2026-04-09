@@ -7,7 +7,7 @@ class ClustersModel extends Model
     protected $table = 'clusters';
     protected $primaryKey = 'cluid';
     protected $allowedFields = [
-        'code', 'cluster', 'isdel',
+        'code', 'name', 'isdel',
     ];
     protected $returnType = 'array';
     

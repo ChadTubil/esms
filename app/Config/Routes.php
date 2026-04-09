@@ -212,6 +212,14 @@ $routes->post('rates/dues/(:segment)', 'AccountingController::ratedues/$1');
 $routes->post('rates/rof/(:segment)', 'AccountingController::raterof/$1');
 $routes->post('rates/dues/update/(:segment)', 'AccountingController::rateduesupdate/$1');
 $routes->post('rates/rof/update/(:segment)', 'AccountingController::raterofupdate/$1');
+$routes->get('shs-rates', 'AccountingController::shsRates');
+$routes->post('shs-rates', 'AccountingController::shsRates');
+$routes->get('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
+$routes->post('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
+$routes->post('shs-rates/dues/(:segment)', 'AccountingController::shsratesDues/$1');
+$routes->post('shs-rates/rof/(:segment)', 'AccountingController::shsratesRof/$1');
+$routes->post('shs-rates/dues/update/(:segment)', 'AccountingController::shsratesDuesUpdate/$1');
+$routes->post('shs-rates/rof/update/(:segment)', 'AccountingController::shsratesRofUpdate/$1');
 $routes->get('chartofaccounts', 'AccountingController::chartofAccounts');
 $routes->post('chartofaccounts', 'AccountingController::chartofAccounts');
 $routes->add('chartofaccounts/delete/(:segment)', 'AccountingController::deleteCOA/$1');
@@ -225,16 +233,13 @@ $routes->post('student-accounts', 'AccountingController::studentAccounts');
 $routes->get('student-accounts/view/(:segment)', 'AccountingController::viewStudentAccounts/$1');
 $routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetails/$1/$2');
 $routes->post('student-accounts/view/details-add', 'AccountingController::viewStudentAccountsDetailsAdd');
+
+$routes->add('student-accounts/view/allocate-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAllocate/$1/$2');
+
 $routes->post('student-accounts/view/details-payment/(:segment)/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2/$3');
 $routes->add('student-accounts/view/details-print/(:segment)', 'AccountingController::viewStudentAccountsDetailsPrint/$1');
-$routes->get('shs-rates', 'AccountingController::shsRates');
-$routes->post('shs-rates', 'AccountingController::shsRates');
-$routes->get('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
-$routes->post('shs-rates/setup/(:segment)', 'AccountingController::shsratesSetup/$1');
-$routes->post('shs-rates/dues/(:segment)', 'AccountingController::shsratesDues/$1');
-$routes->post('shs-rates/rof/(:segment)', 'AccountingController::shsratesRof/$1');
-$routes->post('shs-rates/dues/update/(:segment)', 'AccountingController::shsratesDuesUpdate/$1');
-$routes->post('shs-rates/rof/update/(:segment)', 'AccountingController::shsratesRofUpdate/$1');
+
+
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');

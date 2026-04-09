@@ -85,7 +85,7 @@
                                     <?php foreach($clusterdata as $clusterd):?>
                                         <tr>
                                             <td><?= $clusterd['code']; ?></td>
-                                            <td><?= $clusterd['cluster']; ?></td>
+                                            <td><?= $clusterd['name']; ?></td>
                                             <td>
                                                 <div class="flex align-items-center list-user-action">
                                                     <a class="btn btn-sm btn-icon btn-primary" title="Edit"
@@ -115,7 +115,7 @@
                                                                     <div class="col-lg-12 col-sm-12">
                                                                         <label class="form-label" for="validationDefault01">CLUSTER</label>
                                                                         <input type="text" name="cluster" class="form-control"
-                                                                        value="<?php echo $clusterd['cluster']; ?>">
+                                                                        value="<?php echo $clusterd['name']; ?>">
                                                                     </div>
                                                                     <br>
                                                                     <div class="text-start">

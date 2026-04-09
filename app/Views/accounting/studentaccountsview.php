@@ -88,7 +88,7 @@
                                                             <path d="M16.0861 12H7.91406" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             <path d="M12.3223 8.25205L16.0863 12L12.3223 15.748" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                         </svg>
-                                                    </span><?= $studentaccountsd['accountno']; ?>
+                                                    </span><?= $studentaccountsd['assessmentid']; ?>
                                                 </a></td>
                                             <td style="text-align: center;"><?= $studentaccountsd['sy']; ?></td>
                                             <td style="text-align: center;"><?= $studentaccountsd['sem']; ?></td>
