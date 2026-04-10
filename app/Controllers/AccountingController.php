@@ -22,6 +22,8 @@ use App\Models\SHSRatesModel;
 use App\Models\SHSRateDuesModel;
 use App\Models\SHSRateOtherFeesModel;
 use App\Models\SHSStudentsModel;
+use App\Models\StudentsLedgerModel;
+use App\Models\DiscountsModel;
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -45,6 +47,8 @@ class AccountingController extends BaseController
     public $shsRateDuesModel;
     public $shsRateOtherFeesModel;
     public $shsStudentsModel;
+    public $studentsLedgerModel;
+    public $discountsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -69,6 +73,8 @@ class AccountingController extends BaseController
         $this->shsRateDuesModel = new SHSRateDuesModel();
         $this->shsRateOtherFeesModel = new SHSRateOtherFeesModel();
         $this->shsStudentsModel = new SHSStudentsModel();
+        $this->studentsLedgerModel = new StudentsLedgerModel();
+        $this->discountsModel = new DiscountsModel();
         $this->session = session();
     }
     public function index() {
@@ -532,6 +538,98 @@ class AccountingController extends BaseController
             return redirect()->to(base_url()."feestructure");
         }
     }
+    public function discount(){
+        $data = [
+            'page_title' => 'Holy Cross College | Discount Management',
+            'page_heading' => 'DISCOUNT MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['discountdata'] = $this->discountsModel->where('isdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'discountname' => [
+                    'rules' => 'required|is_unique[discount.discountname]',
+                    'errors' => [
+                        'required' => 'Discount name is required.',
+                        'is_unique' => 'This discount name is already exists.'
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $discountdata = [
+                    'discounttype' => $this->request->getVar('discounttype'),
+                    'discountname' => $this->request->getVar('discountname'),
+                    'discountpercentage' => $this->request->getVar('percentage'),
+                    'discountamount' => $this->request->getVar('amount'),
+                    'feetype' => $this->request->getVar('feetype'),
+                    'startdate' => $this->request->getVar('startdate'),
+                    'enddate' => $this->request->getVar('enddate'),
+                    'terms' => $this->request->getVar('terms'),
+                    'status' => 'Active',
+                    'createddate' => date('Y-m-d'),
+                ];
+                $this->discountsModel->save($discountdata);
+                session()->setTempdata('success','Discount added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('accounting/discountview', $data);
+    }
+    public function updatediscount($id=null){
+        if($this->request->is('post')) {
+            $discountdata = [
+                'discounttype' => $this->request->getVar('discounttype'),
+                'discountname' => $this->request->getVar('discountname'),
+                'discountpercentage' => $this->request->getVar('percentage'),
+                'discountamount' => $this->request->getVar('amount'),
+                'feetype' => $this->request->getVar('feetype'),
+                'startdate' => $this->request->getVar('startdate'),
+                'enddate' => $this->request->getVar('enddate'),
+                'terms' => $this->request->getVar('terms'),
+            ];
+
+            $this->discountsModel->where('discountid', $id)->update($id, $discountdata);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."discount");
+        }
+    }
+    public function deletediscount($id=null) {
+        $discountdata = [
+            'isdel' => '1',
+        ];
+
+        $this->discountsModel->where('discountid', $id)->update($id, $discountdata);
+        session()->setTempdata('updatesuccess', 'Delete Successful!', 2);
+        return redirect()->to(base_url()."discount");
+    }
+    public function activediscount($id=null) {
+        $discountdata = [
+            'status' => 'Active',
+        ];
+
+        $this->discountsModel->where('discountid', $id)->update($id, $discountdata);
+        session()->setTempdata('updatesuccess', 'Delete Successful!', 2);
+        return redirect()->to(base_url()."discount");
+    }
+    public function expireddiscount($id=null) {
+        $discountdata = [
+            'status' => 'Expired',
+        ];
+
+        $this->discountsModel->where('discountid', $id)->update($id, $discountdata);
+        session()->setTempdata('updatesuccess', 'Delete Successful!', 2);
+        return redirect()->to(base_url()."discount");
+    }
     public function studentAccounts() {
         $data = [
             'page_title' => 'Holy Cross College | Student Accounts',
@@ -676,43 +774,124 @@ class AccountingController extends BaseController
         // GET TOTAL ASSESSMENT, TOTAL PAYMENTS, TOTAL BALANCE
         $data['studacctotalassessment'] = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
         // PAYMENT TRANSACTIONS HISTORY FOR ALLOCATION
-
         $data['paymenttransactiondata'] = $this->paymentransactionsModel
         ->where('paymenttransactions.studfullname', $STUDENTFULLNAME)
         ->orWhere('paymenttransactions.studfullname', $STUDENTNO)
         ->where('paymenttransactions.paymentstatus', 'PAID')
         ->findAll();
-
         // PAYMENT TRANSACTIONS HISTORY
-        $data['paymenthistorydata'] = $this->paymentAllocationModel
-            ->select('paymentallocation.*, paymenttransactions.*, studentassessment.*, studentsaccounts.*')
-            ->join('paymenttransactions', 'paymentallocation.paymentid = paymenttransactions.paymentid')
-            ->join('studentassessment', 'studentassessment.sadid = paymentallocation.sadid')
-            ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
-            ->where('studentsaccounts.said', $studentaccountno)
-            ->where('paymentallocation.isdel', 0)
-            ->findAll();
+        $data['paymenthistorydata'] = $this->paymentransactionsModel
+        ->where('paymenttransactions.studfullname', $STUDENTFULLNAME)
+        ->orWhere('paymenttransactions.studfullname', $STUDENTNO)
+        ->where('paymenttransactions.paymentstatus', 'PAID')
+        ->findAll();
+        // DISCOUNT DATA
+        $discountall = $this->discountsModel->where('isdel', '0')->where('studentno', '')->findAll();
+        $discountstudent = $this->discountsModel->where('studentno', $STUDENTNO)->findAll();
+        $data['discountdata'] = array_merge($discountall, $discountstudent);
         
         return view('accounting/studentaccountassessmentview', $data);
     }
-    public function viewStudentAccountsAllocate($paymenttransid=null, $studaccountid=null){
-        if(!session()->has('logged_user')) {
-            return redirect()->to(base_url());
-        }
+    public function viewStudentAccountsAllocate($paymenttransid=null, $studaccountassessid=null){
         $uid = session()->get('logged_user');
-        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
-        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+
+        $PAYMENTTRANSACTIONDATA = $this->paymentransactionsModel
+        ->where('paymentid', $paymenttransid)->findAll();
+        foreach($PAYMENTTRANSACTIONDATA as $PTD) {
+            $AMOUNTPAID = $PTD['amountpaid'];
+            
+        }
+        $STUDENTACCOUNTASSESSMENTDATA = $this->studentAccountsAssessmentModel
+        ->select('studentassessment.*, feestructure.*, studentsaccounts.*')
+        ->join('feestructure', 'feestructure.feeid = studentassessment.feeid')
+        ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
+        ->where('sadid', $studaccountassessid)->findAll();
+
+        foreach($STUDENTACCOUNTASSESSMENTDATA as $SAAD) {
+            $SAID = $SAAD['said'];
+            $STUDNO = $SAAD['studentno'];
+            $TOTALPAYMENTS = $SAAD['totalpayments'];
+            $TOTALBALANCE = $SAAD['totalbalance'];
+            $FEENAME = $SAAD['feename'];
+        }
 
         $allocatedata = [
             'paymentid' => $paymenttransid,
-            'sadid' => $paymenttransid,
-            // 'amountallocated' => ;
+            'sadid' => $studaccountassessid,
+            'amountallocated' => $AMOUNTPAID,
             'allocateddate' => date('Y-m-d'),
-            'allocatedby' => $uid,
+            'allocatedby' => $FULLNAME,
 
         ];
+        $paymenttransdata = [
+            'paymentstatus' => 'Allocated',
+        ];
+
+        $studentaccassessdata = [
+            'paidamount' => $AMOUNTPAID,
+            'balance' => $TOTALBALANCE - $AMOUNTPAID,
+            'isbilled' => '1',
+        ];
+
+        $studentaccountsdata = [
+            'totalpayments' => $TOTALPAYMENTS + $AMOUNTPAID,
+            'totalbalance' => $TOTALBALANCE - $AMOUNTPAID,
+            'updateddate' => date('Y-m-d'),
+        ];
+
+        $studentLedgerData = [
+            'studentno' => $STUDNO,
+            'said' => $SAID,
+            'transactiondate' => date('Y-m-d'),
+            'transactiontype' => 'Payment',
+            'description' => $FEENAME,
+            'debit' => $AMOUNTPAID,
+            'createddate' => date('Y-m-d'),
+            'createdby' => $FULLNAME,
+        ];
+
+        $this->paymentAllocationModel->save($allocatedata);
+        $this->paymentransactionsModel->where('paymentid', $paymenttransid)->update($paymenttransid, $paymenttransdata);
+        $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassessdata);
+        $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountsdata);
+        $this->studentsLedgerModel->save($studentLedgerData);
+        session()->setTempdata('message','Fee added successfully', 3);
+        return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAID);
     }
+    public function viewStudentAccountsAddDiscount($discountid=null, $studaccountassessid=null){
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+
+        $discountdata = [
+            
+        ];
+    }
+
     public function viewStudentAccountsDetailsAdd(){
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
         if($this->request->is('post')) {
             $studentno = $this->request->getVar('studentno');
             $studentaccountno = $this->request->getVar('accountno');
@@ -735,6 +914,7 @@ class AccountingController extends BaseController
                 foreach($FEES as $fee) {
                     $amount = $fee['amount'];
                     $discount = $fee['discount'] ?? 0;
+                    $FEENAME = $fee['feename'];
                 }
                 $data = [
                     'said' => $studentaccountno,
@@ -742,6 +922,8 @@ class AccountingController extends BaseController
                     'feeid' => $this->request->getVar('selectedfeeid'),
                     'amount' => $amount,
                     'discountamount' => $discount,
+                    'netamount' => $amount,
+                    'balance' => $amount,
                     'createddate' => date('Y-m-d'),
                     'isdel' => 0,
                 ];
@@ -750,8 +932,20 @@ class AccountingController extends BaseController
                     'totalbalance' => $TOTALBALANCE + $amount,
                     'updateddate' => date('Y-m-d'),
                 ];
+                $studentLedgerData = [
+                    'studentno' => $studentno,
+                    'said' => $studentaccountno,
+                    'transactiondate' => date('Y-m-d'),
+                    'transactiontype' => 'Assessment',
+                    'description' => $FEENAME,
+                    'credit' => $amount,
+                    'createddate' => date('Y-m-d'),
+                    'createdby' => $FULLNAME,
+
+                ];
                 $this->studentAccountsAssessmentModel->save($data);
                 $this->studentAccountsModel->where('said', $studentaccountno)->set($studAccData)->update();
+                $this->studentsLedgerModel->save($studentLedgerData);
                 session()->setTempdata('message','Fee added successfully', 3);
                 return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
             }

@@ -220,7 +220,8 @@
                                                     </span>
                                                 </a></td> -->
                                             <td class="text-end">₱<?= number_format($studentaccountsassessmentd['discountamount'], 2); ?>
-                                                <a href="" class="btn btn-sm btn-icon btn-primary" title="Modify" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                <a href="#" class="btn btn-sm btn-icon btn-primary" title="Modify Discount" data-bs-toggle="modal"
+                                                    data-bs-target="#discountModal<?= $studentaccountsassessmentd['studentno']; ?>"
                                                     <?php if($studentaccountsassessmentd['isbilled'] == 1) { echo 'hidden'; } else { echo '';} ?>>
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -230,6 +231,65 @@
                                                         </svg>
                                                     </span>
                                                 </a>
+                                                <div class="modal fade" id="discountModal<?= $studentaccountsassessmentd['studentno']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                        <div class="modal-content dark">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="staticBackdropLabel">Add Discount - <?= $studentaccountsassessmentd['feename']; ?></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="text-align: left;">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12 col-sm-12">
+                                                                        <div class="table-responsive">
+                                                                            <table id="datatable" class="table table-striped" data-toggle="data-table" 
+                                                                            style="width: 100%; font-size: 11px;">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>#</th>
+                                                                                        <th>NAME</th>
+                                                                                        <th>DISCOUNT</th>
+                                                                                        <th>TYPE</th>
+                                                                                        <th>ACTION</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <?php foreach($discountdata as $discountd): ?>
+                                                                                        <tr>
+                                                                                            <td><?= $discountd['studentno']; ?></td>
+                                                                                            <td><?= $discountd['discountname']; ?></td>
+                                                                                            <td><?php 
+                                                                                                if($discountd['discountamount'] == 0){
+                                                                                                    echo $discountd['discountpercentage'].'%';
+                                                                                                }else{
+                                                                                                    echo '₱'.$discountd['discountamount'];
+                                                                                                }
+                                                                                            ?></td>
+                                                                                            <td><?= $discountd['discounttype']; ?></td>
+                                                                                            <td>
+                                                                                                <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Allocate"
+                                                                                                    onclick="window.location.href='<?= base_url(); ?>student-accounts/view/add-discount/<?= $discountd['discountid']; ?>/<?= $studentaccountsassessmentd['sadid']; ?>';">
+                                                                                                    <span class="btn-inner">
+                                                                                                        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                                                                                            <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                                                                                            <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                                                                                            <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                                                                                            <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                                                                        </svg>
+                                                                                                    </span>
+                                                                                                </a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    <?php endforeach; ?>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="text-end">₱<?= number_format($studentaccountsassessmentd['netamount'], 2); ?></td>
                                             <td class="text-end">₱<?= number_format($studentaccountsassessmentd['paidamount'], 2); ?></td>
