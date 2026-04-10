@@ -180,6 +180,46 @@ class OnlineRegController extends BaseController
         }
         return view('onlineregistration/gsregview', $data);
     }
+
+    private function saveStudentPhoto($base64Image, $lastname, $firstname)
+    {
+        // Remove base64 header if present
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, etc.
+            
+            // Validate file type
+            if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
+                $type = 'jpg';
+            }
+        } else {
+            $type = 'jpg';
+        }
+        
+        // Decode base64
+        $imageData = base64_decode($base64Image);
+        
+        // Create unique filename
+        $timestamp = date('Ymd_His');
+        $randomString = bin2hex(random_bytes(8));
+        $filename = strtoupper($lastname . '_' . $firstname . '_' . $timestamp . '_' . $randomString . '.' . $type);
+        
+        // Define upload directory
+        $uploadDir = 'public/uploads/student_photos/';
+        
+        // Create directory if it doesn't exist
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        // Save file
+        $filePath = $uploadDir . $filename;
+        file_put_contents($filePath, $imageData);
+        
+        // Return relative path for database storage
+        return 'public/uploads/student_photos/' . $filename;
+    }
+
     public function shsregistration()
     {
         $data = [];
@@ -799,6 +839,12 @@ class OnlineRegController extends BaseController
                         'required' => 'Year of the elementary school you graduated is required.',
                     ],
                 ],
+                'student_photo' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Student photo is required. Please capture a photo.',
+                    ],
+                ],
             ];
             if($this->validate($rules)){
                 // Check if student with same full name already exists
@@ -811,6 +857,10 @@ class OnlineRegController extends BaseController
                 ->where('studfn', $firstname)
                 ->where('studmn', $middlename)
                 ->first();
+
+                // Handle image upload
+                $studentPhoto = $this->request->getVar('student_photo');
+                $photoPath = $this->saveStudentPhoto($studentPhoto, $lastname, $firstname);
 
                 // Get birthday and calculate age
                 $birthday = $this->request->getVar('birthday');
@@ -843,6 +893,7 @@ class OnlineRegController extends BaseController
                         'studemail' => $this->request->getVar('email'),
                         'studbirthplace' => $this->request->getVar('birthplace'),
                         'studcreatedat' => date('Y-m-d H:i:s'),
+                        'studimage' => $photoPath,
                     ];
                     $this->shsStudentsModel->save($data);
                     $FINDSTUDENT = $this->shsStudentsModel

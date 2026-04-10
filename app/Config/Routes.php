@@ -234,7 +234,6 @@ $routes->post('discount/update/(:segment)', 'AccountingController::updatediscoun
 $routes->add('discount/delete/(:segment)', 'AccountingController::deletediscount/$1');
 $routes->add('discount/active/(:segment)', 'AccountingController::activediscount/$1');
 $routes->add('discount/expired/(:segment)', 'AccountingController::expireddiscount/$1');
-
 $routes->get('student-accounts', 'AccountingController::studentAccounts');
 $routes->post('student-accounts', 'AccountingController::studentAccounts');
 $routes->get('student-accounts/view/(:segment)', 'AccountingController::viewStudentAccounts/$1');
@@ -242,9 +241,8 @@ $routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingC
 $routes->post('student-accounts/view/details-add', 'AccountingController::viewStudentAccountsDetailsAdd');
 $routes->add('student-accounts/view/allocate-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAllocate/$1/$2');
 $routes->add('student-accounts/view/add-discount/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAddDiscount/$1/$2');
-
-$routes->post('student-accounts/view/details-payment/(:segment)/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2/$3');
-$routes->add('student-accounts/view/details-print/(:segment)', 'AccountingController::viewStudentAccountsDetailsPrint/$1');
+$routes->post('student-accounts/view/details-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2');
+$routes->add('student-accounts/receipt-print/(:segment)', 'AccountingController::receiptPrint/$1');
 
 
 // ENCODING GRADES
@@ -315,6 +313,12 @@ $routes->get('shs-assessment', 'SHSDepartmentController::assessment');
 $routes->get('shs-assessment/view/(:segment)', 'SHSDepartmentController::assessmentView/$1');
 $routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assessmentPrint/$1');
 $routes->add('shs-assessment/aprroved/(:segment)', 'SHSDepartmentController::assessmentApproved/$1');
+
+//GUIDANCE
+$routes->get('guidance-records', 'GuidanceController::index');
+$routes->post('guidance-records', 'GuidanceController::index');
+$routes->get('guidance-records/print/(:segment)', 'GuidanceController::printStudInfo/$1');
+$routes->post('guidance-records/print/(:segment)', 'GuidanceController::printStudInfo/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

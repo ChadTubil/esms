@@ -20,6 +20,7 @@ use App\Models\SHSRatesModel;
 use App\Models\SHSRateOtherFeesModel;
 use App\Models\SHSRateDuesModel;
 use App\Models\StudentAccountsModel;
+use App\Models\AdditionalInfoSHSModel;
 use TCPDF;
 class SHSDepartmentController extends BaseController
 {
@@ -42,6 +43,7 @@ class SHSDepartmentController extends BaseController
     public $shsRateOtherFeesModel;
     public $shsRateDuesModel;
     public $studentAccountsModel;
+    public $additionalInfoSHSModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -64,6 +66,7 @@ class SHSDepartmentController extends BaseController
         $this->shsRateOtherFeesModel = new SHSRateOtherFeesModel();
         $this->shsRateDuesModel = new SHSRateDuesModel();
         $this->studentAccountsModel = new StudentAccountsModel();
+        $this->additionalInfoSHSModel = new AdditionalInfoSHSModel();
         $this->session = session();
     }
     public function cluster(){
@@ -577,16 +580,70 @@ class SHSDepartmentController extends BaseController
                 'studid' => $id,
                 'nfather' => $this->request->getVar('fname'),
                 'fmobile' => $this->request->getVar('fcontact'),
-                'fwork' => $this->request->getVar('femail'),
-                'femail' => $this->request->getVar('fwork'),
+                'fwork' => $this->request->getVar('fwork'),
+                'femail' => $this->request->getVar('femail'),
                 'foffice' => $this->request->getVar('foffice'),
                 'nmother' => $this->request->getVar('mname'),
                 'mmobile' => $this->request->getVar('mcontact'),
-                'mwork' => $this->request->getVar('memail'),
-                'memail' => $this->request->getVar('mwork'),
+                'mwork' => $this->request->getVar('mwork'),
+                'memail' => $this->request->getVar('memail'),
                 'moffice' => $this->request->getVar('moffice'),
             ];
             $this->shsFamilyBackgroundModel->save($shsfbdata);
+
+            // ADDITIONAL INFO
+            $shsaddinfodata = [
+                'studid' => $id,
+                'fdateofbirth' => $this->request->getVar('fdateofbirth'),
+                'fplaceofbirth' => $this->request->getVar('fplaceofbirth'),
+                'faddress' => $this->request->getVar('faddress'),
+                'feduc' => $this->request->getVar('feduc'),
+                'flanguage' => $this->request->getVar('flanguage'),
+                'mdateofbirth' => $this->request->getVar('mdateofbirth'),
+                'mplaceofbirth' => $this->request->getVar('mplaceofbirth'),
+                'maddress' => $this->request->getVar('maddress'),
+                'meducation' => $this->request->getVar('meducation'),
+                'mlanguage' => $this->request->getVar('mlanguage'),
+                'pstatus' => $this->request->getVar('pstatus'),
+                'nameg' => $this->request->getVar('nameg'),
+                'contactg' => $this->request->getVar('contactg'),
+                'gaddress' => $this->request->getVar('gaddress'),
+                'contactperson' => $this->request->getVar('contactperson'),
+                'personcontactno' => $this->request->getVar('personcontactno'),
+                'siblingname' => $this->request->getVar('siblingname'),
+                'siblingwork' => $this->request->getVar('siblingwork'),
+                'siblingage' => $this->request->getVar('siblingage'),
+                'interest' => $this->request->getVar('interest'),
+                'talents' => $this->request->getVar('talents'),
+                'hobbies' => $this->request->getVar('hobbies'),
+                'goals' => $this->request->getVar('goals'),
+                'characteristics' => $this->request->getVar('characteristics'),
+                'fears' => $this->request->getVar('fears'),
+                'disabilities' => $this->request->getVar('disabilities'),
+                'chronic_illnesses' => $this->request->getVar('chronic_illnesses'),
+                'medicine' => $this->request->getVar('medicine'),
+                'vitamins' => $this->request->getVar('vitamins'),
+                'recent_accidents' => $this->request->getVar('recent_accidents'),
+                'experience_accidents' => $this->request->getVar('experience_accidents'),
+                'recent_surgical' => $this->request->getVar('recent_surgical'),
+                'experience_surgical' => $this->request->getVar('experience_surgical'),
+                'vaccines' => $this->request->getVar('vaccines'),
+                'con_psy' => $this->request->getVar('con_psy'),
+                'con_psy_date' => $this->request->getVar('con_psy_date'),
+                'con_psy_sessions' => $this->request->getVar('con_psy_sessions'),
+                'con_psy_diagnosis' => $this->request->getVar('con_psy_diagnosis'),
+                'con_regpsy' => $this->request->getVar('con_regpsy'),
+                'con_regpsy_date' => $this->request->getVar('con_regpsy_date'),
+                'con_regpsy_sessions' => $this->request->getVar('con_regpsy_sessions'),
+                'con_regpsy_diagnosis' => $this->request->getVar('con_regpsy_diagnosis'),
+                'con_regguid' => $this->request->getVar('con_regguid'),
+                'con_regguid_date' => $this->request->getVar('con_regguid_date'),
+                'con_regguid_sessions' => $this->request->getVar('con_regguid_sessions'),
+                'con_regguid_diagnosis' => $this->request->getVar('con_regguid_diagnosis'),
+                'aisdel' => 0,
+            ];
+            $this->additionalInfoSHSModel->save($shsaddinfodata);
+
             // PERMANENT RECORD 
             $PRSHSInfo = $this->shsPermanentRecordModel->where('studid', $id)->findAll();
             foreach($PRSHSInfo as $prshs) {

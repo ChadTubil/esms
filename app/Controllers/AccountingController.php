@@ -24,6 +24,8 @@ use App\Models\SHSRateOtherFeesModel;
 use App\Models\SHSStudentsModel;
 use App\Models\StudentsLedgerModel;
 use App\Models\DiscountsModel;
+use TCPDF;
+use NumberFormatter; // Add this line
 class AccountingController extends BaseController
 {
     public $usersModel;
@@ -737,8 +739,9 @@ class AccountingController extends BaseController
         foreach($data['studentdata'] as $allstd){
             $STUDENTFULLNAME = $allstd['studfullname'];
             $STUDENTNO = $allstd['studentno'];
-        }
 
+        }
+        $data['studaccdataforpayment'] = $this->studentAccountsModel->findAll();
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
         $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
         $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
@@ -771,19 +774,22 @@ class AccountingController extends BaseController
         }
         
         $data['studentaccountsassessmentdata'] = $assessments;
-        // GET TOTAL ASSESSMENT, TOTAL PAYMENTS, TOTAL BALANCE
-        $data['studacctotalassessment'] = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
+        // GET TOTAL ASSESSMENT, TOTAL PAYMENTS, TOTAL BALANCE, TOTAL DISCOUNTS
+        $data['studacctotalassessment'] = $this->studentAccountsModel
+        ->select('studentsaccounts.*, SUM(studentassessment.discountamount) as totaldiscounts')
+        ->join('studentassessment', 'studentsaccounts.said = studentassessment.said')
+        ->where('studentassessment.said', $studentaccountno)->findAll();
         // PAYMENT TRANSACTIONS HISTORY FOR ALLOCATION
         $data['paymenttransactiondata'] = $this->paymentransactionsModel
         ->where('paymenttransactions.studfullname', $STUDENTFULLNAME)
+        ->where('paymenttransactions.paymentstatus', 'Paid')
         ->orWhere('paymenttransactions.studfullname', $STUDENTNO)
-        ->where('paymenttransactions.paymentstatus', 'PAID')
         ->findAll();
         // PAYMENT TRANSACTIONS HISTORY
         $data['paymenthistorydata'] = $this->paymentransactionsModel
         ->where('paymenttransactions.studfullname', $STUDENTFULLNAME)
         ->orWhere('paymenttransactions.studfullname', $STUDENTNO)
-        ->where('paymenttransactions.paymentstatus', 'PAID')
+        ->where('paymenttransactions.paymentstatus', 'Paid')
         ->findAll();
         // DISCOUNT DATA
         $discountall = $this->discountsModel->where('isdel', '0')->where('studentno', '')->findAll();
@@ -792,96 +798,6 @@ class AccountingController extends BaseController
         
         return view('accounting/studentaccountassessmentview', $data);
     }
-    public function viewStudentAccountsAllocate($paymenttransid=null, $studaccountassessid=null){
-        $uid = session()->get('logged_user');
-        $userdata = $this->usersModel->where('uid', $uid)->findAll();
-        foreach($userdata as $userd){
-            $USERACCOUNTID = $userd['uaccountid'];
-        }
-        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
-        foreach($empdata as $empd){
-            $FULLNAME = $empd['empfullname'];
-        }
-
-        $PAYMENTTRANSACTIONDATA = $this->paymentransactionsModel
-        ->where('paymentid', $paymenttransid)->findAll();
-        foreach($PAYMENTTRANSACTIONDATA as $PTD) {
-            $AMOUNTPAID = $PTD['amountpaid'];
-            
-        }
-        $STUDENTACCOUNTASSESSMENTDATA = $this->studentAccountsAssessmentModel
-        ->select('studentassessment.*, feestructure.*, studentsaccounts.*')
-        ->join('feestructure', 'feestructure.feeid = studentassessment.feeid')
-        ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
-        ->where('sadid', $studaccountassessid)->findAll();
-
-        foreach($STUDENTACCOUNTASSESSMENTDATA as $SAAD) {
-            $SAID = $SAAD['said'];
-            $STUDNO = $SAAD['studentno'];
-            $TOTALPAYMENTS = $SAAD['totalpayments'];
-            $TOTALBALANCE = $SAAD['totalbalance'];
-            $FEENAME = $SAAD['feename'];
-        }
-
-        $allocatedata = [
-            'paymentid' => $paymenttransid,
-            'sadid' => $studaccountassessid,
-            'amountallocated' => $AMOUNTPAID,
-            'allocateddate' => date('Y-m-d'),
-            'allocatedby' => $FULLNAME,
-
-        ];
-        $paymenttransdata = [
-            'paymentstatus' => 'Allocated',
-        ];
-
-        $studentaccassessdata = [
-            'paidamount' => $AMOUNTPAID,
-            'balance' => $TOTALBALANCE - $AMOUNTPAID,
-            'isbilled' => '1',
-        ];
-
-        $studentaccountsdata = [
-            'totalpayments' => $TOTALPAYMENTS + $AMOUNTPAID,
-            'totalbalance' => $TOTALBALANCE - $AMOUNTPAID,
-            'updateddate' => date('Y-m-d'),
-        ];
-
-        $studentLedgerData = [
-            'studentno' => $STUDNO,
-            'said' => $SAID,
-            'transactiondate' => date('Y-m-d'),
-            'transactiontype' => 'Payment',
-            'description' => $FEENAME,
-            'debit' => $AMOUNTPAID,
-            'createddate' => date('Y-m-d'),
-            'createdby' => $FULLNAME,
-        ];
-
-        $this->paymentAllocationModel->save($allocatedata);
-        $this->paymentransactionsModel->where('paymentid', $paymenttransid)->update($paymenttransid, $paymenttransdata);
-        $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassessdata);
-        $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountsdata);
-        $this->studentsLedgerModel->save($studentLedgerData);
-        session()->setTempdata('message','Fee added successfully', 3);
-        return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAID);
-    }
-    public function viewStudentAccountsAddDiscount($discountid=null, $studaccountassessid=null){
-        $uid = session()->get('logged_user');
-        $userdata = $this->usersModel->where('uid', $uid)->findAll();
-        foreach($userdata as $userd){
-            $USERACCOUNTID = $userd['uaccountid'];
-        }
-        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
-        foreach($empdata as $empd){
-            $FULLNAME = $empd['empfullname'];
-        }
-
-        $discountdata = [
-            
-        ];
-    }
-
     public function viewStudentAccountsDetailsAdd(){
         $uid = session()->get('logged_user');
         $userdata = $this->usersModel->where('uid', $uid)->findAll();
@@ -925,6 +841,7 @@ class AccountingController extends BaseController
                     'netamount' => $amount,
                     'balance' => $amount,
                     'createddate' => date('Y-m-d'),
+                    'assessmentdate' => date('Y-m-d'),
                     'isdel' => 0,
                 ];
                 $studAccData = [
@@ -952,7 +869,150 @@ class AccountingController extends BaseController
             
         }
     }
-    public function viewStudentAccountsDetailsPayment($studentno=null, $studentaccountno=null, $sadid=null){
+    public function viewStudentAccountsAllocate($paymenttransid=null, $studaccountassessid=null){
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+
+        $PAYMENTTRANSACTIONDATA = $this->paymentransactionsModel
+        ->where('paymentid', $paymenttransid)->findAll();
+        foreach($PAYMENTTRANSACTIONDATA as $PTD) {
+            $AMOUNTPAID = $PTD['amountpaid'];
+            
+        }
+        $STUDENTACCOUNTASSESSMENTDATA = $this->studentAccountsAssessmentModel
+        ->select('studentassessment.*, feestructure.*, studentsaccounts.*')
+        ->join('feestructure', 'feestructure.feeid = studentassessment.feeid')
+        ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
+        ->where('sadid', $studaccountassessid)->findAll();
+
+        foreach($STUDENTACCOUNTASSESSMENTDATA as $SAAD) {
+            $SAID = $SAAD['said'];
+            $STUDNO = $SAAD['studentno'];
+            $TOTALPAIDAMOUNT = $SAAD['paidamount'];
+            $TOTALPAYMENTS = $SAAD['totalpayments'];
+            $TOTALBALANCE = $SAAD['totalbalance'];
+            $FEENAME = $SAAD['feename'];
+        }
+
+        $allocatedata = [
+            'paymentid' => $paymenttransid,
+            'sadid' => $studaccountassessid,
+            'amountallocated' => $AMOUNTPAID,
+            'allocateddate' => date('Y-m-d'),
+            'allocatedby' => $FULLNAME,
+
+        ];
+        $paymenttransdata = [
+            'paymentstatus' => 'Allocated',
+        ];
+
+        $studentaccassessdata = [
+            'paidamount' => $TOTALPAIDAMOUNT +$AMOUNTPAID,
+            'balance' => $TOTALBALANCE - $AMOUNTPAID,
+        ];
+
+        $studentaccountsdata = [
+            'totalpayments' => $TOTALPAYMENTS + $AMOUNTPAID,
+            'totalbalance' => $TOTALBALANCE - $AMOUNTPAID,
+            'updateddate' => date('Y-m-d'),
+        ];
+
+        $studentLedgerData = [
+            'studentno' => $STUDNO,
+            'said' => $SAID,
+            'transactiondate' => date('Y-m-d'),
+            'transactiontype' => 'Payment',
+            'description' => $FEENAME,
+            'debit' => $AMOUNTPAID,
+            'createddate' => date('Y-m-d'),
+            'createdby' => $FULLNAME,
+        ];
+
+        $this->paymentAllocationModel->save($allocatedata);
+        $this->paymentransactionsModel->where('paymentid', $paymenttransid)->update($paymenttransid, $paymenttransdata);
+        $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassessdata);
+        $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountsdata);
+        $this->studentsLedgerModel->save($studentLedgerData);
+        session()->setTempdata('message','Fee added successfully', 3);
+        return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAID);
+    }
+    public function viewStudentAccountsAddDiscount($discountid=null, $studaccountassessid=null){
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+
+        $STUDENTACCOUNTASSESSMENTDATA = $this->studentAccountsAssessmentModel
+        ->select('studentassessment.*, studentsaccounts.*')
+        ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said')
+        ->where('studentassessment.sadid', $studaccountassessid)->findAll();
+        foreach($STUDENTACCOUNTASSESSMENTDATA as $SAAD) {
+            $SAID = $SAAD['said'];
+            $STUDENTNO = $SAAD['studentno'];
+            $TOTALPAYMENTS = $SAAD['totalpayments'];
+            $TOTALBALANCE = $SAAD['totalbalance'];
+            $ASSESSMENTAMOUNT = $SAAD['amount'];
+            $ASSESSMENTNETAMOUNT = $SAAD['netamount'];
+            $ASSESSMENTDISCOUNT = $SAAD['discountamount'];
+            $TOTALASSESSMENTPAIDAMOUNT = $SAAD['paidamount'];
+            $TOTALASSESSMENTBALANCE = $SAAD['balance'];
+        }
+
+        $DISCOUNTDATA = $this->discountsModel->where('discountid', $discountid)->findAll();
+        foreach($DISCOUNTDATA as $dd) {
+            $DISCOUNTPERCENTAGE = $dd['discountpercentage'];
+            $DISCOUNTAMOUNT = $dd['discountamount'];
+            if($DISCOUNTAMOUNT == '0.00'){
+                $DISCOUNT = '0.'.$DISCOUNTPERCENTAGE;
+            }else{
+                $DISCOUNT = $DISCOUNTAMOUNT;
+            }
+        }
+        
+        $studentaccountdata = [
+            'totalpayments' => $TOTALPAYMENTS + $DISCOUNT,
+            'totalbalance' => $TOTALBALANCE - $DISCOUNT,
+            'updateddate' => date('Y-m-d'),
+        ];
+
+        $studentaccassdata = [
+            'discountamount' => $ASSESSMENTDISCOUNT + $DISCOUNT,
+            'netamount' => $ASSESSMENTAMOUNT - $DISCOUNT,
+            'paidamount' => $TOTALASSESSMENTPAIDAMOUNT + $DISCOUNT,
+            'balance' => $TOTALASSESSMENTBALANCE - $DISCOUNT,
+            'updateddate' => date('Y-m-d'),
+        ];
+
+        $studentLedgerData = [
+            'studentno' => $STUDENTNO,
+            'said' => $SAID,
+            'transactiondate' => date('Y-m-d'),
+            'transactiontype' => 'Discount',
+            'description' => $dd['discountname'],
+            'debit' => $DISCOUNT,
+            'createddate' => date('Y-m-d'),
+            'createdby' => $FULLNAME,
+        ];
+
+        $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountdata);
+        $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassdata);
+        $this->studentsLedgerModel->save($studentLedgerData);
+        session()->setTempdata('message','Discount added successfully', 3);
+        return redirect()->to(base_url()."student-accounts/view/details/".$STUDENTNO."/".$SAID);
+    }
+    public function viewStudentAccountsDetailsPayment($studentno=null, $studentaccountno=null){
         $uid = session()->get('logged_user');
         $userdata = $this->usersModel->where('uid', $uid)->findAll();
         foreach($userdata as $userd){
@@ -963,67 +1023,163 @@ class AccountingController extends BaseController
             $FULLNAME = $empd['empfullname'];
         }
         if($this->request->is('post')) {
-            $NETAMOUNT = $this->request->getVar('netamount');
-            $BALANCE = $NETAMOUNT - $this->request->getVar('amountpaid');
-            if($BALANCE < 0) {
-                session()->setTempdata('message','Payment amount exceeds the net amount.', 3);
-                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
-            }else{
-                $studentaccassdata = [
-                    'paidamount' => $this->request->getVar('amountpaid'),
-                    'balance' => $BALANCE,
-                    'isbilled' => 1,
-                ];
-                $this->studentAccountsAssessmentModel->where('sadid', $sadid)->update($sadid, $studentaccassdata);
-
-                $paymenttransactionsdata = [
-                    'studentno' => $this->request->getVar('studentno'),
-                    'studfullname' => $this->request->getVar('studentname'),
-                    'accountno' => $this->request->getVar('accountno'),
-                    'paymentmethod' => $this->request->getVar('paymentmethod'),
-                    'paymentdate' => $this->request->getVar('paymentdate'),
-                    'paymenttime' => $this->request->getVar('paymenttime'),
-                    'amountpaid' => $this->request->getVar('amountpaid'),
-                    'checknumber' => $this->request->getVar('checknumber'),
-                    'checkdate' => $this->request->getVar('checkdate'),
-                    'bankname' => $this->request->getVar('bankname'),
-                    'particulars' => $this->request->getVar('particulars'),
-                    'ornumber' => $this->request->getVar('ornumber'),
-                    'receivedby' => $FULLNAME,
-                    'paymentstatus' => "Paid",
-                    'createddate' => date('Y-m-d'),
-                    'isdel' => 0,
-                ];
-                $this->paymentransactionsModel->save($paymenttransactionsdata);
-                
-                $paymentid = $this->paymentransactionsModel->getInsertID();
-
-                $CHECKSTUDENTACCOUNT = $this->studentAccountsModel->where('said', $studentaccountno)->findAll();
-                foreach($CHECKSTUDENTACCOUNT as $account) {
-                    $TOTALPAYMENTS = $account['totalpayments'];
-                    $TOTALBALANCE = $account['totalbalance'];
-                }
-                $studAccData = [
-                    'totalpayments' => $TOTALPAYMENTS + $this->request->getVar('amountpaid'),
-                    'totalbalance' => $TOTALBALANCE - $this->request->getVar('amountpaid'),
-                    'updateddate' => date('Y-m-d'),
-                ];
-                $this->studentAccountsModel->where('said', $studentaccountno)->set($studAccData)->update();
-
-                $paymentallocationdata = [
-                    'paymentid' => $paymentid,
-                    'sadid' => $sadid,
-                    'amountallocated' => $this->request->getVar('amountpaid'),
-                    'allocatteddate' => date('Y-m-d'),
-                    'allocatedby' => $FULLNAME,
-                    'isdel' => 0,
-                ];
-                $this->paymentAllocationModel->save($paymentallocationdata);
-
-                session()->setTempdata('message','Payment added successfully', 3);
-                return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
-            }
-        }
+            $paymenttransactionsdata = [
+                'studentno' => $this->request->getVar('studentno'),
+                'studfullname' => $this->request->getVar('studentname'),
+                'paymentmethod' => $this->request->getVar('paymentmethod'),
+                'paymentdate' => $this->request->getVar('paymentdate'),
+                'paymenttime' => $this->request->getVar('paymenttime'),
+                'amountpaid' => $this->request->getVar('amountpaid'),
+                'checknumber' => $this->request->getVar('checknumber'),
+                'checkdate' => $this->request->getVar('checkdate'),
+                'bankname' => $this->request->getVar('bankname'),
+                'particulars' => $this->request->getVar('particulars'),
+                'ornumber' => $this->request->getVar('ornumber'),
+                'receivedby' => $FULLNAME,
+                'paymentstatus' => "Paid",
+                'createddate' => date('Y-m-d'),
+                'isdel' => 0,
+            ];
+            // print_r($paymenttransactionsdata);
+            $this->paymentransactionsModel->save($paymenttransactionsdata);
+            
+            session()->setTempdata('paymentmessage','Payment added successfully', 3);
+            return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
+        }    
     }
+    public function receiptPrint($id=null){
+        $pageSize = array(140, 175);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
     
+        $pdf->SetCreator('TRS Department');
+        $pdf->SetAuthor('Cashier Officec');
+        $pdf->SetTitle('Online Registration Receipt');
+
+        // set margins
+        $pdf->SetMargins(0,0,0,0);
+        
+        $pdf->AddPage();
+        $pdf->SetFont('helvetica', '', 10);
+
+        $uid = session()->get('logged_user');
+        $userdata = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($userdata as $userd){
+            $USERACCOUNTID = $userd['uaccountid'];
+        }
+        $empdata = $this->empModel->where('empnum', $USERACCOUNTID)->findAll();
+        foreach($empdata as $empd){
+            $FULLNAME = $empd['empfullname'];
+        }
+        $paymenttransactiondata = $this->paymentransactionsModel->where('paymentid', $id)->findAll();
+        foreach($paymenttransactiondata as $ptdata){
+            $PAYMENTREFERENCE = $ptdata['paymentreference'];
+            $PAYMENTNAME = $ptdata['studfullname'];
+            $PAYMENTDATE = $ptdata['paymentdate'];
+            $PAYMENTAMOUNT = $ptdata['amountpaid'];
+            $PAYMENTPARTICULARS = $ptdata['particulars'];
+        }
+        $formatter = new NumberFormatter('en', NumberFormatter::SPELLOUT);
+        $PAYMENTAMOUNT_IN_WORDS = $formatter->format($PAYMENTAMOUNT);
+        $html = '
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 70%;"></td>
+                    <td style="width: 30%;">'.date('F j, Y', strtotime($PAYMENTDATE)).'</td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 40%;"></td>
+                    <td style="width: 60%;">'.$PAYMENTNAME.'</td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;"></td>
+                    <td style="width: 60%;">'.$PAYMENTREFERENCE.'</td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 15%;"></td>
+                    <td style="width: 65%;">Fees<br>Misc</td>
+                    <td style="width: 20%;">'.$PAYMENTAMOUNT.'</td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 8%;"></td>
+                    <td style="width: 92%;">'.strtoupper($PAYMENTAMOUNT_IN_WORDS).' PESOS ONLY</td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 80%;"></td>
+                    <td style="width: 20%;">'.$PAYMENTAMOUNT.'</td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 8%;"></td>
+                    <td style="width: 52%;">'.$PAYMENTPARTICULARS.'</td>
+                    <td style="width: 40%;"></td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 80%;"></td>
+                    <td style="width: 20%;">'.$PAYMENTAMOUNT.'</td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td style="width: 10%;"></td>
+                    <td style="width: 50%;">'.$FULLNAME.'</td>
+                    <td style="width: 40%;"></td>
+                </tr>
+            </table>
+        ';
+        
+        // Output PDF to browser
+        $pdf->writeHTML($html, true, false, false, false, '');
+        // Get PDF content as string
+        $pdfContent = $pdf->Output('document.pdf', 'S');
+        
+        // Return as PDF response
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="hello_world.pdf"')
+            ->setBody($pdfContent);
+    }
 }
