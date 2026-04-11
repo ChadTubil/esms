@@ -24,6 +24,7 @@ use App\Models\SHSRateOtherFeesModel;
 use App\Models\SHSStudentsModel;
 use App\Models\StudentsLedgerModel;
 use App\Models\DiscountsModel;
+use App\Models\SchoolLedgerModel;
 use TCPDF;
 use NumberFormatter; // Add this line
 class AccountingController extends BaseController
@@ -51,6 +52,7 @@ class AccountingController extends BaseController
     public $shsStudentsModel;
     public $studentsLedgerModel;
     public $discountsModel;
+    public $schoolLedgerModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -77,6 +79,7 @@ class AccountingController extends BaseController
         $this->shsStudentsModel = new SHSStudentsModel();
         $this->studentsLedgerModel = new StudentsLedgerModel();
         $this->discountsModel = new DiscountsModel();
+        $this->schoolLedgerModel = new SchoolLedgerModel();
         $this->session = session();
     }
     public function index() {
@@ -493,6 +496,7 @@ class AccountingController extends BaseController
                     'feedescription' => $this->request->getVar('description'),
                     'amount' => $this->request->getVar('amount'),
                     'accountid' => $this->request->getVar('coa'),
+                    'toaccountid' => $this->request->getVar('tocoa'),
                     'course' => $this->request->getVar('course'),
                     'sy' => $this->request->getVar('sy'),
                     'semester' => $this->request->getVar('sem'),
@@ -527,6 +531,7 @@ class AccountingController extends BaseController
                 'feedescription' => $this->request->getVar('description'),
                 'amount' => $this->request->getVar('amount'),
                 'accountid' => $this->request->getVar('coa'),
+                'toaccountid' => $this->request->getVar('tocoa'),
                 'course' => $this->request->getVar('course'),
                 'sy' => $this->request->getVar('sy'),
                 'semester' => $this->request->getVar('sem'),
@@ -855,14 +860,23 @@ class AccountingController extends BaseController
                     'transactiondate' => date('Y-m-d'),
                     'transactiontype' => 'Assessment',
                     'description' => $FEENAME,
-                    'credit' => $amount,
+                    'debit' => $amount, //Dating credit. Sa School Ledger pasok sa debit
                     'createddate' => date('Y-m-d'),
                     'createdby' => $FULLNAME,
-
                 ];
+                $schoolLedgerData = [
+                    'said' => $studentaccountno,
+                    'transactiondate' => date('Y-m-d'),
+                    'transactiontype' => 'Assessment',
+                    'description' => $FEENAME,
+                    'credit' => $amount,
+                    'createdby' => $FULLNAME,
+                ];
+
                 $this->studentAccountsAssessmentModel->save($data);
                 $this->studentAccountsModel->where('said', $studentaccountno)->set($studAccData)->update();
                 $this->studentsLedgerModel->save($studentLedgerData);
+                $this->schoolLedgerModel->save($schoolLedgerData);
                 session()->setTempdata('message','Fee added successfully', 3);
                 return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
             }
@@ -930,8 +944,17 @@ class AccountingController extends BaseController
             'transactiondate' => date('Y-m-d'),
             'transactiontype' => 'Payment',
             'description' => $FEENAME,
-            'debit' => $AMOUNTPAID,
+            'credit' => $AMOUNTPAID, //Dating debit. Sa School Ledger pasok sa debit
             'createddate' => date('Y-m-d'),
+            'createdby' => $FULLNAME,
+        ];
+
+        $schoolLedgerData = [
+            'said' => $SAID,
+            'transactiondate' => date('Y-m-d'),
+            'transactiontype' => 'Payment',
+            'description' => $FEENAME,
+            'debit' => $AMOUNTPAID,
             'createdby' => $FULLNAME,
         ];
 
@@ -940,6 +963,7 @@ class AccountingController extends BaseController
         $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassessdata);
         $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountsdata);
         $this->studentsLedgerModel->save($studentLedgerData);
+        $this->schoolLedgerModel->save($schoolLedgerData);
         session()->setTempdata('message','Fee added successfully', 3);
         return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAID);
     }
@@ -1001,14 +1025,23 @@ class AccountingController extends BaseController
             'transactiondate' => date('Y-m-d'),
             'transactiontype' => 'Discount',
             'description' => $dd['discountname'],
-            'debit' => $DISCOUNT,
+            'credit' => $DISCOUNT, //Dating debit. Sa School Ledger pasok sa debit
             'createddate' => date('Y-m-d'),
+            'createdby' => $FULLNAME,
+        ];
+        $schoolLedgerData = [
+            'said' => $SAID,
+            'transactiondate' => date('Y-m-d'),
+            'transactiontype' => 'Discount',
+            'description' => $dd['discountname'],
+            'debit' => $DISCOUNT,
             'createdby' => $FULLNAME,
         ];
 
         $this->studentAccountsModel->where('said', $SAID)->update($SAID, $studentaccountdata);
         $this->studentAccountsAssessmentModel->where('sadid', $studaccountassessid)->update($studaccountassessid, $studentaccassdata);
         $this->studentsLedgerModel->save($studentLedgerData);
+        $this->schoolLedgerModel->save($schoolLedgerData);
         session()->setTempdata('message','Discount added successfully', 3);
         return redirect()->to(base_url()."student-accounts/view/details/".$STUDENTNO."/".$SAID);
     }

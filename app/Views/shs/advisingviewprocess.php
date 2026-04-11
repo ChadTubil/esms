@@ -170,7 +170,7 @@
                                         <h5>Address: <strong><?= $shsassessd['studstbarangay']; ?> <?= $shsassessd['studcity']; ?>, <?= $shsassessd['studprovince']; ?></strong></h5>
                                     </div>
                                     <div class="col-lg-6 col-sm-12">
-                                        <h5>Level/Class: <strong><?= $shsassessd['level']; ?> - <?= $shsassessd['cluster']; ?> / <?= $shsassessd['section']; ?></strong></h5>
+                                        <h5>Level/Class: <strong><?= $shsassessd['level']; ?> - <?= $shsassessd['code']; ?> / <?= $shsassessd['section']; ?></strong></h5>
                                         <h5>School Year: <strong><?= $shsassessd['sy']; ?></strong></h5>
                                     </div>
                                 </div>
@@ -240,17 +240,7 @@
                                                         <td>Tuition</td>
                                                         <td style="text-align: right;">₱<?= $shsrated['tf']; ?></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>QVR (Public)</td>
-                                                        <td style="text-align: right;">-₱<?= $shsrated['tf']; ?></td>
-                                                    </tr>
                                                 </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td style="text-align: right;">Sub Total</td>
-                                                        <td>₱0.00</td>
-                                                    </tr>
-                                                </tfoot>
                                             </table>
                                         </div>
                                         <h5><strong>MISCELLANEOUS FEES</strong></h5>
@@ -296,7 +286,7 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>Tuition</td>
-                                                        <td style="text-align: right;">₱0.00</td>
+                                                        <td style="text-align: right;">₱<?= $shsrated['tf']; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Miscellaneous</td>
@@ -316,7 +306,7 @@
                                                         <td style="text-align: right;">Grand Total</td>
                                                         <td style="text-align: right;">
                                                             <?php 
-                                                                $grandtotal = 0 + $totalotherfees;
+                                                                $grandtotal = $shsrated['tf'] + $totalotherfees;
                                                                 echo "₱" . number_format($grandtotal, 2);
                                                             ?>
                                                         </td>

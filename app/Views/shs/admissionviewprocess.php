@@ -137,37 +137,37 @@
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">PLANS AFTER COLLEGE</label>
-                                                    <input type="text" name="plans" class="form-control" required>
+                                                    <input type="text" name="plans" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">AWARDS AND HONORS RECEIVED</label>
-                                                    <input type="text" name="awards" class="form-control" required>
+                                                    <input type="text" name="awards" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">NAME OF ORGANIZATION/CLUB</label>
-                                                    <input type="text" name="orgname" class="form-control" required>
+                                                    <input type="text" name="orgname" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">POSITION/TITLE</label>
-                                                    <input type="text" name="orgpos" class="form-control" required>
+                                                    <input type="text" name="orgpos" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">OTHER AFFILIATIONS</label>
-                                                    <input type="text" name="orgnameo" class="form-control" required>
+                                                    <input type="text" name="orgnameo" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">POSITION/TITLE</label>
-                                                    <input type="text" name="orgposo" class="form-control" required>
+                                                    <input type="text" name="orgposo" class="form-control" >
                                                 </div>
                                             </div>
                                         </div>
@@ -348,19 +348,19 @@
                                             <div class="col-lg-5 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">NAME OF SIBLINGS</label>
-                                                    <input type="text" name="siblingname" class="form-control" required>
+                                                    <input type="text" name="siblingname" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-5 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">SCHOOL/PLACE OF WORK</label>
-                                                    <input type="text" name="siblingwork" class="form-control" required>
+                                                    <input type="text" name="siblingwork" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">AGE</label>
-                                                    <input type="number" name="siblingage" class="form-control" required>
+                                                    <input type="number" name="siblingage" class="form-control" >
                                                 </div>
                                             </div>
                                             <h5><strong>UNIQUE FEATURES</strong></h5>
@@ -368,37 +368,37 @@
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">INTEREST</label>
-                                                    <input type="text" name="interest" class="form-control" required>
+                                                    <input type="text" name="interest" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">TALENTS</label>
-                                                    <input type="text" name="talents" class="form-control" required>
+                                                    <input type="text" name="talents" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HOBBIES</label>
-                                                    <input type="text" name="hobbies" class="form-control" required>
+                                                    <input type="text" name="hobbies" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">GOALS IN LIFE</label>
-                                                    <input type="text" name="goals" class="form-control" required>
+                                                    <input type="text" name="goals" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">CHARACTERISTICS THAT DESCRIBE YOU BEST</label>
-                                                    <input type="text" name="characteristics" class="form-control" required>
+                                                    <input type="text" name="characteristics" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">PRESENT FEARS</label>
-                                                    <input type="text" name="fears" class="form-control" required>
+                                                    <input type="text" name="fears" class="form-control" >
                                                 </div>
                                             </div>
                                             <h5><strong>HEALTH</strong></h5>
@@ -406,56 +406,56 @@
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">DISABLITIES/IMPAIRMENTS</label>
-                                                    <input type="text" name="disabilities" class="form-control" required>
+                                                    <input type="text" name="disabilities" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">CHRONIC ILLNESSES</label>
-                                                    <input type="text" name="chronic_illnesses" class="form-control" required>
+                                                    <input type="text" name="chronic_illnesses" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">MEDICINE TAKEN REGULARLY</label>
-                                                    <input type="text" name="medicine" class="form-control" required>
+                                                    <input type="text" name="medicine" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">VITAMINS TAKEN REGULARLY</label>
-                                                    <input type="text" name="vitamins" class="form-control" required>
+                                                    <input type="text" name="vitamins" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">ANY RECENT ACCIDENTS OR INJURIES? WHAT KIND?</label>
-                                                    <input type="text" name="recent_accidents" class="form-control" required>
+                                                    <input type="text" name="recent_accidents" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">WHAT WAS THE EFFECTS/EXPERIENCE TO YOU?</label>
-                                                    <input type="text" name="experience_accidents" class="form-control" required>
+                                                    <input type="text" name="experience_accidents" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">ANY RECENT SURGICAL OPERATIONS OR PROCEDURES? WHAT KIND?</label>
-                                                    <input type="text" name="recent_surgical" class="form-control" required>
+                                                    <input type="text" name="recent_surgical" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">WHAT WAS THE EFFECTS/EXPERIENCE TO YOU?</label>
-                                                    <input type="text" name="experience_surgical" class="form-control" required>
+                                                    <input type="text" name="experience_surgical" class="form-control" >
                                                 </div>
                                             </div>
                                             <h6><strong>PLEASE SELECT VACCINATIONS YOU HAVE HAD</strong></h6>
                                             <br><br>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
-                                                    <select name="vaccines" class="form-select" required>
+                                                    <select name="vaccines" class="form-select" >
                                                         <option value="">Select Vaccine</option>
                                                         <option value="Chicken Pox">Chicken Pox</option>
                                                         <option value="Mumps">Mumps</option>
@@ -471,73 +471,73 @@
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HAVE YOU CONSULTED A PSYCHIATRIST BEFORE?</label>
-                                                    <input type="text" name="con_psy" class="form-control" required>
+                                                    <input type="text" name="con_psy" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">IF YES WHEN?</label>
-                                                    <input type="text" name="con_psy_date" class="form-control" required>
+                                                    <input type="text" name="con_psy_date" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HOW MANY SESSIONS?</label>
-                                                    <input type="text" name="con_psy_sessions" class="form-control" required>
+                                                    <input type="text" name="con_psy_sessions" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">DIAGNOSIS</label>
-                                                    <input type="text" name="con_psy_diagnosis" class="form-control" required>
+                                                    <input type="text" name="con_psy_diagnosis" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HAVE YOU CONSULTED A REGISTERED PSYCHOLOGIST BEFORE?</label>
-                                                    <input type="text" name="con_regpsy" class="form-control" required>
+                                                    <input type="text" name="con_regpsy" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">IF YES WHEN?</label>
-                                                    <input type="text" name="con_regpsy_date" class="form-control" required>
+                                                    <input type="text" name="con_regpsy_date" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HOW MANY SESSIONS?</label>
-                                                    <input type="text" name="con_regpsy_sessions" class="form-control" required>
+                                                    <input type="text" name="con_regpsy_sessions" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">DIAGNOSIS</label>
-                                                    <input type="text" name="con_regpsy_diagnosis" class="form-control" required>
+                                                    <input type="text" name="con_regpsy_diagnosis" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HAVE YOU CONSULTED A REGISTERED GUIDANCE COUNSELLOR BEFORE?</label>
-                                                    <input type="text" name="con_regguid" class="form-control" required>
+                                                    <input type="text" name="con_regguid" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">IF YES WHEN?</label>
-                                                    <input type="text" name="con_regguid_date" class="form-control" required>
+                                                    <input type="text" name="con_regguid_date" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">HOW MANY SESSIONS?</label>
-                                                    <input type="text" name="con_regguid_sessions" class="form-control" required>
+                                                    <input type="text" name="con_regguid_sessions" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">DIAGNOSIS</label>
-                                                    <input type="text" name="con_regguid_diagnosis" class="form-control" required>
+                                                    <input type="text" name="con_regguid_diagnosis" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">

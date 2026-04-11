@@ -263,10 +263,10 @@ $routes->get('registrar-onlineregistration-reports', 'RegistrarController::onlin
 $routes->get('registrar-onlineregistration-reports/export', 'RegistrarController::exportPDF');
 $routes->post('registrar-onlineregistration-update/(:segment)', 'RegistrarController::registrarOnlineRegUpdate/$1');
 // CASHIER 
-$routes->get('cashier-transaction', 'CashierController::index');
-$routes->post('cashier-transaction', 'CashierController::index');
-$routes->get('cashier-transaction-view/(:segment)', 'CashierController::transactionView/$1');
-$routes->get('cashier-transaction-view/open/(:segment)', 'CashierController::transactionViewOpen/$1');
+// $routes->get('cashier-transaction', 'CashierController::index');
+// $routes->post('cashier-transaction', 'CashierController::index');
+// $routes->get('cashier-transaction-view/(:segment)', 'CashierController::transactionView/$1');
+// $routes->get('cashier-transaction-view/open/(:segment)', 'CashierController::transactionViewOpen/$1');
 
 $routes->get('cashier-onlineregistration', 'CashierController::cashierOnlineRegistration');
 $routes->get('cashier-onlineregistration-payment/(:segment)', 'CashierController::cashierOnlineRegistrationPayment/$1');
@@ -297,7 +297,10 @@ $routes->post('shs-sections', 'SHSDepartmentController::sections');
 $routes->add('shs-sections/delete/(:segment)', 'SHSDepartmentController::deletesections/$1');
 $routes->post('shs-sections/update/(:segment)', 'SHSDepartmentController::updatesections/$1');
 $routes->get('shs-registration-select', 'SHSDepartmentController::registrationselect');
-$routes->get('shs-oldstudent', 'SHSDepartmentController::oldstudent');
+//OLD STUDENTS
+$routes->get('shs-oldstudent-select', 'SHSDepartmentController::oldstudentselect');
+$routes->post('shs-oldstudent-process', 'SHSDepartmentController::oldstudentprocess');
+// SHS STUDENTS
 $routes->get('shs-registeredstudent', 'SHSDepartmentController::registeredstudent');
 $routes->add('shs-registeredstudent/process/(:segment)', 'SHSDepartmentController::registeredstudentProcess/$1');
 $routes->get('shs-admission', 'SHSDepartmentController::admission');
@@ -313,6 +316,18 @@ $routes->get('shs-assessment', 'SHSDepartmentController::assessment');
 $routes->get('shs-assessment/view/(:segment)', 'SHSDepartmentController::assessmentView/$1');
 $routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assessmentPrint/$1');
 $routes->add('shs-assessment/aprroved/(:segment)', 'SHSDepartmentController::assessmentApproved/$1');
+
+// IBED DEPARTMENT
+$routes->get('ibed-level', 'IBEDController::level');
+$routes->post('ibed-level', 'IBEDController::level');
+$routes->add('ibed-level/delete/(:segment)', 'IBEDController::deletelevel/$1');
+$routes->post('ibed-level/update/(:segment)', 'IBEDController::updatelevel/$1');
+$routes->get('ibed-curriculum', 'IBEDController::curriculum');
+$routes->post('ibed-curriculum', 'IBEDController::curriculum');
+$routes->add('ibed-curriculum/delete/(:segment)', 'IBEDController::deletecurriculum/$1');
+$routes->post('ibed-curriculum/update/(:segment)', 'IBEDController::updatecurriculum/$1');
+
+
 
 //GUIDANCE
 $routes->get('guidance-records', 'GuidanceController::index');

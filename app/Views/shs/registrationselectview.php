@@ -30,10 +30,11 @@
                         <div class="row">
                             <div class="col-lg-6 col-sm-12">
                                 <a data-bs-toggle="tooltip" data-bs-placement="top" title="RE-ENROLLMENT"
-                                    onclick="window.location.href='<?= base_url(); ?>shs-oldstudent'" style="pointer-events: none;"> <!-- REMOVE pointer-events: none if u want to use the a -->
-                                    <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 50px 0;">
+                                    onclick="window.location.href='<?= base_url(); ?>shs-oldstudent-select'">
+                                    <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 30px;">
                                         <div class="card-body" style="text-align: center;">
                                             <h1 style="color: white;"><strong>RE-ENROLLMENT</strong></h1>
+                                            <p style="color: white;">FOR GRADE 12 STUDENTS</p>
                                         </div>
                                     </div>
                                 </a>
@@ -41,9 +42,10 @@
                             <div class="col-lg-6 col-sm-12">
                                 <a data-bs-toggle="tooltip" data-bs-placement="top" title="Registered Student"
                                     onclick="window.location.href='<?= base_url(); ?>shs-registeredstudent'">
-                                    <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 50px 0;">
+                                    <div class="card" style="border: 1px solid #ccc; background-color: #263A56; padding: 30px;">
                                         <div class="card-body" style="text-align: center;">
                                             <h1 style="color: white;"><strong>EARLY | ONLINE REGISTRATION</strong></h1>
+                                            <p style="color: white;">FOR NEW STUDENTS</p>
                                         </div>
                                     </div>
                                 </a>

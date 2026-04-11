@@ -374,9 +374,9 @@
                             <span>IMPORTANT DISCLAIMER</span>
                         </div>
                         <div class="disclaimer-content" style="color: black;">
-                            <p>Please read the following information carefully before proceeding with the online registration:</p>
+                            <p>Please read the following information carefully before proceeding with the registration:</p>
                             <ul>
-                                <li>This online registration system is for <strong>NEW STUDENTS ONLY</strong>. Current students should follow the re-enrollment process through their student portal.</li>
+                                <li>This registration system is for <strong>NEW STUDENTS ONLY</strong>. Current students should follow the re-enrollment process through their student portal.</li>
                                 <li>All information provided must be accurate and complete. Falsification of information may result in cancellation of admission.</li>
                                 <li>Required documents must be prepared beforehand for submission:
                                     <ul>
@@ -388,7 +388,7 @@
                                     </ul>
                                 </li>
                                 <li>Submission of this registration form does not guarantee admission. All applications will undergo evaluation and screening.</li>
-                                <li>After online registration, you will receive an email with further instructions regarding examination schedule (if applicable), interview, and submission of physical documents.</li>
+                                <li>After registration, you will receive an email with further instructions regarding examination schedule (if applicable), interview, and submission of physical documents.</li>
                                 <li>For inquiries, please contact the Registrar's Office at (045) 123-4567 or email registrar@hcc.edu.ph.</li>
                                 <li>In compliance with the Philippine Data Privacy Act of 2012 (RA 10173), HCC College informs you that the personal data you provide in this registration form will be collected, processed, and stored for legitimate educational and administrative purposes.</li>
                             </ul>

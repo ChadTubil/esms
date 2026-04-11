@@ -73,8 +73,16 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">CHART OF ACCOUNT</label>
+                                    <label class="form-label" for="validationDefault01">ACCOUNT DEBITED</label>
                                     <select name="coa" class="form-select">
+                                        <?php foreach($coadata as $coad):?>
+                                            <option value="<?= $coad['accountid']; ?>"><?= $coad['accountcode']; ?> - <?= $coad['accountname']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">ACCOUNT CREDITED</label>
+                                    <select name="tocoa" class="form-select">
                                         <?php foreach($coadata as $coad):?>
                                             <option value="<?= $coad['accountid']; ?>"><?= $coad['accountcode']; ?> - <?= $coad['accountname']; ?></option>
                                         <?php endforeach; ?>
@@ -221,11 +229,26 @@
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group">
-                                                                    <label for="email" class="form-label">CHART OF ACCOUNT</label>
+                                                                    <label for="email" class="form-label">ACCOUNT DEBITED</label>
                                                                     <select name="coa" class="form-select">
                                                                         <option value="<?php echo $feestructured['accountid']; ?>"><?php
                                                                             foreach($coadata as $coad):?>
                                                                                 <?php if($coad['accountid'] == $feestructured['accountid']): ?>
+                                                                                    <?= $coad['accountcode']; ?> - <?= $coad['accountname']; ?>
+                                                                                <?php endif; ?>
+                                                                            <?php endforeach;
+                                                                            ?></option>
+                                                                        <?php foreach($coadata as $coad):?>
+                                                                            <option value="<?= $coad['accountid']; ?>"><?= $coad['accountcode']; ?> - <?= $coad['accountname']; ?></option>
+                                                                        <?php endforeach; ?>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="email" class="form-label">ACCOUNT CREDITED</label>
+                                                                    <select name="tocoa" class="form-select">
+                                                                        <option value="<?php echo $feestructured['toaccountid']; ?>"><?php
+                                                                            foreach($coadata as $coad):?>
+                                                                                <?php if($coad['accountid'] == $feestructured['toaccountid']): ?>
                                                                                     <?= $coad['accountcode']; ?> - <?= $coad['accountname']; ?>
                                                                                 <?php endif; ?>
                                                                             <?php endforeach;

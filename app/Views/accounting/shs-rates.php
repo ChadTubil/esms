@@ -55,7 +55,7 @@
                                     <select name="cluster" class="form-select" id="SEM" style="width: 100%;">
                                         <option selected="" disabled=""></option>
                                         <?php foreach ($clusterdata as $clusterd): ?>
-                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['cluster']; ?></option>
+                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['name']; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>

@@ -8,8 +8,8 @@ class UsersModel extends Model
     protected $primaryKey = 'uid';
     protected $allowedFields = [
         'uaccountid', 'username', 'upassword', 'uadmin',
-        'ustudent', 'uregistrar', 'uprogramchair', 'uhrd', 'uemployee', 'ucashier',
-        'ustatus', 'ucollege', 'ushs', 'uibed', 'uisdel',
+        'ustudent', 'uregistrar', 'uprogramchair', 'uhrd', 'uemployee', 'ucashier', 'uaccounting',
+        'ustatus', 'ucollege', 'ushs', 'uibed', 'uadmindept', 'uisdel',
     ];
     protected $returnType = 'array';
     

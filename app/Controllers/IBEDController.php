@@ -3,76 +3,32 @@
 namespace App\Controllers;
 use App\Models\UsersModel;
 use App\Models\SYModel;
-use App\Models\ClustersModel;
-use App\Models\SHSSubjectsModel;
-use App\Models\SHSCurriculumModel;
-use App\Models\SHSCurriculumDataModel;
-use App\Models\RegStudentsModel;
-use App\Models\PaymentTransactionsModel;
-use App\Models\EnrollmentHistorySHSModel;
-use App\Models\SHSStudentsModel;
-use App\Models\SHSPermanentRecordModel;
-use App\Models\SHSSchoolRecordModel;
-use App\Models\SHSFamilyBackgroundModel;
-use App\Models\SHSSectionsModel;
-use App\Models\SHSAssessmentModel;
-use App\Models\SHSRatesModel;
-use App\Models\SHSRateOtherFeesModel;
-use App\Models\SHSRateDuesModel;
-use App\Models\StudentAccountsModel;
-use App\Models\AdditionalInfoSHSModel;
+use App\Models\IBEDLevelModel;
+use App\Models\IBEDCurriculumModel;
+
 use TCPDF;
-class SHSDepartmentController extends BaseController
+class IBEDController extends BaseController
 {
     public $usersModel;
     public $syModel;
-    public $clustersModel;
-    public $shsSubjectsModel;
-    public $shsCurriculumModel;
-    public $shsCurriculumDataModel;
-    public $regStudentsModel;
-    public $paymentTransactionsModel;
-    public $enrollmentHistorySHSModel;
-    public $shsStudentsModel;
-    public $shsPermanentRecordModel;
-    public $shsSchoolRecordModel;
-    public $shsFamilyBackgroundModel;
-    public $shsSectionsModel;
-    public $shsAssessmentModel;
-    public $shsRatesModel;
-    public $shsRateOtherFeesModel;
-    public $shsRateDuesModel;
-    public $studentAccountsModel;
-    public $additionalInfoSHSModel;
+    public $ibedlvlModel;
+    public $ibedcurriculumModel;
+    
     public $session;
     public function __construct() {
         helper('form');
         $this->usersModel = new UsersModel();
         $this->syModel = new SYModel();
-        $this->clustersModel = new ClustersModel();
-        $this->shsSubjectsModel = new SHSSubjectsModel();
-        $this->shsCurriculumModel = new SHSCurriculumModel();
-        $this->shsCurriculumDataModel = new SHSCurriculumDataModel();
-        $this->regStudentsModel = new RegStudentsModel();
-        $this->paymentTransactionsModel = new PaymentTransactionsModel();
-        $this->enrollmentHistorySHSModel = new EnrollmentHistorySHSModel();
-        $this->shsStudentsModel = new SHSStudentsModel();
-        $this->shsPermanentRecordModel = new SHSPermanentRecordModel();
-        $this->shsSchoolRecordModel = new SHSSchoolRecordModel();
-        $this->shsFamilyBackgroundModel = new SHSFamilyBackgroundModel();
-        $this->shsSectionsModel = new SHSSectionsModel();
-        $this->shsAssessmentModel = new SHSAssessmentModel();
-        $this->shsRatesModel = new SHSRatesModel();
-        $this->shsRateOtherFeesModel = new SHSRateOtherFeesModel();
-        $this->shsRateDuesModel = new SHSRateDuesModel();
-        $this->studentAccountsModel = new StudentAccountsModel();
-        $this->additionalInfoSHSModel = new AdditionalInfoSHSModel();
+        $this->ibedlvlModel = new IBEDLevelModel();
+        $this->ibedcurriculumModel = new IBEDCurriculumModel();
+
+        
         $this->session = session();
     }
-    public function cluster(){
+    public function level(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Cluster',
-            'page_heading' => 'SHS CLUSTER! ',
+            'page_title' => 'Holy Cross College | IBED Level',
+            'page_heading' => 'IBED LEVEL MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -81,64 +37,64 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
+        $data['leveldata'] = $this->ibedlvlModel->where('isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
                 'code' => [
-                    'rules' => 'required|is_unique[clusters.code]',
+                    'rules' => 'required|is_unique[ibedlevel.code]',
                     'errors' => [
                         'required' => 'Code is required.',
                         'is_unique' => 'This code is already exists.'
                     ],
                 ],
-                'cluster' => [
-                    'rules' => 'required|is_unique[clusters.cluster]',
+                'level' => [
+                    'rules' => 'required|is_unique[ibedlevel.name]',
                     'errors' => [
-                        'required' => 'Cluster is required.',
-                        'is_unique' => 'This cluster is already exists.'
+                        'required' => 'Level is required.',
+                        'is_unique' => 'This level is already exists.'
                     ],
                 ],
             ];
             if($this->validate($rules)){
-                $clusterdata = [
+                $lvldata = [
                     'code' => $this->request->getVar('code'),
-                    'name' => $this->request->getVar('cluster'),
+                    'name' => $this->request->getVar('level'),
                 ];
-                $this->clustersModel->save($clusterdata);
-                session()->setTempdata('addsuccess','Cluster added successfully', 3);
+                $this->ibedlvlModel->save($lvldata);
+                session()->setTempdata('addsuccess','Level added successfully', 3);
                 return redirect()->to(current_url());
             } else {
                 $data['validation'] = $this->validator;
             }
         }
-        return view('shs/clusterview', $data);
+        return view('ibed/levelview', $data);
     }
-    public function deletecluster($id=null) {
-        $cludata = [
+    public function deletelevel($id=null) {
+        $lvldata = [
             'isdel' => '1',
         ];
 
-        $this->clustersModel->where('cluid', $id)->update($id, $cludata);
-        session()->setTempdata('deletesuccess', 'Cluster is deleted!', 2);
-        return redirect()->to(base_url()."shs-cluster");
+        $this->ibedlvlModel->where('ibedlvlid', $id)->update($id, $lvldata);
+        session()->setTempdata('deletesuccess', 'Level is deleted!', 2);
+        return redirect()->to(base_url()."ibed-level");
     }
-    public function updatecluster($id=null) {
+    public function updatelevel($id=null) {
         if($this->request->is('post')) {
             $data = [
                 'code' => $this->request->getVar('code'),
-                'name' => $this->request->getVar('cluster'),
+                'name' => $this->request->getVar('level'),
             ];
 
-            $this->clustersModel->where('cluid', $id)->update($id, $data);
+            $this->ibedlvlModel->where('ibedlvlid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
-            return redirect()->to(base_url()."shs-cluster");
+            return redirect()->to(base_url()."ibed-level");
         }
     }
     public function subjects(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Subjects',
-            'page_heading' => 'SHS SUBJECTS! ',
+            'page_title' => 'Holy Cross College | IBED Subjects',
+            'page_heading' => 'IBED SUBJECTS! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -147,7 +103,7 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['shssubjectsdata'] = $this->shsSubjectsModel->where('isdel', '0')->findAll();
+        $data['gssubjectsdata'] = $this->gsSubjectsModel->where('isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
@@ -179,30 +135,30 @@ class SHSDepartmentController extends BaseController
                 ],
             ];
             if($this->validate($rules)){
-                $shssubjectdata = [
+                $gssubjectdata = [
                     'code' => $this->request->getVar('code'),
                     'subject' => $this->request->getVar('subject'),
                     'type' => $this->request->getVar('type'),
                     'hours' => $this->request->getVar('hours'),
                     'prerequisite' => $this->request->getVar('prerequisite'),
                 ];
-                $this->shsSubjectsModel->save($shssubjectdata);
+                $this->gsSubjectsModel->save($gssubjectdata);
                 session()->setTempdata('addsuccess','Subject added successfully', 3);
                 return redirect()->to(current_url());
             } else {
                 $data['validation'] = $this->validator;
             }
         }
-        return view('shs/subjectsview', $data);
+        return view('gs/subjectsview', $data);
     }
     public function deletesubjects($id=null) {
         $cludata = [
             'isdel' => '1',
         ];
 
-        $this->shsSubjectsModel->where('subid', $id)->update($id, $cludata);
+        $this->gsSubjectsModel->where('subid', $id)->update($id, $cludata);
         session()->setTempdata('deletesuccess', 'Subject is deleted!', 2);
-        return redirect()->to(base_url()."shs-subjects");
+        return redirect()->to(base_url()."gs-subjects");
     }
     public function updatesubjects($id=null) {
         if($this->request->is('post')) {
@@ -214,15 +170,15 @@ class SHSDepartmentController extends BaseController
                 'prerequisite' => $this->request->getVar('prerequisite'),
             ];
 
-            $this->shsSubjectsModel->where('subid', $id)->update($id, $data);
+            $this->gsSubjectsModel->where('subid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
-            return redirect()->to(base_url()."shs-subjects");
+            return redirect()->to(base_url()."gs-subjects");
         }
     }
     public function curriculum(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Curriculum',
-            'page_heading' => 'SHS CURRICULUM! ',
+            'page_title' => 'Holy Cross College | IBED Curriculum',
+            'page_heading' => 'IBED CURRICULUM MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -232,63 +188,61 @@ class SHSDepartmentController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
-        $data['shscurriculumdata'] = $this->shsCurriculumModel
-        ->select('curriculum_shs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = curriculum_shs.cluster')
-        ->where('curriculum_shs.isdel', '0')->findAll();
+        $data['leveldata'] = $this->ibedlvlModel->where('isdel', '0')->findAll();
+        $data['curriculumdata'] = $this->ibedcurriculumModel
+        ->select('curriculum_ibed.*, ibedlevel.*')
+        ->join('ibedlevel', 'ibedlevel.ibedlvlid = curriculum_ibed.level')
+        ->where('curriculum_ibed.isdel', '0')->findAll();
         
 
         if($this->request->is('post')) {
             $rules = [
-                'cluster' => [
+                'level' => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'Cluster is required.',
+                        'required' => 'Level is required.',
                     ],
                 ],
             ];
             if($this->validate($rules)){
                 $curridata = [
-                    'cluster' => $this->request->getVar('cluster'),
-                    'sy' => $this->request->getVar('sy'),
                     'level' => $this->request->getVar('level'),
+                    'sy' => $this->request->getVar('sy'),
                 ];
-                $this->shsCurriculumModel->save($curridata);
+                $this->ibedcurriculumModel->save($curridata);
                 session()->setTempdata('addsuccess','Curriculum added successfully', 3);
                 return redirect()->to(current_url());
             } else {
                 $data['validation'] = $this->validator;
             }
         }
-        return view('shs/curriculumview', $data);
+        return view('ibed/curriculumview', $data);
     }
     public function deletecurriculum($id=null) {
         $cludata = [
             'isdel' => '1',
         ];
 
-        $this->shsCurriculumModel->where('currid', $id)->update($id, $cludata);
+        $this->ibedcurriculumModel->where('currid', $id)->update($id, $cludata);
         session()->setTempdata('deletesuccess', 'Curriculum is deleted!', 2);
-        return redirect()->to(base_url()."shs-curriculum");
+        return redirect()->to(base_url()."ibed-curriculum");
     }
     public function updatecurriculum($id=null) {
         if($this->request->is('post')) {
             $data = [
-                'cluster' => $this->request->getVar('cluster'),
-                'sy' => $this->request->getVar('sy'),
                 'level' => $this->request->getVar('level'),
+                'sy' => $this->request->getVar('sy'),
             ];
 
-            $this->shsCurriculumModel->where('currid', $id)->update($id, $data);
+            $this->ibedcurriculumModel->where('currid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
-            return redirect()->to(base_url()."shs-curriculum");
+            return redirect()->to(base_url()."ibed-curriculum");
         }
     }
     public function setupcurriculum($id=null){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Curriculum Setup',
-            'page_heading' => 'SHS CURRICULUM SETUP! ',
+            'page_title' => 'Holy Cross College | IBED Curriculum Setup',
+            'page_heading' => 'IBED CURRICULUM SETUP! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -299,12 +253,12 @@ class SHSDepartmentController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
-        $data['shssubjectsdata'] = $this->shsSubjectsModel->where('isdel', '0')->findAll();
-        $data['shscurriculumdata'] = $this->shsCurriculumModel
-        ->select('curriculum_shs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = curriculum_shs.cluster')
+        $data['gssubjectsdata'] = $this->gsSubjectsModel->where('isdel', '0')->findAll();
+        $data['gscurriculumdata'] = $this->gsCurriculumModel
+        ->select('curriculum_gs.*, clusters.*')
+        ->join('clusters', 'clusters.cluid = curriculum_gs.cluster')
         ->where('currid', $id)->findAll();
-        $data['cddata'] = $this->shsCurriculumDataModel->where('curriculumid', $id)->findAll();
+        $data['cddata'] = $this->gsCurriculumDataModel->where('curriculumid', $id)->findAll();
 
         if($this->request->is('post')) {
             $rules = [
@@ -323,7 +277,7 @@ class SHSDepartmentController extends BaseController
             ];
             if($this->validate($rules)){
                 $subjectid = $this->request->getVar('subject');
-                $FINDSUBJECT = $this->shsSubjectsModel->where('subid', $subjectid)->findAll();
+                $FINDSUBJECT = $this->gsSubjectsModel->where('subid', $subjectid)->findAll();
                 foreach($FINDSUBJECT as $FINDSUB){
                     $PRERE = $FINDSUB['prerequisite'];
                 }
@@ -334,7 +288,7 @@ class SHSDepartmentController extends BaseController
                     'sem' => $this->request->getVar('sem'),
                     'prerequisite' => $PRERE,
                 ];
-                $this->shsCurriculumDataModel->save($data);
+                $this->gsCurriculumDataModel->save($data);
                 session()->setTempdata('addsuccess','Subject added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -342,12 +296,12 @@ class SHSDepartmentController extends BaseController
             }
         }
 
-        return view('shs/curriculumsetupview', $data);
+        return view('gs/curriculumsetupview', $data);
     }
     public function sections() {
         $data = [
-            'page_title' => 'Holy Cross College | SHS Sections Setup',
-            'page_heading' => 'SHS SECTIONS SETUP! ',
+            'page_title' => 'Holy Cross College | IBED Sections Setup',
+            'page_heading' => 'IBED SECTIONS SETUP! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -358,15 +312,15 @@ class SHSDepartmentController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
-        $data['sectiondata'] = $this->shsSectionsModel
-        ->select('sections_shs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = sections_shs.cluster')
-        ->where('sections_shs.isdel', '0')->findAll();
+        $data['sectiondata'] = $this->gsSectionsModel
+        ->select('sections_gs.*, clusters.*')
+        ->join('clusters', 'clusters.cluid = sections_gs.cluster')
+        ->where('sections_gs.isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
                 'section' => [
-                    'rules' => 'required|is_unique[sections_shs.section]',
+                    'rules' => 'required|is_unique[sections_gs.section]',
                     'errors' => [
                         'required' => 'Section is required.',
                         'is_unique' => 'This section is already exists.'
@@ -398,7 +352,7 @@ class SHSDepartmentController extends BaseController
                     'level' => $this->request->getVar('level'),
                     'cluster' => $this->request->getVar('cluster'),
                 ];
-                $this->shsSectionsModel->save($sectiondata);
+                $this->gsSectionsModel->save($sectiondata);
                 session()->setTempdata('success', 'Section is added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -406,16 +360,16 @@ class SHSDepartmentController extends BaseController
             }
         }
 
-        return view('shs/sectionsview', $data);
+        return view('gs/sectionsview', $data);
     }
     public function deletesections($id=null) {
         $data = [
             'isdel' => '1',
         ];
 
-        $this->shsSectionsModel->where('secid', $id)->update($id, $data);
+        $this->gsSectionsModel->where('secid', $id)->update($id, $data);
         session()->setTempdata('success', 'Section is deleted!', 2);
-        return redirect()->to(base_url()."shs-sections");
+        return redirect()->to(base_url()."gs-sections");
     }
     public function updatesections($id=null) {
         if($this->request->is('post')) {
@@ -426,15 +380,15 @@ class SHSDepartmentController extends BaseController
                 'cluster' => $this->request->getVar('cluster'),
             ];
 
-            $this->shsSectionsModel->where('secid', $id)->update($id, $sectiondata);
+            $this->gsSectionsModel->where('secid', $id)->update($id, $sectiondata);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
             return redirect()->to(base_url()."shs-sections");
         }
     }
     public function registrationselect(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Registration - New Stundents',
-            'page_heading' => 'SHS REGISTRATION - OLD STUDENTS!',
+            'page_title' => 'Holy Cross College | IBED Registration',
+            'page_heading' => 'IBED REGISTRATION!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -444,110 +398,15 @@ class SHSDepartmentController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        return view('shs/registrationselectview', $data);
+        return view('gs/registrationselectview', $data);
     }
-    public function oldstudentselect(){
-        $data = [
-            'page_title' => 'Holy Cross College | SHS Registration - Old Students',
-            'page_heading' => 'SHS REGISTRATION - OLD STUDENTS!',
-            'page_p' => 'Welcome to Holy Cross College School Management System.',
-        ];
-        if(!session()->has('logged_user')) {
-            return redirect()->to(base_url());
-        }
-        $uid = session()->get('logged_user');
-        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
-        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $shsStudentsInfo = $this->shsStudentsModel
-        ->select('students_shs.*, enrollmenthistory_shs.*')
-        ->join('enrollmenthistory_shs', 'enrollmenthistory_shs.studid = students_shs.studid')
-        ->where('students_shs.studentno', '')
-        ->where('enrollmenthistory_shs.sy', '')
-        ->where('enrollmenthistory_shs.level', '')
-        ->where('enrollmenthistory_shs.cluster', '')
-        ->where('enrollmenthistory_shs.isdel', '')
-        ->findAll();
-        $registeredstudentsinfo = $this->regStudentsModel
-        ->select('regstudents.*')
-        ->where('NOT EXISTS (SELECT 1 FROM enrollmenthistory_shs 
-            WHERE enrollmenthistory_shs.studfullname = regstudents.studfullname 
-            AND enrollmenthistory_shs.isdel = 0)', NULL, FALSE)
-        ->findAll();
-        $data['registeredstudents'] = array_merge($shsStudentsInfo, $registeredstudentsinfo);
+    public function oldstudent(){
 
-        return view('shs/oldselectview', $data);
-    }
-    public function oldstudentprocess(){
-        if($this->request->is('post')) {
-            $studfullname = $this->request->getVar('fullname');
-            $studno = $this->request->getVar('studnumber');
-
-            $CHECKSTUDSHSTABLE = $this->shsStudentsModel
-            ->where('studfullname', $studfullname)->findAll();
-
-            if(empty($CHECKSTUDSHSTABLE)){
-                $CHECKREGTABLE = $this->regStudentsModel->where('studfullname', $studfullname)->findAll();
-                foreach($CHECKREGTABLE as $CRT){
-                    $STUDLN = $CRT['studln'];
-                    $STUDFN = $CRT['studfn'];
-                    $STUDMN = $CRT['studmn'];
-                    $STUDEXT = $CRT['studextension'];
-                    $STUDFULLNAME = $CRT['studfullname'];
-                    $STUDBIRTHDAY = $CRT['studbirthday'];
-                    $STUDAGE = $CRT['studage'];
-                    $STUDGENDER = $CRT['studgender'];
-                    $STUDBARANGAY = $CRT['studstbarangay'];
-                    $STUDCITY = $CRT['studcity'];
-                    $STUDPROVINCE = $CRT['studprovince'];
-                    $STUDCONTACT = $CRT['studcontact'];
-                    $STUDICITIZENSHIP = $CRT['studcitizenship'];
-                    $STUDRELIGION = $CRT['studreligion'];
-                    $STUDEMAIL = $CRT['studemail'];
-                    $STUDBIRTHPLACE = $CRT['studbirthplace'];
-                }
-                $shsstuddata = [
-                    'studentno' => $studno,
-                    'studln' => $STUDLN,
-                    'studfn' => $STUDFN,
-                    'studmn' => $STUDMN,
-                    'studextension' => $STUDEXT,
-                    'studfullname' => $STUDFULLNAME,
-                    'studbirthday' => $STUDBIRTHDAY,
-                    'studage' => $STUDAGE,
-                    'studgender' => $STUDGENDER,
-                    'studstbarangay' => $STUDBARANGAY,
-                    'studcity' => $STUDCITY,
-                    'studprovince' => $STUDPROVINCE,
-                    'studcontact' => $STUDCONTACT,
-                    'studcitizenship' => $STUDICITIZENSHIP,
-                    'studreligion' => $STUDRELIGION,
-                    'studemail' => $STUDEMAIL,
-                    'studbirthplace' => $STUDBIRTHPLACE,
-                ];
-                $this->shsStudentsModel->save($shsstuddata);
-                $registeredstudentpr = $this->shsStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
-                foreach($registeredstudentpr as $rsp){
-                    $STUDID = $rsp['studid'];
-                }
-                $this->shsPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
-                $ehdata = [
-                    'studid' => $STUDID,
-                    'studfullname' => $STUDFULLNAME,
-                    'date' => date('Y-m-d'),
-                    'status' => 'Registered',
-                ];
-                $this->enrollmentHistorySHSModel->save($ehdata);
-                return redirect()->to(base_url()."shs-admission");
-            } else {
-                $this->shsStudentsModel->where('studfullname', $studfullname)->set(['studentno' => $studno])->update();
-                return redirect()->to(base_url()."shs-admission");
-            }
-        }
     }
     public function registeredstudent(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Registered Students',
-            'page_heading' => 'SHS REGISTERED STUDENTS!',
+            'page_title' => 'Holy Cross College | IBED Registered Students',
+            'page_heading' => 'IBED REGISTERED STUDENTS!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -557,21 +416,19 @@ class SHSDepartmentController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        $data['registeredstudents'] = $this->regStudentsModel
-        ->select('regstudents.*')
-        ->join('enrollmenthistory_shs', 'enrollmenthistory_shs.studfullname = regstudents.studfullname AND enrollmenthistory_shs.isdel = 0', 'left')
-        ->where('enrollmenthistory_shs.studfullname IS NULL') // Only those NOT in enrollment history
-        ->groupBy('regstudents.studfullname') // Group by student fullname to avoid duplicates
+        $data['registeredstudents'] = $this->gsStudentsModel
+        ->select('students_gs.*')
+        ->join('paymenttransactions', 'paymenttransactions.studfullname = students_gs.studfullname')
+        ->join('enrollmenthistory_gs', 'enrollmenthistory_gs.studfullname = students_gs.studfullname AND enrollmenthistory_gs.isdel = 0', 'left')
+        ->where('enrollmenthistory_gs.studfullname IS NULL') // Only those NOT in enrollment history
+        ->groupBy('students_gs.studfullname') // Group by student fullname to avoid duplicates
         ->findAll();
 
-        $data['paymenttransactionsData'] = $this->paymentTransactionsModel
-        ->where('isdel', 0)->findAll();
 
-
-        return view('shs/registeredstudentview', $data);
+        return view('gs/registeredstudentview', $data);
     }
     public function registeredstudentProcess($id=null){
-        $registeredstudent = $this->regStudentsModel->where('studid', $id)->findAll();
+        $registeredstudent = $this->gsStudentsModel->where('studid', $id)->findAll();
         foreach($registeredstudent as $rs){
             $STUDLN = $rs['studln'];
             $STUDFN = $rs['studfn'];
@@ -590,7 +447,7 @@ class SHSDepartmentController extends BaseController
             $STUDEMAIL = $rs['studemail'];
             $STUDBIRTHPLACE = $rs['studbirthplace'];
         }
-        $shsstuddata = [
+        $gsstuddata = [
             'studln' => $STUDLN,
             'studfn' => $STUDFN,
             'studmn' => $STUDMN,
@@ -608,25 +465,25 @@ class SHSDepartmentController extends BaseController
             'studemail' => $STUDEMAIL,
             'studbirthplace' => $STUDBIRTHPLACE,
         ];
-        $this->shsStudentsModel->save($shsstuddata);
-        $registeredstudentpr = $this->shsStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
+        $this->gsStudentsModel->save($gsstuddata);
+        $registeredstudentpr = $this->gsStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
         foreach($registeredstudentpr as $rsp){
             $STUDID = $rsp['studid'];
         }
-        $this->shsPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
+        $this->gsPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
         $ehdata = [
             'studid' => $STUDID,
             'studfullname' => $STUDFULLNAME,
             'date' => date('Y-m-d'),
             'status' => 'Registered',
         ];
-        $this->enrollmentHistorySHSModel->save($ehdata);
-        return redirect()->to(base_url()."shs-admission");
+        $this->enrollmentHistoryGSModel->save($ehdata);
+        return redirect()->to(base_url()."gs-admission");
     }
     public function admission(){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Admission',
-            'page_heading' => 'SHS ADMISSION!',
+            'page_title' => 'Holy Cross College | IBED Admission',
+            'page_heading' => 'IBED ADMISSION!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -635,17 +492,17 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->where('enrollmenthistory_shs.status', 'Registered')->where('enrollmenthistory_shs.isdel', 0)->findAll();
+        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->where('enrollmenthistory_gs.status', 'Registered')->where('enrollmenthistory_gs.isdel', 0)->findAll();
 
-        return view('shs/admissionview', $data);
+        return view('gs/admissionview', $data);
     }
     public function admissionProcess($id=null){
         $data = [
-            'page_title' => 'Holy Cross College | SHS Admission Process',
-            'page_heading' => 'SHS ADMISSION PROCESS!',
+            'page_title' => 'Holy Cross College | IBED Admission Process',
+            'page_heading' => 'IBED ADMISSION PROCESS!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -655,25 +512,25 @@ class SHSDepartmentController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        $data['studentsshsdata'] = $this->shsStudentsModel
-        ->select('students_shs.*, permanentrecord_shs.*')
-        ->join('permanentrecord_shs', 'permanentrecord_shs.studid = students_shs.studid', 'left')
-        ->where('students_shs.studid', $id)->findAll();
+        $data['studentsgssdata'] = $this->gsStudentsModel
+        ->select('students_gs.*, permanentrecord_gs.*')
+        ->join('permanentrecord_gs', 'permanentrecord_gs.studid = students_gs.studid', 'left')
+        ->where('students_gs.studid', $id)->findAll();
 
         $data['schoolyear'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
 
         if($this->request->is('post')){
-            // SHS SCHOOL RECORD 
-            $shsschoolrecorddata = [
+            // IBED SCHOOL RECORD 
+            $gsschoolrecorddata = [
                 'studid' => $id,
                 'sy' => $this->request->getVar('schoolyear'),
                 'level' => $this->request->getVar('level'),
                 'cluster' => $this->request->getVar('cluster'),
             ];
-            $this->shsSchoolRecordModel->save($shsschoolrecorddata);
-            // SHS FAMILY BACKGROUND 
-            $shsfbdata = [
+            $this->gsSchoolRecordModel->save($gsschoolrecorddata);
+            // IBED FAMILY BACKGROUND 
+            $gsfbdata = [
                 'studid' => $id,
                 'nfather' => $this->request->getVar('fname'),
                 'fmobile' => $this->request->getVar('fcontact'),
@@ -686,10 +543,10 @@ class SHSDepartmentController extends BaseController
                 'memail' => $this->request->getVar('memail'),
                 'moffice' => $this->request->getVar('moffice'),
             ];
-            $this->shsFamilyBackgroundModel->save($shsfbdata);
+            $this->gsFamilyBackgroundModel->save($gsfbdata);
 
             // ADDITIONAL INFO
-            $shsaddinfodata = [
+            $gsaddinfodata = [
                 'studid' => $id,
                 'fdateofbirth' => $this->request->getVar('fdateofbirth'),
                 'fplaceofbirth' => $this->request->getVar('fplaceofbirth'),
@@ -739,56 +596,43 @@ class SHSDepartmentController extends BaseController
                 'con_regguid_diagnosis' => $this->request->getVar('con_regguid_diagnosis'),
                 'aisdel' => 0,
             ];
-            $this->additionalInfoSHSModel->save($shsaddinfodata);
-
-            // PERMANENT RECORD 
-            $PRSHSInfo = $this->shsPermanentRecordModel->where('studid', $id)->findAll();
-            foreach($PRSHSInfo as $prshs) {
-                $PRSHSID = $prshs['prid'];
-            }
-            $shsprdata = [
-                'eschool' => $this->request->getVar('eschool'),
-                'eyeargraduate' => $this->request->getVar('eyeargraduate'),
-                'jhschool' => $this->request->getVar('jhschool'),
-                'jhyeargraduate' => $this->request->getVar('jhyeargraduate'),
-            ];
-            $this->shsPermanentRecordModel->where('prid', $PRSHSID)->update($PRSHSID, $shsprdata);
+            $this->additionalInfoGSModel->save($gsaddinfodata);
             // ENROLLMENT TEMP DATA UPDATE
-            $EHSHSInfo = $this->enrollmentHistorySHSModel->where('studid', $id)->findAll();
-            foreach($EHSHSInfo as $ehshs) {
-                $EHSHSID = $ehshs['ehid'];
+            $EHGSInfo = $this->enrollmentHistoryGSModel->where('studid', $id)->findAll();
+            foreach($EHGSInfo as $ehshs) {
+                $EHGSID = $ehshs['ehid'];
             }
-            $ehshsdata = [
+            $ehgsdata = [
                 'sy' => $this->request->getVar('schoolyear'),
                 'level' => $this->request->getVar('level'),
                 'cluster' => $this->request->getVar('cluster'),
                 'status' => 'Admitted',
             ];
-            $this->enrollmentHistorySHSModel->where('ehid', $EHSHSID)->update($EHSHSID, $ehshsdata);
+            $this->enrollmentHistoryGSModel->where('ehid', $EHGSID)->update($EHGSID, $ehgsdata);
             session()->setTempdata('success', 'Admission processed successfully!', 2);
-            return redirect()->to(base_url()."shs-admission");
+            return redirect()->to(base_url()."gs-admission");
         }
 
-        return view('shs/admissionviewprocess', $data);
+        return view('gs/admissionviewprocess', $data);
     }
     public function admissionProcessCancel($id=null) {
         $ehdata = [
             'isdel' => '1',
             'status' => 'Cancelled',
         ];
-        $shsstuddata = [
+        $gsstuddata = [
             'studisdel' => '1',
         ];
 
-        $this->enrollmentHistorySHSModel->where('ehid', $id)->update($id, $ehdata);
-        $this->shsStudentsModel->where('studid', $id)->update($id, $shsstuddata);
+        $this->enrollmentHistoryGSModel->where('ehid', $id)->update($id, $ehdata);
+        $this->gsStudentsModel->where('studid', $id)->update($id, $gsstuddata);
         session()->setTempdata('deletesuccess', 'Application is deleted!', 2);
-        return redirect()->to(base_url()."shs-admission");
+        return redirect()->to(base_url()."gs-admission");
     }
     public function admissionProcessGenerate($id=null) {
         $year = date('y');
         // print_r($year);
-        $laststudentno = $this->shsStudentsModel
+        $laststudentno = $this->gsStudentsModel
         ->like('studentno', $year . 'S', 'after')
         ->orderBy('studentno', 'DESC')
         ->get()
@@ -806,13 +650,13 @@ class SHSDepartmentController extends BaseController
         $data = [
             'studentno' => $studentNumber,
         ];
-        $this->shsStudentsModel->where('studid', $id)->update($id, $data);
-        return redirect()->to(base_url()."shs-admission/process/".$id);
+        $this->gsStudentsModel->where('studid', $id)->update($id, $data);
+        return redirect()->to(base_url()."gs-admission/process/".$id);
     }
     public function advising() {
         $data = [
-            'page_title' => 'Holy Cross College | SHS Advising',
-            'page_heading' => 'SHS ADVISING!',
+            'page_title' => 'Holy Cross College | IBED Advising',
+            'page_heading' => 'IBED ADVISING!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -821,18 +665,18 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('enrollmenthistory_shs.status', 'Admitted')->where('enrollmenthistory_shs.isdel', 0)->findAll();
+        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
+        ->where('enrollmenthistory_gs.status', 'Admitted')->where('enrollmenthistory_gs.isdel', 0)->findAll();
 
-        return view('shs/advisingview', $data);
+        return view('gs/advisingview', $data);
     }
     public function advisingProcess($id=null) {
         $data = [
-            'page_title' => 'Holy Cross College | SHS Advising',
-            'page_heading' => 'SHS ADVISING!',
+            'page_title' => 'Holy Cross College | IBED Advising',
+            'page_heading' => 'IBED ADVISING!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -841,38 +685,38 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('students_shs.studid', $id)->findAll();
-        foreach($data['enrollmenthistoryshsdata'] as $ehs) {
+        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
+        ->where('students_gs.studid', $id)->findAll();
+        foreach($data['enrollmenthistorygsdata'] as $ehs) {
             $CLUSTERID = $ehs['cluid'];
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
         }
 
-        $data['shscurriculumdata'] = $this->shsCurriculumModel
-        ->select('curriculum_shs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = curriculum_shs.cluster')
-        ->where('curriculum_shs.cluster', $CLUSTERID)
-        ->where('curriculum_shs.level', $LEVEL)
-        ->where('curriculum_shs.sy', $SY)
+        $data['gscurriculumdata'] = $this->gsCurriculumModel
+        ->select('curriculum_gs.*, clusters.*')
+        ->join('clusters', 'clusters.cluid = curriculum_gs.cluster')
+        ->where('curriculum_gs.cluster', $CLUSTERID)
+        ->where('curriculum_gs.level', $LEVEL)
+        ->where('curriculum_gs.sy', $SY)
         ->findAll();
 
-        $data['shssectiondata'] = $this->shsSectionsModel
-        ->select('sections_shs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = sections_shs.cluster')
-        ->where('sections_shs.cluster', $CLUSTERID)
-        ->where('sections_shs.level', $LEVEL)
-        ->where('sections_shs.sy', $SY)
+        $data['gssectiondata'] = $this->gsSectionsModel
+        ->select('sections_gs.*, clusters.*')
+        ->join('clusters', 'clusters.cluid = sections_gs.cluster')
+        ->where('sections_gs.cluster', $CLUSTERID)
+        ->where('sections_gs.level', $LEVEL)
+        ->where('sections_gs.sy', $SY)
         ->findAll();
 
         if($this->request->is('post')) {
             $SELECTEDCURRICULUM = $this->request->getVar('curriculum');
             $SELECTEDSECTION = $this->request->getVar('section');
-            $ADVISINGCHECK = $this->shsAssessmentModel
+            $ADVISINGCHECK = $this->gsAssessmentModel
             ->where('studid', $STUDID)
             ->where('sy', $SY)
             ->where('level', $LEVEL)
@@ -882,7 +726,7 @@ class SHSDepartmentController extends BaseController
                 session()->setTempdata('error', 'Student is already assessed!', 2);
                 return redirect()->to(current_url());
             }else{
-                $shsassessmentdata = [
+                $gsassessmentdata = [
                     'studid' => $STUDID,
                     'sy' => $SY,
                     'level' => $LEVEL,
@@ -892,65 +736,62 @@ class SHSDepartmentController extends BaseController
                     'date' => date('Y-m-d'),
                 ];
                 // print_r($shsassessmentdata);
-                $this->shsAssessmentModel->save($shsassessmentdata);
+                $this->gsAssessmentModel->save($gsassessmentdata);
                 session()->setTempdata('success', 'Student is processed successfully!', 2);
                 return redirect()->to(current_url());
             }
         }
-        $data['shsassessmentdata'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*,clusters.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
-        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
-        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
-        ->join('clusters', 'clusters.cluid = assessment_shs.cluster')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
+        $data['gsassessmentdata'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
+        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
+        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
         ->findAll();
 
         // SHS ASSESSED CURRICULUM DATA
-        $data['firstsemester'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '1st Semester')
+        $data['firstsemester'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '1st Semester')
         ->findAll();
-        $data['secondsemester'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '2nd Semester')
+        $data['secondsemester'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '2nd Semester')
         ->findAll();
 
         //SHS ASSESSED RATE DATA
-        $data['shsratedata'] = $this->shsRatesModel
-        ->where('rates_shs.cluster', $CLUSTERID)
-        ->where('rates_shs.level', $LEVEL)
-        ->where('rates_shs.sy', $SY)
+        $data['gsratedata'] = $this->gsRatesModel
+        ->where('rates_gs.cluster', $CLUSTERID)
         ->findAll();
-        foreach($data['shsratedata'] as $rates){
+        foreach($data['gsratedata'] as $rates){
             $RATEID = $rates['rateid'];
         }
 
-        $data['shsrofdata'] = $this->shsRateOtherFeesModel->where('rateid', $RATEID)->findAll();
-        $data['shsrddata'] = $this->shsRateDuesModel->where('rateid', $RATEID)->findAll();
+        $data['gsrofdata'] = $this->gsRateOtherFeesModel->where('rateid', $RATEID)->findAll();
+        $data['gsrddata'] = $this->gsRateDuesModel->where('rateid', $RATEID)->findAll();
 
-        return view('shs/advisingviewprocess', $data);
+        return view('gs/advisingviewprocess', $data);
     }
     public function advisingSubmitAccount($id=null) {
-        $ASSESSMENTDATACHECKING = $this->shsAssessmentModel
-        ->select('assessment_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
-        ->join('clusters', 'clusters.cluid = assessment_shs.cluster')
-        ->where('assessment_shs.studid', $id)
+        $ASSESSMENTDATACHECKING = $this->gsAssessmentModel
+        ->select('assessment_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
+        ->join('clusters', 'clusters.cluid = assessment_gs.cluster')
+        ->where('assessment_gs.studid', $id)
         ->findAll();
         foreach($ASSESSMENTDATACHECKING as $adc) {
             $STUDENTNO = $adc['studentno'];
@@ -969,33 +810,33 @@ class SHSDepartmentController extends BaseController
             'accountstatus' => 'Active',
             'createddate' => date('Y-m-d'),
         ];
-        $FINDEHSHS = $this->enrollmentHistorySHSModel
+        $FINDEHGS = $this->enrollmentHistoryGSModel
         ->where('studid', $id)
         ->where('sy', $SY)
         ->where('level', $LEVEL)
         ->findAll();
-        foreach($FINDEHSHS as $findehshs){
-            $STUDENTID = $findehshs['studid'];
+        foreach($FINDEHGS as $findehgs){
+            $STUDENTID = $findehgs['studid'];
         }
 
-        $ehshsdata = [
+        $ehgsdata = [
             'status' => 'Assessed',
         ];
         
-        $shsassessment = [
+        $gsassessment = [
             'status' => 'Finalized',
         ];
 
-        $this->shsAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
+        $this->gsAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $gsassessment);
         $this->studentAccountsModel->save($studentsaccounts);
-        $this->enrollmentHistorySHSModel->where('studid', $STUDENTID)->update($STUDENTID, $ehshsdata);
+        $this->enrollmentHistoryGSModel->where('studid', $STUDENTID)->update($STUDENTID, $ehgsdata);
         session()->setTempdata('success', 'Student is assessed successfully!', 2);
-        return redirect()->to(base_url()."shs-advising");
+        return redirect()->to(base_url()."gs-advising");
     }
     public function assessment() {
         $data = [
-            'page_title' => 'Holy Cross College | SHS Assessment',
-            'page_heading' => 'SHS ASSESSMENT!',
+            'page_title' => 'Holy Cross College | IBED Assessment',
+            'page_heading' => 'IBED ASSESSMENT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -1004,18 +845,18 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('enrollmenthistory_shs.status', 'Assessed')->where('enrollmenthistory_shs.isdel', 0)->findAll();
+        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
+        ->where('enrollmenthistory_gs.status', 'Assessed')->where('enrollmenthistory_gs.isdel', 0)->findAll();
 
-        return view('shs/assessmentview', $data);
+        return view('gs/assessmentview', $data);
     }
     public function assessmentView($id=null) {
         $data = [
-            'page_title' => 'Holy Cross College | SHS Assessment View',
-            'page_heading' => 'SHS ASSESSMENT VIEW!',
+            'page_title' => 'Holy Cross College | IBED Assessment View',
+            'page_heading' => 'IBED ASSESSMENT VIEW!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -1024,67 +865,56 @@ class SHSDepartmentController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistoryshsdata'] = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('students_shs.studid', $id)->findAll();
-        foreach($data['enrollmenthistoryshsdata'] as $ehs) {
+        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
+        ->where('students_gs.studid', $id)->findAll();
+        foreach($data['enrollmenthistorygsdata'] as $ehs) {
             $CLUSTERID = $ehs['cluid'];
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
         }
-        $data['shsassessmentdata'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*, clusters.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
-        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
-        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
-        ->join('clusters', 'clusters.cluid = assessment_shs.cluster')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
+        $data['gsassessmentdata'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
+        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
+        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
         ->findAll();
         // SHS ASSESSED CURRICULUM DATA
-        $data['firstsemester'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '1st Semester')
+        $data['firstsemester'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '1st Semester')
         ->findAll();
-        $data['secondsemester'] = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '2nd Semester')
+        $data['secondsemester'] = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '2nd Semester')
         ->findAll();
 
         //SHS ASSESSED RATE DATA
-        $data['shsratedata'] = $this->shsRatesModel
-        ->where('rates_shs.cluster', $CLUSTERID)
-        ->where('rates_shs.sy', $SY)
-        ->where('rates_shs.level', $LEVEL)
+        $data['gsratedata'] = $this->gsRatesModel
+        ->where('rates_gs.cluster', $CLUSTERID)
         ->findAll();
-        foreach($data['shsratedata'] as $rates){
-            $RATEID = $rates['rateid'];
-        }
-
-        $data['shsrofdata'] = $this->shsRateOtherFeesModel
-        ->where('rateid', $RATEID)
-        ->findAll();
-        $data['shsrddata'] = $this->shsRateDuesModel
-        ->where('rateid', $RATEID)
-        ->findAll();
+        $data['gsrofdata'] = $this->gsRateOtherFeesModel->findAll();
+        $data['gsrddata'] = $this->gsRateDuesModel->findAll();
         
-        return view('shs/assessmentviewing', $data);
+        return view('gs/assessmentviewing', $data);
     }
     public function assessmentPrint($id=null) {
         $pageSize = array(216, 330);
@@ -1104,7 +934,7 @@ class SHSDepartmentController extends BaseController
 
         $pdf->SetMargins(5,40,5,0);
         $pdf->SetHeaderMargin(0);
-        $pdf->SetFooterMargin(0);
+        
 
         $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -1120,28 +950,28 @@ class SHSDepartmentController extends BaseController
         $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
         $pdf->Line(5, 37, 206, 37);
 
-        $enrollmenthistoryshsdata = $this->enrollmentHistorySHSModel
-        ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
-        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('students_shs.studid', $id)->findAll();
-        foreach($enrollmenthistoryshsdata as $ehs) {
+        $enrollmenthistorygsdata = $this->enrollmentHistoryGSModel
+        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
+        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
+        ->where('students_gs.studid', $id)->findAll();
+        foreach($enrollmenthistorygsdata as $ehs) {
             $CLUSTERID = $ehs['cluid'];
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
             $CLUSTER = $ehs['code'];
         }
-        $shsassessmentdata = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, sections_shs.*, students_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum')
-        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
-        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
+        $gsassessmentdata = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
+        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
+        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
         ->findAll();
-        foreach($shsassessmentdata as $sad) {
+        foreach($gsassessmentdata as $sad) {
             $STUDENTNO = $sad['studentno'];
             $SY = $sad['sy'];
             $STUDFULLNAME = $sad['studfullname'];
@@ -1154,38 +984,34 @@ class SHSDepartmentController extends BaseController
         }
         
         // SHS ASSESSED CURRICULUM DATA
-        $firstsemester = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '1st Semester')
+        $firstsemester = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '1st Semester')
         ->findAll();
-        $secondsemester = $this->shsAssessmentModel
-        ->select('assessment_shs.*, curriculum_shs.*, currdata_shs.*, subjects_shs.*')
-        ->join('curriculum_shs', 'curriculum_shs.currid = assessment_shs.curriculum', 'left')
-        ->join('currdata_shs', 'currdata_shs.curriculumid = curriculum_shs.currid', 'left')
-        ->join('subjects_shs', 'subjects_shs.subid = currdata_shs.subid', 'left')
-        ->where('assessment_shs.studid', $STUDID)
-        ->where('assessment_shs.sy', $SY)
-        ->where('assessment_shs.level', $LEVEL)
-        ->where('currdata_shs.sem', '2nd Semester')
+        $secondsemester = $this->gsAssessmentModel
+        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
+        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
+        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
+        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
+        ->where('assessment_gs.studid', $STUDID)
+        ->where('assessment_gs.sy', $SY)
+        ->where('assessment_gs.level', $LEVEL)
+        ->where('currdata_gs.sem', '2nd Semester')
         ->findAll();
 
         //SHS ASSESSED RATE DATA
-        $shsratedata = $this->shsRatesModel
-        ->where('rates_shs.cluster', $CLUSTERID)
-        ->where('rates_shs.sy', $SY)
-        ->where('rates_shs.level', $LEVEL)
+        $gsratedata = $this->gsRatesModel
+        ->where('rates_gs.cluster', $CLUSTERID)
         ->findAll();
-        foreach($shsratedata as $rates){
-            $RATEID = $rates['rateid'];
-        }
-        $shsrofdata = $this->shsRateOtherFeesModel->where('rateid', $RATEID)->findAll();
-        $shsrddata = $this->shsRateDuesModel->where('rateid', $RATEID)->findAll();
+        
+        $gsrofdata = $this->gsRateOtherFeesModel->findAll();
+        $gsrddata = $this->gsRateDuesModel->findAll();
 
         $html = '
             <style>        
@@ -1203,8 +1029,8 @@ class SHSDepartmentController extends BaseController
 
             <table>
                 <tr>
-                    <td style="width: 60%;"></td>
-                    <td><h3>SENIOR HIGH SCHOOL DEPARTMENT</h3></td>
+                    <td style="width: 80%;"></td>
+                    <td><h3>IBED DEPARTMENT</h3></td>
                 </tr>   
             </table><br><br>
 
@@ -1258,9 +1084,7 @@ class SHSDepartmentController extends BaseController
         }
         $html .='
                 </tbody>
-            </table>
-            <br>
-            <br>
+            </table><br><br>
             <table border="1" style="width: 100%; font-size: 10px;">
                 <tr>
                     <td style="text-align: center;"><strong>SECOND SEMESTER</strong></td>
@@ -1284,24 +1108,23 @@ class SHSDepartmentController extends BaseController
                     <td style="width: 50%; text-align: left; font-size: 10px;">'.$SSUBJECT.'</td>
                 </tr>';
         }
-        foreach($shsratedata as $shsrated){
-            $TF = $shsrated['tf'];
+        foreach($gsratedata as $gsrated){
+            $TF = $gsrated['tf'];
         }
         $html .='
                 </tbody>
-            </table>
-            <table style="width: 100%;">
+            </table><br><br>
+            <table>
                 <tbody>
                     <tr>
-                        <td style="width: 50%; ">
+                        <td style="width: 50%;">
                             <table>
                                 <tbody>
-                                <br><br>
                                     <tr>
-                                        <td style="width: 100%; text-align: left; font-size: 10px;"><strong>FEES:</strong></td>
-                                    </tr>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;"><strong>FEES:</strong></td>
+                                    </tr><br>
                                     <tr>
-                                        <td style="width: 100%; text-align: left; font-size: 10px;">Tuition Fee</td>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;">Tuition Fee</td>
                                     </tr>
                                     <tr>
                                         <td style="width: 5%;"></td>
@@ -1309,30 +1132,42 @@ class SHSDepartmentController extends BaseController
                                         <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($TF, 2).'</strong></td>
                                         <td style="width: 5%;"></td>
                                     </tr>
+                                    <tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: left; font-size: 10px;">QVR (Public)</td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;"><strong>-'.number_format($TF, 2).'</strong></td>
+                                        <td style="width: 5%;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;">Sub Total</td>
+                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
+                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>0.00</strong></td>
+                                    </tr>
                                 </tbody>
-                            </table>
-                            <table style="width: 100%;">
+                            </table><br><br>
+                            <table>
                                 <tbody>
                                     <tr>
-                                        <td style="width: 100%; text-align: left; font-size: 10px;">Miscellaneous Fees</td>
+                                        <td style="width: 50%; text-align: left; font-size: 10px;">Miscellaneous Fees</td>
                                     </tr>';
-                                        foreach($shsrofdata as $shsrofd){
-                                        if($shsrofd['rateid'] == $shsrated['rateid']){
-                                            $NAME = $shsrofd['name'];
-                                            $AMOUNT = $shsrofd['otherfees'];
+                                    foreach($gsrofdata as $gsrofd){
+                                        if($gsrofd['rateid'] == $gsrated['rateid']){
+                                            $NAME = $gsrofd['name'];
+                                            $AMOUNT = $gsrofd['otherfees'];
                                             $totalotherfees = 0;
-                                            foreach($shsrofdata as $shsrofd) {
-                                                if($shsrofd['rateid'] == $shsrated['rateid']) {
-                                                    $totalotherfees += $shsrofd['otherfees'];
+                                            foreach($gsrofdata as $gsrofd) {
+                                                if($gsrofd['rateid'] == $gsrated['rateid']) {
+                                                    $totalotherfees += $gsrofd['otherfees'];
                                                 }
                                             }
-                                            $GRANDTOTAL = $TF + $totalotherfees;
-                                        $html .= '<tr>
-                                            <td style="width: 5%;"></td>
-                                            <td style="width: 45%; text-align: left; font-size: 10px;">'.$NAME.'</td>
-                                            <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($AMOUNT, 2).'</strong></td>
-                                            <td style="width: 5%;"></td>
-                                        </tr>';
+
+                                            $html .= '<tr>
+                                                <td style="width: 5%;"></td>
+                                                <td style="width: 45%; text-align: left; font-size: 10px;">'.$NAME.'</td>
+                                                <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($AMOUNT, 2).'</strong></td>
+                                                <td style="width: 5%;"></td>
+                                            </tr>';
                                         }
                                     }
                             $html .='<tr>
@@ -1341,27 +1176,19 @@ class SHSDepartmentController extends BaseController
                                         <td style="width: 15%; text-align: right; font-size: 10px;"></td>
                                         <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>'.number_format($totalotherfees, 2).'</strong></td>
                                     </tr>
-                                    <tr>
-                                    <br>
-                                        <td style="width: 5%;"></td>
-                                        <td style="width: 45%; text-align: right; font-size: 10px;">Grand Total</td>
-                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
-                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>'.number_format($GRANDTOTAL, 2).'</strong></td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </td>
                         <td style="width: 50%;">
                             <table>
                                 <tbody>
-                                    <br><br>
                                     <tr>
                                         <td style="width: 50%; text-align: left; font-size: 10px;"><strong>INSTALLMENT SCHEDULE:</strong></td>
-                                    </tr>';
-                                    foreach($shsrddata as $shsrdd){
-                                        if($shsrdd['rateid'] == $shsrated['rateid']){
-                                            $DNAME = $shsrdd['name'];
-                                            $DDATE = $shsrdd['due'];
+                                    </tr><br>';
+                                    foreach($gsrddata as $gsrdd){
+                                        if($gsrdd['rateid'] == $gsrated['rateid']){
+                                            $DNAME = $gsrdd['name'];
+                                            $DDATE = $gsrdd['due'];
 
                                             $html .='<tr>
                                                 <td style="width: 5%;"></td>
@@ -1376,13 +1203,18 @@ class SHSDepartmentController extends BaseController
                         </td>
                     </tr>
                 </tbody>
-            </table>';
+            </table>
+            <br>
+            <br>
+            <br>
+            <br>';
             $html .= '<table style="width: 100%;">
+            <br>
+            
                 <tr>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
                             <tbody>
-                            <br><br><br><br><br><br><br>
                                 <tr>
                                     <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
                                 </tr>
@@ -1395,7 +1227,6 @@ class SHSDepartmentController extends BaseController
                     <td style="width: 50%; vertical-align: top;">
                         <table  style="width: 100%;">
                             <tbody>
-                            <br><br><br>
                                 <tr>
                                     <td style="width: 30%; text-align: center;"></td>
                                     <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
@@ -1406,9 +1237,11 @@ class SHSDepartmentController extends BaseController
                                 </tr>
                             </tbody>
                         </table>
+                        <br>
+                        <br>
+                        <br>
                         <table  style="width: 100%;">
                             <tbody>
-                            <br><br><br>
                                 <tr>
                                     <td style="width: 30%; text-align: center;"></td>
                                     <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
@@ -1421,15 +1254,15 @@ class SHSDepartmentController extends BaseController
                         </table>
                     </td>
                 </tr>
-            </table>';
+            </table>
+            <br>';
         
         $html .='
             <table>
                 <tbody>
                     <tr>
-                    <br><br><br>
                         <td style="text-align: center;">
-                            <p style="font-size: 9px;">THIS IS NOT OFFICIAL UNLESS SIGNED BY THE REGISTRAR</p>
+                            <p style="font-size: 6px;">THIS IS NOT OFFICIAL UNLESS SIGNED BY THE REGISTRAR</p>
                         </td>
                     </tr>
                 </tbody>
@@ -1446,11 +1279,11 @@ class SHSDepartmentController extends BaseController
             ->setBody($pdfContent);
     }
     public function assessmentApproved($id=null) {
-        $ehshsdata = [
+        $ehgsdata = [
             'status' => 'Payment',
         ];
-        $this->enrollmentHistorySHSModel->where('ehid', $id)->update($id, $ehshsdata);
+        $this->enrollmentHistoryGSModel->where('ehid', $id)->update($id, $ehgsdata);
         session()->setTempdata('success', 'Student is approved!', 2);
-        return redirect()->to(base_url()."shs-assessment");
+        return redirect()->to(base_url()."gs-assessment");
     }
 }

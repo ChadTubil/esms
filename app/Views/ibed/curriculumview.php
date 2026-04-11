@@ -31,14 +31,14 @@
                                 <?php echo $validation->listErrors(); ?>
                             </div>
                         <?php endif; ?>
-                        <?= form_open('shs-curriculum'); ?>
+                        <?= form_open('ibed-curriculum'); ?>
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">CLUSTER</label>
-                                    <select name="cluster" class="form-select" id="Course" style="width: 100%;">
+                                    <label class="form-label" for="validationDefault01">LEVEL</label>
+                                    <select name="level" class="form-select" id="Course" style="width: 100%;">
                                         <option selected="" disabled=""></option>
-                                        <?php foreach ($clusterdata as $clusterd): ?>
-                                            <option value="<?php echo $clusterd['cluid']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['name']; ?></option>
+                                        <?php foreach ($leveldata as $leveld): ?>
+                                            <option value="<?php echo $leveld['ibedlvlid']; ?>"><?php echo $leveld['code']; ?> - <?php echo $leveld['name']; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -49,14 +49,6 @@
                                         <?php foreach ($sydata as $syd): ?>
                                             <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
                                         <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">LEVEL</label>
-                                    <select name="level" class="form-select" id="LEVEL" style="width: 100%;">
-                                        <option selected="" disabled=""></option>
-                                        <option value="Grade 11">Grade 11</option>
-                                        <option value="Grade 12">Grade 12</option>
                                     </select>
                                 </div>
                             </div>
@@ -93,34 +85,32 @@
                             <table id="datatable" class="table table-striped" data-toggle="data-table">
                                 <thead>
                                     <tr>
-                                        <th>CLUSTER</th>
                                         <th>LEVEL</th>
                                         <th>SCHOOL YEAR</th>
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach($shscurriculumdata as $shscurriculumd):?>
+                                    <?php foreach($curriculumdata as $ibedcurriculumd):?>
                                         <tr>
-                                            <td><?= $shscurriculumd['code']; ?></td>
-                                            <td><?= $shscurriculumd['level']; ?></td>
-                                            <td><?= $shscurriculumd['sy']; ?></td>
+                                            <td><?= $ibedcurriculumd['name']; ?></td>
+                                            <td><?= $ibedcurriculumd['sy']; ?></td>
                                             <td>
                                                 <div class="flex align-items-center list-user-action">
                                                     <a class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Set Up"
-                                                        onclick="window.location.href='<?= base_url(); ?>shs-curriculum/setup/<?= $shscurriculumd['currid']; ?>';">
+                                                        onclick="window.location.href='<?= base_url(); ?>ibed-curriculum/setup/<?= $ibedcurriculumd['currid']; ?>';">
                                                         <span class="btn-inner">
                                                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                 <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                                 <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 １８．９C１８．９４２９ １８．９ ２０．０００２ １７．８４９４ ２０．０００２ １６．５５３８Ｚ" stroke="currentColor" stroke-width="１．５" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             </svg>                            
                                                         </span>
                                                         <span>SET UP</span>
                                                     </a>
                                                     <a class="btn btn-sm btn-icon btn-primary" title="Edit"
-                                                        href="#" data-bs-toggle="modal" data-bs-target="#editModal<?= $shscurriculumd['currid']; ?>">
+                                                        href="#" data-bs-toggle="modal" data-bs-target="#editModal<?= $ibedcurriculumd['currid']; ?>">
                                                         <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -129,45 +119,35 @@
                                                         </svg>
                                                         </span>
                                                     </a>
-                                                    <div class="modal fade" id="editModal<?= $shscurriculumd['currid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal fade" id="editModal<?= $ibedcurriculumd['currid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content dark">
                                                                 <div class="modal-header">
                                                                     <h5 class="modal-title" id="staticBackdropLabel">UPDATE CURRICULUM</h5>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
-                                                                <?= form_open('shs-curriculum/update/'.$shscurriculumd['currid']); ?>
+                                                                <?= form_open('ibed-curriculum/update/'.$ibedcurriculumd['currid']); ?>
                                                                 <div class="modal-body">
                                                                     <div class="form-group">
-                                                                        <label for="email" class="form-label">CLUSTER</label>
-                                                                        <select name="cluster" class="form-select" id="exampleFormControlSelect1">
-                                                                            <option value="<?php echo $shscurriculumd['cluster']; ?>" selected>
-                                                                                <?php echo $shscurriculumd['cluster']; ?>
+                                                                        <label for="email" class="form-label">LEVEL</label>
+                                                                        <select name="level" class="form-select" id="exampleFormControlSelect1">
+                                                                            <option value="<?php echo $ibedcurriculumd['level']; ?>" selected>
+                                                                                <?php echo $ibedcurriculumd['name']; ?>
                                                                             </option>
-                                                                            <?php foreach ($clusterdata as $clusterd): ?>
-                                                                                <option value="<?php echo $clusterd['code']; ?>"><?php echo $clusterd['code']; ?> - <?php echo $clusterd['name']; ?></option>
+                                                                            <?php foreach ($leveldata as $lvld): ?>
+                                                                                <option value="<?php echo $lvld['ibedlvlid']; ?>"><?php echo $lvld['code']; ?> - <?php echo $lvld['name']; ?></option>
                                                                             <?php endforeach; ?>
                                                                         </select>
                                                                     </div>
                                                                     <div class="form-group">
                                                                         <label for="email" class="form-label">SCHOOL YEAR</label>
                                                                         <select name="sy" class="form-select" id="exampleFormControlSelect1">
-                                                                            <option value="<?php echo $shscurriculumd['sy']; ?>" selected>
-                                                                                <?php echo $shscurriculumd['sy']; ?>
+                                                                            <option value="<?php echo $ibedcurriculumd['sy']; ?>" selected>
+                                                                                <?php echo $ibedcurriculumd['sy']; ?>
                                                                             </option>
                                                                             <?php foreach ($sydata as $syd): ?>
                                                                                 <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
                                                                             <?php endforeach; ?>
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="email" class="form-label">LEVEL</label>
-                                                                        <select name="level" class="form-select" id="exampleFormControlSelect1">
-                                                                            <option value="<?php echo $shscurriculumd['level']; ?>" selected>
-                                                                                <?php echo $shscurriculumd['level']; ?>
-                                                                            </option>
-                                                                            <option value="Grade 11">Grade 11</option>
-                                                                            <option value="Grade 12">Grade 12</option>
                                                                         </select>
                                                                     </div>
                                                                     <br>
@@ -181,7 +161,7 @@
                                                         </div>
                                                     </div>
                                                     <a class="btn btn-sm btn-icon btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
-                                                        onclick="window.location.href='<?= base_url(); ?>shs-curriculum/delete/<?= $shscurriculumd['currid']; ?>';">
+                                                        onclick="window.location.href='<?= base_url(); ?>ibed-curriculum/delete/<?= $ibedcurriculumd['currid']; ?>';">
                                                         <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                                                             <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
