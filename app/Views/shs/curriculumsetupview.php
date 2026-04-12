@@ -76,7 +76,7 @@
                             <div style="text-align: center;">
                                 <h5><strong>
                                     <?php foreach($shscurriculumdata as $shscurriculumd): ?>
-                                        <?= $shscurriculumd['cluster']; ?> - <?= $shscurriculumd['sy']; ?> - <?= $shscurriculumd['level']; ?>
+                                        <?= $shscurriculumd['code']; ?> - <?= $shscurriculumd['sy']; ?> - <?= $shscurriculumd['level']; ?>
                                     <?php endforeach; ?>
                                 </strong></h5>
                             </div>

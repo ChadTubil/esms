@@ -25,6 +25,11 @@ use App\Models\SHSStudentsModel;
 use App\Models\StudentsLedgerModel;
 use App\Models\DiscountsModel;
 use App\Models\SchoolLedgerModel;
+use App\Models\IBEDLevelModel;
+use App\Models\IBEDRatesModel;
+use App\Models\IBEDRateDuesModel;
+use App\Models\IBEDRateOtherFeesModel;
+use App\Models\IBEDStudentsModel;
 use TCPDF;
 use NumberFormatter; // Add this line
 class AccountingController extends BaseController
@@ -53,6 +58,11 @@ class AccountingController extends BaseController
     public $studentsLedgerModel;
     public $discountsModel;
     public $schoolLedgerModel;
+    public $ibedlevelModel;
+    public $ibedRatesModel;
+    public $ibedRateDuesModel;
+    public $ibedRateOtherFeesModel;
+    public $ibedStudentsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -80,6 +90,11 @@ class AccountingController extends BaseController
         $this->studentsLedgerModel = new StudentsLedgerModel();
         $this->discountsModel = new DiscountsModel();
         $this->schoolLedgerModel = new SchoolLedgerModel();
+        $this->ibedlevelModel = new IBEDLevelModel();
+        $this->ibedRatesModel = new IBEDRatesModel();
+        $this->ibedRateDuesModel = new IBEDRateDuesModel();
+        $this->ibedRateOtherFeesModel = new IBEDRateOtherFeesModel();
+        $this->ibedStudentsModel = new IBEDStudentsModel();
         $this->session = session();
     }
     public function index() {
@@ -363,6 +378,143 @@ class AccountingController extends BaseController
 
             $this->shsRateOtherFeesModel->where('rofid', $id)->update($id, $data);
             return redirect()->to(base_url()."shs-rates/setup/".$rateID);
+        }
+    }
+    public function ibedRates() {
+        $data = [
+            'page_title' => 'Holy Cross College | IBED Rates',
+            'page_heading' => 'IBED RATES! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', '0')->findAll();
+        $data['ibedratesdata'] = $this->ibedRatesModel
+        ->select('rates_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'rates_ibed.level = levels_ibed.levelid')
+        ->where('rates_ibed.isdel', '0')->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'level' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Level is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $data = [
+                    'sy' => $this->request->getVar('sy'),
+                    'level' => $this->request->getVar('level'),
+                ];
+                $this->ibedRatesModel->save($data);
+                session()->setTempdata('success','Rate added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('accounting/ibed-rates', $data);
+    }
+    public function ibedratesSetup($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | IBED Rates Setup',
+            'page_heading' => 'IBED RATES SETUP! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['ibedratesdata'] = $this->ibedRatesModel
+        ->select('rates_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'rates_ibed.level = levels_ibed.levelid')
+        ->where('rates_ibed.rateid', $id)->findAll();
+
+        $data['ibedrddata'] = $this->ibedRateDuesModel->where('rateid', $id)->findAll();
+        $data['ibedrofdata'] = $this->ibedRateOtherFeesModel->where('rateid', $id)->findAll();
+
+        if($this->request->is('post')) {
+            $data = [
+                'tf' => $this->request->getVar('tf'),
+            ];
+            $this->ibedRatesModel->where('rateid', $id)->update($id, $data);
+            session()->setTempdata('addsuccess','Save successfully', 3);
+            return redirect()->to(current_url());
+        }
+
+        return view('accounting/ibed-ratessetup', $data);
+    }
+    public function ibedratesDues($id=null) {
+        if($this->request->is('post')) {
+            $numberofdues = $this->ibedRateDuesModel->where('rateid', $id)->countAllResults();
+            $newcount = $numberofdues + 1;
+            // print_r($newcount);
+            $data = [
+                'rateid' => $id,
+                'name' => "Due Date ".$newcount,
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->ibedRateDuesModel->save($data);
+            return redirect()->to(base_url()."ibed-rates/setup/".$id);
+        }
+    }
+    public function ibedratesRof($id=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'rateid' => $id,
+                'name' => $this->request->getVar('ratename'),
+                'otherfees' => $this->request->getVar('otherfees'),
+            ];
+
+            $this->ibedRateOtherFeesModel->save($data);
+            return redirect()->to(base_url()."ibed-rates/setup/".$id);
+        }
+    }
+    public function ibedratesDuesUpdate($id=null) {
+        $LocateRateID = $this->ibedRateDuesModel->where('rdid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
+        if($this->request->is('post')) {
+            $data = [
+                'due' => $this->request->getVar('due'),
+            ];
+
+            $this->ibedRateDuesModel->where('rdid', $id)->update($id, $data);
+            return redirect()->to(base_url()."ibed-rates/setup/".$rateID);
+        }
+    }
+    public function ibedratesRofUpdate($id=null) {
+        $LocateRateID = $this->ibedRateOtherFeesModel->where('rofid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
+        if($this->request->is('post')) {
+            $data = [
+                'name' => $this->request->getVar('name'),
+                'otherfees' => $this->request->getVar('otherfee'),
+            ];
+
+            $this->ibedRateOtherFeesModel->where('rofid', $id)->update($id, $data);
+            return redirect()->to(base_url()."ibed-rates/setup/".$rateID);
         }
     }
     public function chartofAccounts() {
@@ -659,7 +811,8 @@ class AccountingController extends BaseController
             if($searchStudent == ''){
                 $students = $this->studentsModel->where('studisdel', 0)->findAll();
                 $shsStudents = $this->shsStudentsModel->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $shsStudents);
+                $ibedStudents = $this->ibedStudentsModel->where('studisdel', 0)->findAll();
+                $resultStudent = array_merge($students, $shsStudents, $ibedStudents);
                 foreach($resultStudent as $key => $student) {
                     $accountCount = $this->studentAccountsModel
                         ->where('studentno', $student['studentno'])
@@ -684,7 +837,13 @@ class AccountingController extends BaseController
                 ->orLike('studfn', $searchStudent)
                 ->orLike('studfullname', $searchStudent)
                 ->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $shsStudents);
+                $ibedStudents = $this->ibedStudentsModel
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->where('studisdel', 0)->findAll();
+                $resultStudent = array_merge($students, $shsStudents, $ibedStudents);
 
                 // Add account count for each student
                 foreach($resultStudent as $key => $student) {
@@ -718,7 +877,8 @@ class AccountingController extends BaseController
         // $data['studentdata'] = $this->studentsModel->where('studentno', $id)->findAll();
         $students = $this->studentsModel->where('studentno', $id)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
-        $data['studentdata'] = array_merge($students, $shsStudents);
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $data['studentdata'] = array_merge($students, $shsStudents, $ibedStudents);
         
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $id)->where('isdel', 0)->findAll();
 
@@ -740,7 +900,8 @@ class AccountingController extends BaseController
         // $data['studentdata'] = $this->studentsModel->where('studentno', $studentno)->findAll();
         $students = $this->studentsModel->where('studentno', $studentno)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $studentno)->findAll();
-        $data['studentdata'] = array_merge($students, $shsStudents);
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $studentno)->findAll();
+        $data['studentdata'] = array_merge($students, $shsStudents, $ibedStudents);
         foreach($data['studentdata'] as $allstd){
             $STUDENTFULLNAME = $allstd['studfullname'];
             $STUDENTNO = $allstd['studentno'];

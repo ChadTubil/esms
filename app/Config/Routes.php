@@ -243,7 +243,14 @@ $routes->add('student-accounts/view/allocate-payment/(:segment)/(:segment)', 'Ac
 $routes->add('student-accounts/view/add-discount/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAddDiscount/$1/$2');
 $routes->post('student-accounts/view/details-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2');
 $routes->add('student-accounts/receipt-print/(:segment)', 'AccountingController::receiptPrint/$1');
-
+$routes->get('ibed-rates', 'AccountingController::ibedRates');
+$routes->post('ibed-rates', 'AccountingController::ibedRates');
+$routes->get('ibed-rates/setup/(:segment)', 'AccountingController::ibedratesSetup/$1');
+$routes->post('ibed-rates/setup/(:segment)', 'AccountingController::ibedratesSetup/$1');
+$routes->post('ibed-rates/dues/(:segment)', 'AccountingController::ibedratesDues/$1');
+$routes->post('ibed-rates/rof/(:segment)', 'AccountingController::ibedratesRof/$1');
+$routes->post('ibed-rates/dues/update/(:segment)', 'AccountingController::ibedratesDuesUpdate/$1');
+$routes->post('ibed-rates/rof/update/(:segment)', 'AccountingController::ibedratesRofUpdate/$1');
 
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
@@ -318,15 +325,44 @@ $routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assess
 $routes->add('shs-assessment/aprroved/(:segment)', 'SHSDepartmentController::assessmentApproved/$1');
 
 // IBED DEPARTMENT
-$routes->get('ibed-level', 'IBEDController::level');
-$routes->post('ibed-level', 'IBEDController::level');
-$routes->add('ibed-level/delete/(:segment)', 'IBEDController::deletelevel/$1');
-$routes->post('ibed-level/update/(:segment)', 'IBEDController::updatelevel/$1');
-$routes->get('ibed-curriculum', 'IBEDController::curriculum');
-$routes->post('ibed-curriculum', 'IBEDController::curriculum');
-$routes->add('ibed-curriculum/delete/(:segment)', 'IBEDController::deletecurriculum/$1');
-$routes->post('ibed-curriculum/update/(:segment)', 'IBEDController::updatecurriculum/$1');
-
+$routes->get('ibed-level', 'IBEDDepartmentController::level');
+$routes->post('ibed-level', 'IBEDDepartmentController::level');
+$routes->add('ibed-level/delete/(:segment)', 'IBEDDepartmentController::deletelevel/$1');
+$routes->post('ibed-level/update/(:segment)', 'IBEDDepartmentController::updatelevel/$1');
+$routes->get('ibed-subjects', 'IBEDDepartmentController::subjects');
+$routes->post('ibed-subjects', 'IBEDDepartmentController::subjects');
+$routes->add('ibed-subjects/delete/(:segment)', 'IBEDDepartmentController::deletesubjects/$1');
+$routes->post('ibed-subjects/update/(:segment)', 'IBEDDepartmentController::updatesubjects/$1');
+$routes->get('ibed-curriculum', 'IBEDDepartmentController::curriculum');
+$routes->post('ibed-curriculum', 'IBEDDepartmentController::curriculum');
+$routes->add('ibed-curriculum/delete/(:segment)', 'IBEDDepartmentController::deletecurriculum/$1');
+$routes->post('ibed-curriculum/update/(:segment)', 'IBEDDepartmentController::updatecurriculum/$1');
+$routes->get('ibed-curriculum/setup/(:segment)', 'IBEDDepartmentController::setupcurriculum/$1');
+$routes->post('ibed-curriculum/setup/(:segment)', 'IBEDDepartmentController::setupcurriculum/$1');
+$routes->get('ibed-sections', 'IBEDDepartmentController::sections');
+$routes->post('ibed-sections', 'IBEDDepartmentController::sections');
+$routes->add('ibed-sections/delete/(:segment)', 'IBEDDepartmentController::deletesections/$1');
+$routes->post('ibed-sections/update/(:segment)', 'IBEDDepartmentController::updatesections/$1');
+$routes->get('ibed-registration-select', 'IBEDDepartmentController::registrationselect');
+// OLD STUDENTS
+$routes->get('ibed-oldstudent-select', 'IBEDDepartmentController::oldstudentselect');
+$routes->post('ibed-oldstudent-process', 'IBEDDepartmentController::oldstudentprocess');
+// IBED STUDENTS
+$routes->get('ibed-registeredstudent', 'IBEDDepartmentController::registeredstudent');
+$routes->add('ibed-registeredstudent/process/(:segment)', 'IBEDDepartmentController::registeredstudentProcess/$1');
+$routes->get('ibed-admission', 'IBEDDepartmentController::admission');
+$routes->get('ibed-admission/process/(:segment)', 'IBEDDepartmentController::admissionProcess/$1');
+$routes->post('ibed-admission/process/(:segment)', 'IBEDDepartmentController::admissionProcess/$1');
+$routes->get('ibed-admission/process-cancel/(:segment)', 'IBEDDepartmentController::admissionProcessCancel/$1');
+$routes->add('ibed-admission/process-generate/(:segment)', 'IBEDDepartmentController::admissionProcessGenerate/$1');
+$routes->get('ibed-advising', 'IBEDDepartmentController::advising');
+$routes->get('ibed-advising/process/(:segment)', 'IBEDDepartmentController::advisingProcess/$1');
+$routes->post('ibed-advising/process/(:segment)', 'IBEDDepartmentController::advisingProcess/$1');
+$routes->add('ibed-advising/submit-account/(:segment)', 'IBEDDepartmentController::advisingSubmitAccount/$1');
+$routes->get('ibed-assessment', 'IBEDDepartmentController::assessment');
+$routes->get('ibed-assessment/view/(:segment)', 'IBEDDepartmentController::assessmentView/$1');
+$routes->add('ibed-assessment/print/(:segment)', 'IBEDDepartmentController::assessmentPrint/$1');
+$routes->add('ibed-assessment/aprroved/(:segment)', 'IBEDDepartmentController::assessmentApproved/$1');
 
 
 //GUIDANCE

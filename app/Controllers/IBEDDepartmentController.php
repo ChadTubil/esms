@@ -4,31 +4,72 @@ namespace App\Controllers;
 use App\Models\UsersModel;
 use App\Models\SYModel;
 use App\Models\IBEDLevelModel;
+use App\Models\IBEDSubjectsModel;
 use App\Models\IBEDCurriculumModel;
-
+use App\Models\IBEDCurriculumDataModel;
+use App\Models\IBEDSectionsModel;
+use App\Models\RegStudentsModel;
+use App\Models\PaymentTransactionsModel;
+use App\Models\EnrollmentHistoryIBEDModel;
+use App\Models\IBEDStudentsModel;
+use App\Models\IBEDSchoolRecordModel;
+use App\Models\IBEDFamilyBackgroundModel;
+use App\Models\AdditionalInfoIBEDModel;
+use App\Models\IBEDAssessmentModel;
+use App\Models\IBEDRatesModel;
+use App\Models\IBEDRateOtherFeesModel;
+use App\Models\IBEDRateDuesModel;
+use App\Models\StudentAccountsModel;
 use TCPDF;
-class IBEDController extends BaseController
+class IBEDDepartmentController extends BaseController
 {
     public $usersModel;
     public $syModel;
-    public $ibedlvlModel;
+    public $ibedlevelModel;
+    public $ibedSubjectsModel;
     public $ibedcurriculumModel;
-    
+    public $ibedCurriculumDataModel;
+    public $ibedSectionsModel;
+    public $regStudentsModel;
+    public $paymentTransactionsModel;
+    public $enrollmentHistoryIBEDModel;
+    public $ibedStudentsModel;
+    public $ibedSchoolRecordModel;
+    public $ibedFamilyBackgroundModel;
+    public $additionalInfoIBEDModel;
+    public $ibedAssessmentModel;
+    public $ibedRatesModel;
+    public $ibedRateOtherFeesModel;
+    public $ibedRateDuesModel;
+    public $studentAccountsModel;
     public $session;
     public function __construct() {
         helper('form');
         $this->usersModel = new UsersModel();
         $this->syModel = new SYModel();
-        $this->ibedlvlModel = new IBEDLevelModel();
+        $this->ibedlevelModel = new IBEDLevelModel();
+        $this->ibedSubjectsModel = new IBEDSubjectsModel();
         $this->ibedcurriculumModel = new IBEDCurriculumModel();
-
-        
+        $this->ibedCurriculumDataModel = new IBEDCurriculumDataModel();
+        $this->ibedSectionsModel = new IBEDSectionsModel();
+        $this->regStudentsModel = new RegStudentsModel();
+        $this->paymentTransactionsModel = new PaymentTransactionsModel();
+        $this->enrollmentHistoryIBEDModel = new EnrollmentHistoryIBEDModel();
+        $this->ibedStudentsModel = new IBEDStudentsModel();
+        $this->ibedSchoolRecordModel = new IBEDSchoolRecordModel();
+        $this->ibedFamilyBackgroundModel = new IBEDFamilyBackgroundModel();
+        $this->additionalInfoIBEDModel = new AdditionalInfoIBEDModel();
+        $this->ibedAssessmentModel = new IBEDAssessmentModel();
+        $this->ibedRatesModel = new IBEDRatesModel();
+        $this->ibedRateOtherFeesModel = new IBEDRateOtherFeesModel();
+        $this->ibedRateDuesModel = new IBEDRateDuesModel();
+        $this->studentAccountsModel = new StudentAccountsModel();
         $this->session = session();
     }
     public function level(){
         $data = [
-            'page_title' => 'Holy Cross College | IBED Level',
-            'page_heading' => 'IBED LEVEL MANAGEMENT! ',
+            'page_title' => 'Holy Cross College | IBED Grade Level Management',
+            'page_heading' => 'IBED GRADE LEVEL MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -37,19 +78,19 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['leveldata'] = $this->ibedlvlModel->where('isdel', '0')->findAll();
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
                 'code' => [
-                    'rules' => 'required|is_unique[ibedlevel.code]',
+                    'rules' => 'required|is_unique[levels_ibed.code]',
                     'errors' => [
                         'required' => 'Code is required.',
                         'is_unique' => 'This code is already exists.'
                     ],
                 ],
                 'level' => [
-                    'rules' => 'required|is_unique[ibedlevel.name]',
+                    'rules' => 'required|is_unique[levels_ibed.name]',
                     'errors' => [
                         'required' => 'Level is required.',
                         'is_unique' => 'This level is already exists.'
@@ -57,11 +98,11 @@ class IBEDController extends BaseController
                 ],
             ];
             if($this->validate($rules)){
-                $lvldata = [
+                $leveldata = [
                     'code' => $this->request->getVar('code'),
                     'name' => $this->request->getVar('level'),
                 ];
-                $this->ibedlvlModel->save($lvldata);
+                $this->ibedlevelModel->save($leveldata);
                 session()->setTempdata('addsuccess','Level added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -71,12 +112,12 @@ class IBEDController extends BaseController
         return view('ibed/levelview', $data);
     }
     public function deletelevel($id=null) {
-        $lvldata = [
+        $leveldata = [
             'isdel' => '1',
         ];
 
-        $this->ibedlvlModel->where('ibedlvlid', $id)->update($id, $lvldata);
-        session()->setTempdata('deletesuccess', 'Level is deleted!', 2);
+        $this->ibedlevelModel->where('levelid', $id)->update($id, $leveldata);
+        session()->setTempdata('success', 'Level is deleted!', 2);
         return redirect()->to(base_url()."ibed-level");
     }
     public function updatelevel($id=null) {
@@ -86,15 +127,15 @@ class IBEDController extends BaseController
                 'name' => $this->request->getVar('level'),
             ];
 
-            $this->ibedlvlModel->where('ibedlvlid', $id)->update($id, $data);
-            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            $this->ibedlevelModel->where('levelid', $id)->update($id, $data);
+            session()->setTempdata('success', 'Update Successful!', 2);
             return redirect()->to(base_url()."ibed-level");
         }
     }
     public function subjects(){
         $data = [
-            'page_title' => 'Holy Cross College | IBED Subjects',
-            'page_heading' => 'IBED SUBJECTS! ',
+            'page_title' => 'Holy Cross College | IBED Subjects Management',
+            'page_heading' => 'IBED SUBJECTS MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -103,81 +144,56 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['gssubjectsdata'] = $this->gsSubjectsModel->where('isdel', '0')->findAll();
+        $data['ibedsubdata'] = $this->ibedSubjectsModel->where('isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
-                'code' => [
-                    'rules' => 'required|is_unique[subjects_shs.code]',
-                    'errors' => [
-                        'required' => 'Code is required.',
-                        'is_unique' => 'This code is already exists.'
-                    ],
-                ],
                 'subject' => [
-                    'rules' => 'required|is_unique[subjects_shs.subject]',
+                    'rules' => 'required|is_unique[subjects_ibed.subject]',
                     'errors' => [
                         'required' => 'Subject is required.',
                         'is_unique' => 'This subject is already exists.'
                     ],
                 ],
-                'hours' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Hours is required.',
-                    ],
-                ],
-                'type' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Subject type is required.',
-                    ],
-                ],
             ];
             if($this->validate($rules)){
-                $gssubjectdata = [
+                $ibedsubjectdata = [
                     'code' => $this->request->getVar('code'),
                     'subject' => $this->request->getVar('subject'),
-                    'type' => $this->request->getVar('type'),
-                    'hours' => $this->request->getVar('hours'),
-                    'prerequisite' => $this->request->getVar('prerequisite'),
                 ];
-                $this->gsSubjectsModel->save($gssubjectdata);
+                $this->ibedSubjectsModel->save($ibedsubjectdata);
                 session()->setTempdata('addsuccess','Subject added successfully', 3);
                 return redirect()->to(current_url());
             } else {
                 $data['validation'] = $this->validator;
             }
         }
-        return view('gs/subjectsview', $data);
+        return view('ibed/subjectsview', $data);
     }
     public function deletesubjects($id=null) {
         $cludata = [
             'isdel' => '1',
         ];
 
-        $this->gsSubjectsModel->where('subid', $id)->update($id, $cludata);
+        $this->ibedSubjectsModel->where('subid', $id)->update($id, $cludata);
         session()->setTempdata('deletesuccess', 'Subject is deleted!', 2);
-        return redirect()->to(base_url()."gs-subjects");
+        return redirect()->to(base_url()."ibed-subjects");
     }
     public function updatesubjects($id=null) {
         if($this->request->is('post')) {
             $data = [
                 'code' => $this->request->getVar('code'),
                 'subject' => $this->request->getVar('subject'),
-                'type' => $this->request->getVar('type'),
-                'hours' => $this->request->getVar('hours'),
-                'prerequisite' => $this->request->getVar('prerequisite'),
             ];
 
-            $this->gsSubjectsModel->where('subid', $id)->update($id, $data);
+            $this->ibedSubjectsModel->where('subid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
-            return redirect()->to(base_url()."gs-subjects");
+            return redirect()->to(base_url()."ibed-subjects");
         }
     }
     public function curriculum(){
         $data = [
-            'page_title' => 'Holy Cross College | IBED Curriculum',
+            'page_title' => 'Holy Cross College | IBED Curriculum Management',
             'page_heading' => 'IBED CURRICULUM MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
@@ -188,10 +204,10 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['leveldata'] = $this->ibedlvlModel->where('isdel', '0')->findAll();
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', '0')->findAll();
         $data['curriculumdata'] = $this->ibedcurriculumModel
-        ->select('curriculum_ibed.*, ibedlevel.*')
-        ->join('ibedlevel', 'ibedlevel.ibedlvlid = curriculum_ibed.level')
+        ->select('curriculum_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = curriculum_ibed.level')
         ->where('curriculum_ibed.isdel', '0')->findAll();
         
 
@@ -252,13 +268,13 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
-        $data['gssubjectsdata'] = $this->gsSubjectsModel->where('isdel', '0')->findAll();
-        $data['gscurriculumdata'] = $this->gsCurriculumModel
-        ->select('curriculum_gs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = curriculum_gs.cluster')
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', '0')->findAll();
+        $data['ibedsubdata'] = $this->ibedSubjectsModel->where('isdel', '0')->findAll();
+        $data['ibedcurriculumdata'] = $this->ibedcurriculumModel
+        ->select('curriculum_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = curriculum_ibed.level')
         ->where('currid', $id)->findAll();
-        $data['cddata'] = $this->gsCurriculumDataModel->where('curriculumid', $id)->findAll();
+        $data['cddata'] = $this->ibedCurriculumDataModel->where('curriculumid', $id)->findAll();
 
         if($this->request->is('post')) {
             $rules = [
@@ -268,27 +284,15 @@ class IBEDController extends BaseController
                         'required' => 'Subject is required.',
                     ],
                 ],
-                'sem' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Semester is required.',
-                    ],
-                ],
             ];
             if($this->validate($rules)){
                 $subjectid = $this->request->getVar('subject');
-                $FINDSUBJECT = $this->gsSubjectsModel->where('subid', $subjectid)->findAll();
-                foreach($FINDSUBJECT as $FINDSUB){
-                    $PRERE = $FINDSUB['prerequisite'];
-                }
                 $data = [
                     'curriculumid' => $id,
                     'subid' => $this->request->getVar('subject'),
                     'level' => $this->request->getVar('level'),
-                    'sem' => $this->request->getVar('sem'),
-                    'prerequisite' => $PRERE,
                 ];
-                $this->gsCurriculumDataModel->save($data);
+                $this->ibedCurriculumDataModel->save($data);
                 session()->setTempdata('addsuccess','Subject added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -296,12 +300,12 @@ class IBEDController extends BaseController
             }
         }
 
-        return view('gs/curriculumsetupview', $data);
+        return view('ibed/curriculumsetupview', $data);
     }
     public function sections() {
         $data = [
-            'page_title' => 'Holy Cross College | IBED Sections Setup',
-            'page_heading' => 'IBED SECTIONS SETUP! ',
+            'page_title' => 'Holy Cross College | IBED Sections Management',
+            'page_heading' => 'IBED SECTIONS MANAGEMENT! ',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -311,16 +315,16 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
-        $data['sectiondata'] = $this->gsSectionsModel
-        ->select('sections_gs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = sections_gs.cluster')
-        ->where('sections_gs.isdel', '0')->findAll();
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', '0')->findAll();
+        $data['sectiondata'] = $this->ibedSectionsModel
+        ->select('sections_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = sections_ibed.level')
+        ->where('sections_ibed.isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
                 'section' => [
-                    'rules' => 'required|is_unique[sections_gs.section]',
+                    'rules' => 'required|is_unique[sections_ibed.section]',
                     'errors' => [
                         'required' => 'Section is required.',
                         'is_unique' => 'This section is already exists.'
@@ -330,12 +334,6 @@ class IBEDController extends BaseController
                     'rules' => 'required',
                     'errors' => [
                         'required' => 'School year is required.',
-                    ],
-                ],
-                'cluster' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'Cluster is required.',
                     ],
                 ],
                 'level' => [
@@ -350,9 +348,8 @@ class IBEDController extends BaseController
                     'section' => $this->request->getVar('section'),
                     'sy' => $this->request->getVar('sy'),
                     'level' => $this->request->getVar('level'),
-                    'cluster' => $this->request->getVar('cluster'),
                 ];
-                $this->gsSectionsModel->save($sectiondata);
+                $this->ibedSectionsModel->save($sectiondata);
                 session()->setTempdata('success', 'Section is added successfully', 3);
                 return redirect()->to(current_url());
             } else {
@@ -360,16 +357,16 @@ class IBEDController extends BaseController
             }
         }
 
-        return view('gs/sectionsview', $data);
+        return view('ibed/sectionsview', $data);
     }
     public function deletesections($id=null) {
         $data = [
             'isdel' => '1',
         ];
 
-        $this->gsSectionsModel->where('secid', $id)->update($id, $data);
+        $this->ibedSectionsModel->where('secid', $id)->update($id, $data);
         session()->setTempdata('success', 'Section is deleted!', 2);
-        return redirect()->to(base_url()."gs-sections");
+        return redirect()->to(base_url()."ibed-sections");
     }
     public function updatesections($id=null) {
         if($this->request->is('post')) {
@@ -377,12 +374,11 @@ class IBEDController extends BaseController
                 'section' => $this->request->getVar('section'),
                 'sy' => $this->request->getVar('sy'),
                 'level' => $this->request->getVar('level'),
-                'cluster' => $this->request->getVar('cluster'),
             ];
 
-            $this->gsSectionsModel->where('secid', $id)->update($id, $sectiondata);
+            $this->ibedSectionsModel->where('secid', $id)->update($id, $sectiondata);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
-            return redirect()->to(base_url()."shs-sections");
+            return redirect()->to(base_url()."ibed-sections");
         }
     }
     public function registrationselect(){
@@ -398,10 +394,104 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        return view('gs/registrationselectview', $data);
+        return view('ibed/registrationselectview', $data);
     }
-    public function oldstudent(){
+    public function oldstudentselect(){
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Registration - Old Students',
+            'page_heading' => 'SHS REGISTRATION - OLD STUDENTS!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $shsStudentsInfo = $this->ibedStudentsModel
+        ->select('students_ibed.*, enrollmenthistory_ibed.*')
+        ->join('enrollmenthistory_ibed', 'enrollmenthistory_ibed.studid = students_ibed.studid')
+        ->where('students_ibed.studentno', '')
+        ->where('enrollmenthistory_ibed.sy', '')
+        ->where('enrollmenthistory_ibed.level', '')
+        ->where('enrollmenthistory_ibed.isdel', '')
+        ->findAll();
+        $registeredstudentsinfo = $this->regStudentsModel
+        ->select('regstudents.*')
+        ->where('NOT EXISTS (SELECT 1 FROM enrollmenthistory_ibed 
+            WHERE enrollmenthistory_ibed.studfullname = regstudents.studfullname 
+            AND enrollmenthistory_ibed.isdel = 0)', NULL, FALSE)
+        ->where('studstatus', 'GS')
+        ->findAll();
+        $data['registeredstudents'] = array_merge($shsStudentsInfo, $registeredstudentsinfo);
 
+        return view('ibed/oldselectview', $data);
+    }
+    public function oldstudentprocess(){
+        if($this->request->is('post')) {
+            $studfullname = $this->request->getVar('fullname');
+            $studno = $this->request->getVar('studnumber');
+
+            $CHECKSTUDSHSTABLE = $this->ibedStudentsModel
+            ->where('studfullname', $studfullname)->findAll();
+
+            if(empty($CHECKSTUDSHSTABLE)){
+                $CHECKREGTABLE = $this->regStudentsModel->where('studfullname', $studfullname)->findAll();
+                foreach($CHECKREGTABLE as $CRT){
+                    $STUDLN = $CRT['studln'];
+                    $STUDFN = $CRT['studfn'];
+                    $STUDMN = $CRT['studmn'];
+                    $STUDEXT = $CRT['studextension'];
+                    $STUDFULLNAME = $CRT['studfullname'];
+                    $STUDBIRTHDAY = $CRT['studbirthday'];
+                    $STUDAGE = $CRT['studage'];
+                    $STUDGENDER = $CRT['studgender'];
+                    $STUDBARANGAY = $CRT['studstbarangay'];
+                    $STUDCITY = $CRT['studcity'];
+                    $STUDPROVINCE = $CRT['studprovince'];
+                    $STUDCONTACT = $CRT['studcontact'];
+                    $STUDICITIZENSHIP = $CRT['studcitizenship'];
+                    $STUDRELIGION = $CRT['studreligion'];
+                    $STUDEMAIL = $CRT['studemail'];
+                    $STUDBIRTHPLACE = $CRT['studbirthplace'];
+                }
+                $ibedstuddata = [
+                    'studentno' => $studno,
+                    'studln' => $STUDLN,
+                    'studfn' => $STUDFN,
+                    'studmn' => $STUDMN,
+                    'studextension' => $STUDEXT,
+                    'studfullname' => $STUDFULLNAME,
+                    'studbirthday' => $STUDBIRTHDAY,
+                    'studage' => $STUDAGE,
+                    'studgender' => $STUDGENDER,
+                    'studstbarangay' => $STUDBARANGAY,
+                    'studcity' => $STUDCITY,
+                    'studprovince' => $STUDPROVINCE,
+                    'studcontact' => $STUDCONTACT,
+                    'studcitizenship' => $STUDICITIZENSHIP,
+                    'studreligion' => $STUDRELIGION,
+                    'studemail' => $STUDEMAIL,
+                    'studbirthplace' => $STUDBIRTHPLACE,
+                ];
+                $this->ibedStudentsModel->save($ibedstuddata);
+                $registeredstudentpr = $this->ibedStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
+                foreach($registeredstudentpr as $rsp){
+                    $STUDID = $rsp['studid'];
+                }
+                $ehdata = [
+                    'studid' => $STUDID,
+                    'studfullname' => $STUDFULLNAME,
+                    'date' => date('Y-m-d'),
+                    'status' => 'Registered',
+                ];
+                $this->enrollmentHistoryIBEDModel->save($ehdata);
+                return redirect()->to(base_url()."ibed-admission");
+            } else {
+                $this->ibedStudentsModel->where('studfullname', $studfullname)->set(['studentno' => $studno])->update();
+                return redirect()->to(base_url()."ibed-admission");
+            }
+        }
     }
     public function registeredstudent(){
         $data = [
@@ -416,19 +506,21 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        $data['registeredstudents'] = $this->gsStudentsModel
-        ->select('students_gs.*')
-        ->join('paymenttransactions', 'paymenttransactions.studfullname = students_gs.studfullname')
-        ->join('enrollmenthistory_gs', 'enrollmenthistory_gs.studfullname = students_gs.studfullname AND enrollmenthistory_gs.isdel = 0', 'left')
-        ->where('enrollmenthistory_gs.studfullname IS NULL') // Only those NOT in enrollment history
-        ->groupBy('students_gs.studfullname') // Group by student fullname to avoid duplicates
+        $data['registeredstudents'] = $this->regStudentsModel
+        ->select('regstudents.*')
+        ->join('enrollmenthistory_ibed', 'enrollmenthistory_ibed.studfullname = regstudents.studfullname AND enrollmenthistory_ibed.isdel = 0', 'left')
+        ->where('enrollmenthistory_ibed.studfullname IS NULL') // Only those NOT in enrollment history
+        ->where('regstudents.studstatus', 'GS') // Only SHS students
+        ->groupBy('regstudents.studfullname') // Group by student fullname to avoid duplicates
         ->findAll();
+        
+        $data['paymenttransactionsData'] = $this->paymentTransactionsModel
+        ->where('isdel', 0)->findAll();
 
-
-        return view('gs/registeredstudentview', $data);
+        return view('ibed/registeredstudentview', $data);
     }
     public function registeredstudentProcess($id=null){
-        $registeredstudent = $this->gsStudentsModel->where('studid', $id)->findAll();
+        $registeredstudent = $this->regStudentsModel->where('studid', $id)->findAll();
         foreach($registeredstudent as $rs){
             $STUDLN = $rs['studln'];
             $STUDFN = $rs['studfn'];
@@ -447,7 +539,7 @@ class IBEDController extends BaseController
             $STUDEMAIL = $rs['studemail'];
             $STUDBIRTHPLACE = $rs['studbirthplace'];
         }
-        $gsstuddata = [
+        $ibedstuddata = [
             'studln' => $STUDLN,
             'studfn' => $STUDFN,
             'studmn' => $STUDMN,
@@ -465,20 +557,19 @@ class IBEDController extends BaseController
             'studemail' => $STUDEMAIL,
             'studbirthplace' => $STUDBIRTHPLACE,
         ];
-        $this->gsStudentsModel->save($gsstuddata);
-        $registeredstudentpr = $this->gsStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
+        $this->ibedStudentsModel->save($ibedstuddata);
+        $registeredstudentpr = $this->ibedStudentsModel->where('studfullname', $STUDFULLNAME)->findAll();
         foreach($registeredstudentpr as $rsp){
             $STUDID = $rsp['studid'];
         }
-        $this->gsPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
         $ehdata = [
             'studid' => $STUDID,
             'studfullname' => $STUDFULLNAME,
             'date' => date('Y-m-d'),
             'status' => 'Registered',
         ];
-        $this->enrollmentHistoryGSModel->save($ehdata);
-        return redirect()->to(base_url()."gs-admission");
+        $this->enrollmentHistoryIBEDModel->save($ehdata);
+        return redirect()->to(base_url()."ibed-admission");
     }
     public function admission(){
         $data = [
@@ -492,12 +583,12 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->where('enrollmenthistory_gs.status', 'Registered')->where('enrollmenthistory_gs.isdel', 0)->findAll();
+        $data['enrollmenthistoryibeddata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->where('enrollmenthistory_ibed.status', 'Registered')->where('enrollmenthistory_ibed.isdel', 0)->findAll();
 
-        return view('gs/admissionview', $data);
+        return view('ibed/admissionview', $data);
     }
     public function admissionProcess($id=null){
         $data = [
@@ -512,13 +603,11 @@ class IBEDController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        $data['studentsgssdata'] = $this->gsStudentsModel
-        ->select('students_gs.*, permanentrecord_gs.*')
-        ->join('permanentrecord_gs', 'permanentrecord_gs.studid = students_gs.studid', 'left')
-        ->where('students_gs.studid', $id)->findAll();
+        $data['studentsibeddata'] = $this->ibedStudentsModel
+        ->where('studid', $id)->findAll();
 
         $data['schoolyear'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', 0)->findAll();
 
         if($this->request->is('post')){
             // IBED SCHOOL RECORD 
@@ -526,9 +615,8 @@ class IBEDController extends BaseController
                 'studid' => $id,
                 'sy' => $this->request->getVar('schoolyear'),
                 'level' => $this->request->getVar('level'),
-                'cluster' => $this->request->getVar('cluster'),
             ];
-            $this->gsSchoolRecordModel->save($gsschoolrecorddata);
+            $this->ibedSchoolRecordModel->save($gsschoolrecorddata);
             // IBED FAMILY BACKGROUND 
             $gsfbdata = [
                 'studid' => $id,
@@ -543,7 +631,7 @@ class IBEDController extends BaseController
                 'memail' => $this->request->getVar('memail'),
                 'moffice' => $this->request->getVar('moffice'),
             ];
-            $this->gsFamilyBackgroundModel->save($gsfbdata);
+            $this->ibedFamilyBackgroundModel->save($gsfbdata);
 
             // ADDITIONAL INFO
             $gsaddinfodata = [
@@ -596,9 +684,9 @@ class IBEDController extends BaseController
                 'con_regguid_diagnosis' => $this->request->getVar('con_regguid_diagnosis'),
                 'aisdel' => 0,
             ];
-            $this->additionalInfoGSModel->save($gsaddinfodata);
+            $this->additionalInfoIBEDModel->save($gsaddinfodata);
             // ENROLLMENT TEMP DATA UPDATE
-            $EHGSInfo = $this->enrollmentHistoryGSModel->where('studid', $id)->findAll();
+            $EHGSInfo = $this->enrollmentHistoryIBEDModel->where('studid', $id)->findAll();
             foreach($EHGSInfo as $ehshs) {
                 $EHGSID = $ehshs['ehid'];
             }
@@ -608,12 +696,12 @@ class IBEDController extends BaseController
                 'cluster' => $this->request->getVar('cluster'),
                 'status' => 'Admitted',
             ];
-            $this->enrollmentHistoryGSModel->where('ehid', $EHGSID)->update($EHGSID, $ehgsdata);
+            $this->enrollmentHistoryIBEDModel->where('ehid', $EHGSID)->update($EHGSID, $ehgsdata);
             session()->setTempdata('success', 'Admission processed successfully!', 2);
-            return redirect()->to(base_url()."gs-admission");
+            return redirect()->to(base_url()."ibed-admission");
         }
 
-        return view('gs/admissionviewprocess', $data);
+        return view('ibed/admissionviewprocess', $data);
     }
     public function admissionProcessCancel($id=null) {
         $ehdata = [
@@ -624,16 +712,16 @@ class IBEDController extends BaseController
             'studisdel' => '1',
         ];
 
-        $this->enrollmentHistoryGSModel->where('ehid', $id)->update($id, $ehdata);
-        $this->gsStudentsModel->where('studid', $id)->update($id, $gsstuddata);
+        $this->enrollmentHistoryIBEDModel->where('ehid', $id)->update($id, $ehdata);
+        $this->ibedStudentsModel->where('studid', $id)->update($id, $gsstuddata);
         session()->setTempdata('deletesuccess', 'Application is deleted!', 2);
-        return redirect()->to(base_url()."gs-admission");
+        return redirect()->to(base_url()."ibed-admission");
     }
     public function admissionProcessGenerate($id=null) {
         $year = date('y');
         // print_r($year);
-        $laststudentno = $this->gsStudentsModel
-        ->like('studentno', $year . 'S', 'after')
+        $laststudentno = $this->ibedStudentsModel
+        ->like('studentno', $year . 'IBED', 'after')
         ->orderBy('studentno', 'DESC')
         ->get()
         ->getFirstRow();
@@ -645,13 +733,13 @@ class IBEDController extends BaseController
             $newNumber = '1';
         }
 
-        $studentNumber = $year . 'S' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        $studentNumber = $year . 'IBED' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
         // print_r($studentNumber);
         $data = [
             'studentno' => $studentNumber,
         ];
-        $this->gsStudentsModel->where('studid', $id)->update($id, $data);
-        return redirect()->to(base_url()."gs-admission/process/".$id);
+        $this->ibedStudentsModel->where('studid', $id)->update($id, $data);
+        return redirect()->to(base_url()."ibed-admission/process/".$id);
     }
     public function advising() {
         $data = [
@@ -665,13 +753,13 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
-        ->where('enrollmenthistory_gs.status', 'Admitted')->where('enrollmenthistory_gs.isdel', 0)->findAll();
+        $data['enrollmenthistoryibeddata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
+        ->where('enrollmenthistory_ibed.status', 'Admitted')->where('enrollmenthistory_ibed.isdel', 0)->findAll();
 
-        return view('gs/advisingview', $data);
+        return view('ibed/advisingview', $data);
     }
     public function advisingProcess($id=null) {
         $data = [
@@ -685,38 +773,36 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
-        ->where('students_gs.studid', $id)->findAll();
-        foreach($data['enrollmenthistorygsdata'] as $ehs) {
-            $CLUSTERID = $ehs['cluid'];
+
+        $data['enrollmenthistoryibeddata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
+        ->where('students_ibed.studid', $id)->findAll();
+        foreach($data['enrollmenthistoryibeddata'] as $ehs) {
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
         }
 
-        $data['gscurriculumdata'] = $this->gsCurriculumModel
-        ->select('curriculum_gs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = curriculum_gs.cluster')
-        ->where('curriculum_gs.cluster', $CLUSTERID)
-        ->where('curriculum_gs.level', $LEVEL)
-        ->where('curriculum_gs.sy', $SY)
+        $data['ibedcurriculumdata'] = $this->ibedcurriculumModel
+        ->select('curriculum_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = curriculum_ibed.level')
+        ->where('curriculum_ibed.level', $LEVEL)
+        ->where('curriculum_ibed.sy', $SY)
         ->findAll();
 
-        $data['gssectiondata'] = $this->gsSectionsModel
-        ->select('sections_gs.*, clusters.*')
-        ->join('clusters', 'clusters.cluid = sections_gs.cluster')
-        ->where('sections_gs.cluster', $CLUSTERID)
-        ->where('sections_gs.level', $LEVEL)
-        ->where('sections_gs.sy', $SY)
+        $data['ibedsectiondata'] = $this->ibedSectionsModel
+        ->select('sections_ibed.*, levels_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = sections_ibed.level')
+        ->where('sections_ibed.level', $LEVEL)
+        ->where('sections_ibed.sy', $SY)
         ->findAll();
 
         if($this->request->is('post')) {
             $SELECTEDCURRICULUM = $this->request->getVar('curriculum');
             $SELECTEDSECTION = $this->request->getVar('section');
-            $ADVISINGCHECK = $this->gsAssessmentModel
+            $ADVISINGCHECK = $this->ibedAssessmentModel
             ->where('studid', $STUDID)
             ->where('sy', $SY)
             ->where('level', $LEVEL)
@@ -726,91 +812,80 @@ class IBEDController extends BaseController
                 session()->setTempdata('error', 'Student is already assessed!', 2);
                 return redirect()->to(current_url());
             }else{
-                $gsassessmentdata = [
+                $ibedassessmentdata = [
                     'studid' => $STUDID,
                     'sy' => $SY,
                     'level' => $LEVEL,
-                    'cluster' => $CLUSTERID,
                     'curriculum' => $SELECTEDCURRICULUM,
                     'section' => $SELECTEDSECTION,
                     'date' => date('Y-m-d'),
                 ];
                 // print_r($shsassessmentdata);
-                $this->gsAssessmentModel->save($gsassessmentdata);
+                $this->ibedAssessmentModel->save($ibedassessmentdata);
                 session()->setTempdata('success', 'Student is processed successfully!', 2);
                 return redirect()->to(current_url());
             }
         }
-        $data['gsassessmentdata'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
-        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
-        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
+        $data['ibedassessmentdata'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, sections_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum')
+        ->join('sections_ibed', 'sections_ibed.secid = assessment_ibed.section')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = assessment_ibed.level')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
 
         // SHS ASSESSED CURRICULUM DATA
-        $data['firstsemester'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '1st Semester')
-        ->findAll();
-        $data['secondsemester'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '2nd Semester')
+        $data['firstsemester'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, currdata_ibed.*, subjects_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum', 'left')
+        ->join('currdata_ibed', 'currdata_ibed.curriculumid = curriculum_ibed.currid', 'left')
+        ->join('subjects_ibed', 'subjects_ibed.subid = currdata_ibed.subid', 'left')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
 
-        //SHS ASSESSED RATE DATA
-        $data['gsratedata'] = $this->gsRatesModel
-        ->where('rates_gs.cluster', $CLUSTERID)
+        // ASSESSED RATE DATA
+        $data['ibedratedata'] = $this->ibedRatesModel
+        ->where('rates_ibed.level', $LEVEL)
+        ->where('rates_ibed.sy', $SY)
         ->findAll();
-        foreach($data['gsratedata'] as $rates){
+        foreach($data['ibedratedata'] as $rates){
             $RATEID = $rates['rateid'];
         }
 
-        $data['gsrofdata'] = $this->gsRateOtherFeesModel->where('rateid', $RATEID)->findAll();
-        $data['gsrddata'] = $this->gsRateDuesModel->where('rateid', $RATEID)->findAll();
+        $data['ibedrofdata'] = $this->ibedRateOtherFeesModel->where('rateid', $RATEID)->findAll();
+        $data['ibedrddata'] = $this->ibedRateDuesModel->where('rateid', $RATEID)->findAll();
 
-        return view('gs/advisingviewprocess', $data);
+        return view('ibed/advisingviewprocess', $data);
     }
     public function advisingSubmitAccount($id=null) {
-        $ASSESSMENTDATACHECKING = $this->gsAssessmentModel
-        ->select('assessment_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
-        ->join('clusters', 'clusters.cluid = assessment_gs.cluster')
-        ->where('assessment_gs.studid', $id)
+        $ASSESSMENTDATACHECKING = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = assessment_ibed.level')
+        ->where('assessment_ibed.studid', $id)
         ->findAll();
         foreach($ASSESSMENTDATACHECKING as $adc) {
             $STUDENTNO = $adc['studentno'];
             $ASSESSMENTID = $adc['assid'];
             $SY = $adc['sy'];
-            $CLUSTERID = $adc['code'];
             $LEVEL = $adc['level'];
+            $LEVELNAME = $adc['name'];
         }
 
         $studentsaccounts = [
             'studentno' => $STUDENTNO,
             'assessmentid' => $ASSESSMENTID,
             'sy' => $SY,
-            'cluster' => $CLUSTERID,
-            'level' => $LEVEL,
+            'level' => $LEVELNAME,
             'accountstatus' => 'Active',
             'createddate' => date('Y-m-d'),
         ];
-        $FINDEHGS = $this->enrollmentHistoryGSModel
+        $FINDEHGS = $this->enrollmentHistoryIBEDModel
         ->where('studid', $id)
         ->where('sy', $SY)
         ->where('level', $LEVEL)
@@ -827,11 +902,12 @@ class IBEDController extends BaseController
             'status' => 'Finalized',
         ];
 
-        $this->gsAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $gsassessment);
+        $this->ibedAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $gsassessment);
         $this->studentAccountsModel->save($studentsaccounts);
-        $this->enrollmentHistoryGSModel->where('studid', $STUDENTID)->update($STUDENTID, $ehgsdata);
+        // $this->enrollmentHistoryIBEDModel->where('studid', $STUDENTID)->update($STUDENTID, $ehgsdata);
+        $this->enrollmentHistoryIBEDModel->where('studid', $STUDENTID)->set(['status' => 'Assessed'])->update();
         session()->setTempdata('success', 'Student is assessed successfully!', 2);
-        return redirect()->to(base_url()."gs-advising");
+        return redirect()->to(base_url()."ibed-advising");
     }
     public function assessment() {
         $data = [
@@ -845,13 +921,13 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
-        ->where('enrollmenthistory_gs.status', 'Assessed')->where('enrollmenthistory_gs.isdel', 0)->findAll();
+        $data['enrollmenthistoryibeddata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
+        ->where('enrollmenthistory_ibed.status', 'Assessed')->where('enrollmenthistory_ibed.isdel', 0)->findAll();
 
-        return view('gs/assessmentview', $data);
+        return view('ibed/assessmentview', $data);
     }
     public function assessmentView($id=null) {
         $data = [
@@ -865,56 +941,50 @@ class IBEDController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['enrollmenthistorygsdata'] = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
-        ->where('students_gs.studid', $id)->findAll();
-        foreach($data['enrollmenthistorygsdata'] as $ehs) {
-            $CLUSTERID = $ehs['cluid'];
+        $data['enrollmenthistoryibeddata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
+        ->where('students_ibed.studid', $id)->findAll();
+        foreach($data['enrollmenthistoryibeddata'] as $ehs) {
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
         }
-        $data['gsassessmentdata'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
-        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
-        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
+        $data['ibedassessmentdata'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, sections_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum')
+        ->join('sections_ibed', 'sections_ibed.secid = assessment_ibed.section')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = assessment_ibed.level')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
-        // SHS ASSESSED CURRICULUM DATA
-        $data['firstsemester'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '1st Semester')
-        ->findAll();
-        $data['secondsemester'] = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '2nd Semester')
+        // ASSESSED CURRICULUM DATA
+        $data['firstsemester'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, currdata_ibed.*, subjects_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum', 'left')
+        ->join('currdata_ibed', 'currdata_ibed.curriculumid = curriculum_ibed.currid', 'left')
+        ->join('subjects_ibed', 'subjects_ibed.subid = currdata_ibed.subid', 'left')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
 
-        //SHS ASSESSED RATE DATA
-        $data['gsratedata'] = $this->gsRatesModel
-        ->where('rates_gs.cluster', $CLUSTERID)
+        // ASSESSED RATE DATA
+        $data['ibedratedata'] = $this->ibedRatesModel
+        ->where('rates_ibed.level', $LEVEL)
+        ->where('rates_ibed.sy', $SY)
         ->findAll();
-        $data['gsrofdata'] = $this->gsRateOtherFeesModel->findAll();
-        $data['gsrddata'] = $this->gsRateDuesModel->findAll();
+        foreach($data['ibedratedata'] as $rates){
+            $RATEID = $rates['rateid'];
+        }
+
+        $data['ibedrofdata'] = $this->ibedRateOtherFeesModel->where('rateid', $RATEID)->findAll();
+        $data['ibedrddata'] = $this->ibedRateDuesModel->where('rateid', $RATEID)->findAll();
         
-        return view('gs/assessmentviewing', $data);
+        return view('ibed/assessmentviewing', $data);
     }
     public function assessmentPrint($id=null) {
         $pageSize = array(216, 330);
@@ -950,32 +1020,33 @@ class IBEDController extends BaseController
         $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
         $pdf->Line(5, 37, 206, 37);
 
-        $enrollmenthistorygsdata = $this->enrollmentHistoryGSModel
-        ->select('enrollmenthistory_gs.*, students_gs.*, clusters.*')
-        ->join('students_gs', 'students_gs.studid = enrollmenthistory_gs.studid')
-        ->join('clusters', 'clusters.cluid = enrollmenthistory_gs.cluster')
-        ->where('students_gs.studid', $id)->findAll();
-        foreach($enrollmenthistorygsdata as $ehs) {
-            $CLUSTERID = $ehs['cluid'];
+        $enrollmenthistoryibeddata = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
+        ->where('students_ibed.studid', $id)->findAll();
+        foreach($enrollmenthistoryibeddata as $ehs) {
             $LEVEL = $ehs['level'];
             $SY = $ehs['sy'];
             $STUDID = $ehs['studid'];
             $CLUSTER = $ehs['code'];
         }
-        $gsassessmentdata = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, sections_gs.*, students_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum')
-        ->join('sections_gs', 'sections_gs.secid = assessment_gs.section')
-        ->join('students_gs', 'students_gs.studid = assessment_gs.studid')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
+        $ibedassessmentdata = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, sections_ibed.*, students_ibed.*, levels_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum')
+        ->join('sections_ibed', 'sections_ibed.secid = assessment_ibed.section')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        ->join('levels_ibed', 'levels_ibed.levelid = assessment_ibed.level')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
-        foreach($gsassessmentdata as $sad) {
+        foreach($ibedassessmentdata as $sad) {
             $STUDENTNO = $sad['studentno'];
             $SY = $sad['sy'];
             $STUDFULLNAME = $sad['studfullname'];
             $LEVEL = $sad['level'];
+            $LEVELNAME = $sad['name'];
             $BARANGAY = $sad['studstbarangay'];
             $MUNICIPALITY = $sad['studcity'];
             $PROVINCE = $sad['studprovince'];
@@ -983,35 +1054,28 @@ class IBEDController extends BaseController
             $SECTION = $sad['section'];
         }
         
-        // SHS ASSESSED CURRICULUM DATA
-        $firstsemester = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '1st Semester')
-        ->findAll();
-        $secondsemester = $this->gsAssessmentModel
-        ->select('assessment_gs.*, curriculum_gs.*, currdata_gs.*, subjects_gs.*')
-        ->join('curriculum_gs', 'curriculum_gs.currid = assessment_gs.curriculum', 'left')
-        ->join('currdata_gs', 'currdata_gs.curriculumid = curriculum_gs.currid', 'left')
-        ->join('subjects_gs', 'subjects_gs.subid = currdata_gs.subid', 'left')
-        ->where('assessment_gs.studid', $STUDID)
-        ->where('assessment_gs.sy', $SY)
-        ->where('assessment_gs.level', $LEVEL)
-        ->where('currdata_gs.sem', '2nd Semester')
+        // ASSESSED CURRICULUM DATA
+        $firstsemester = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, curriculum_ibed.*, currdata_ibed.*, subjects_ibed.*')
+        ->join('curriculum_ibed', 'curriculum_ibed.currid = assessment_ibed.curriculum', 'left')
+        ->join('currdata_ibed', 'currdata_ibed.curriculumid = curriculum_ibed.currid', 'left')
+        ->join('subjects_ibed', 'subjects_ibed.subid = currdata_ibed.subid', 'left')
+        ->where('assessment_ibed.studid', $STUDID)
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
         ->findAll();
 
-        //SHS ASSESSED RATE DATA
-        $gsratedata = $this->gsRatesModel
-        ->where('rates_gs.cluster', $CLUSTERID)
+        // ASSESSED RATE DATA
+        $ibedratedata = $this->ibedRatesModel
+        ->where('rates_ibed.level', $LEVEL)
+        ->where('rates_ibed.sy', $SY)
         ->findAll();
-        
-        $gsrofdata = $this->gsRateOtherFeesModel->findAll();
-        $gsrddata = $this->gsRateDuesModel->findAll();
+        foreach($ibedratedata as $rates){
+            $RATEID = $rates['rateid'];
+        }
+
+        $ibedrofdata = $this->ibedRateOtherFeesModel->where('rateid', $RATEID)->findAll();
+        $ibedrddata = $this->ibedRateDuesModel->where('rateid', $RATEID)->findAll();
 
         $html = '
             <style>        
@@ -1047,84 +1111,54 @@ class IBEDController extends BaseController
                 </tr>
                 <tr>
                     <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
-                    <td>LEVEL: <strong>'. $LEVEL .'</strong></td>
-                </tr>
-                <tr>
-                    <td>CLUSTER: <strong>'. strtoupper($CLUSTER) .'</strong></td>
-                    <td>SECTION: <strong>'. $SECTION .'</strong></td>
+                    <td>LEVEL: <strong>'. $LEVELNAME .'</strong></td>
                 </tr>
                 <tr>
                     <td>ADDRESS: <strong>'. strtoupper($ADDRESS) .'</strong></td>
-                    
+                    <td>SECTION: <strong>'. $SECTION .'</strong></td>
                 </tr>
             </table><br><br>
 
-            <table border="1" style="width: 100%; font-size: 10px;">
+            <table border="1" style="width: 100%; font-size: 11px;">
                 <tr>
-                    <td style="text-align: center;"><strong>FIRST SEMESTER</strong></td>
+                    <td style="text-align: center;"><strong>SUBJECTS</strong></td>
                 </tr>
                 <thead>
                     <tr>
-                        <th style="width: 20%;text-align: center;"><strong>GROUPING</strong></th>
-                        <th style="width: 30%;text-align: center;"><strong>CODE</strong></th>
-                        <th style="width: 50%;text-align: center;"><strong>SUBJECT</strong></th>
+                        <th style="width: 20%;text-align: center;"><strong>CODE</strong></th>
+                        <th style="width: 80%;text-align: center;"><strong>SUBJECT</strong></th>
                     </tr>
                 </thead>
                 <tbody>
         ';
         foreach($firstsemester as $fs){
-            $TYPE = $fs['type'];
             $CODE = $fs['code'];
             $SUBJECT = $fs['subject'];
             $html .= '<tr>
-                    <td style="width: 20%; text-align: left; font-size: 10px;">'.$TYPE.'</td>
-                    <td style="width: 30%; text-align: center; font-size: 10px;">'.$CODE.' </td>
-                    <td style="width: 50%; text-align: left; font-size: 10px;">'.$SUBJECT.'</td>
+                    <td style="width: 20%; text-align: center; font-size: 11px;">'.$CODE.' </td>
+                    <td style="width: 80%; text-align: left; font-size: 11px;">'.$SUBJECT.'</td>
                 </tr>';
         }
         $html .='
                 </tbody>
-            </table><br><br>
-            <table border="1" style="width: 100%; font-size: 10px;">
-                <tr>
-                    <td style="text-align: center;"><strong>SECOND SEMESTER</strong></td>
-                </tr>
-                <thead>
-                    <tr>
-                        <th style="width: 20%;text-align: center;"><strong>GROUPING</strong></th>
-                        <th style="width: 30%;text-align: center;"><strong>CODE</strong></th>
-                        <th style="width: 50%;text-align: center;"><strong>SUBJECT</strong></th>
-                    </tr>
-                </thead>
-                <tbody>
+            </table>
         ';
-        foreach($secondsemester as $ss){
-            $STYPE = $ss['type'];
-            $SCODE = $ss['code'];
-            $SSUBJECT = $ss['subject'];
-            $html .= '<tr>
-                    <td style="width: 20%; text-align: left; font-size: 10px;">'.$STYPE.'</td>
-                    <td style="width: 30%; text-align: center; font-size: 10px;">'.$SCODE.' </td>
-                    <td style="width: 50%; text-align: left; font-size: 10px;">'.$SSUBJECT.'</td>
-                </tr>';
-        }
-        foreach($gsratedata as $gsrated){
+        foreach($ibedratedata as $gsrated){
             $TF = $gsrated['tf'];
         }
         $html .='
-                </tbody>
-            </table><br><br>
-            <table>
+            <table style="width: 100%;">
                 <tbody>
                     <tr>
                         <td style="width: 50%;">
                             <table>
                                 <tbody>
+                                <br><br>
                                     <tr>
-                                        <td style="width: 50%; text-align: left; font-size: 10px;"><strong>FEES:</strong></td>
-                                    </tr><br>
+                                        <td style="width: 100%; text-align: left; font-size: 10px;"><strong>FEES:</strong></td>
+                                    </tr>
                                     <tr>
-                                        <td style="width: 50%; text-align: left; font-size: 10px;">Tuition Fee</td>
+                                        <td style="width: 100%; text-align: left; font-size: 10px;">Tuition Fee</td>
                                     </tr>
                                     <tr>
                                         <td style="width: 5%;"></td>
@@ -1132,36 +1166,24 @@ class IBEDController extends BaseController
                                         <td style="width: 45%; text-align: right; font-size: 10px;"><strong>'.number_format($TF, 2).'</strong></td>
                                         <td style="width: 5%;"></td>
                                     </tr>
-                                    <tr>
-                                        <td style="width: 5%;"></td>
-                                        <td style="width: 45%; text-align: left; font-size: 10px;">QVR (Public)</td>
-                                        <td style="width: 45%; text-align: right; font-size: 10px;"><strong>-'.number_format($TF, 2).'</strong></td>
-                                        <td style="width: 5%;"></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width: 5%;"></td>
-                                        <td style="width: 45%; text-align: right; font-size: 10px;">Sub Total</td>
-                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
-                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>0.00</strong></td>
-                                    </tr>
                                 </tbody>
-                            </table><br><br>
-                            <table>
+                            </table>
+                            <table style="width: 100%;">
                                 <tbody>
                                     <tr>
                                         <td style="width: 50%; text-align: left; font-size: 10px;">Miscellaneous Fees</td>
                                     </tr>';
-                                    foreach($gsrofdata as $gsrofd){
+                                    foreach($ibedrofdata as $gsrofd){
                                         if($gsrofd['rateid'] == $gsrated['rateid']){
                                             $NAME = $gsrofd['name'];
                                             $AMOUNT = $gsrofd['otherfees'];
                                             $totalotherfees = 0;
-                                            foreach($gsrofdata as $gsrofd) {
+                                            foreach($ibedrofdata as $gsrofd) {
                                                 if($gsrofd['rateid'] == $gsrated['rateid']) {
                                                     $totalotherfees += $gsrofd['otherfees'];
                                                 }
                                             }
-
+                                            $GRANDTOTAL = $TF + $totalotherfees;
                                             $html .= '<tr>
                                                 <td style="width: 5%;"></td>
                                                 <td style="width: 45%; text-align: left; font-size: 10px;">'.$NAME.'</td>
@@ -1176,16 +1198,24 @@ class IBEDController extends BaseController
                                         <td style="width: 15%; text-align: right; font-size: 10px;"></td>
                                         <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>'.number_format($totalotherfees, 2).'</strong></td>
                                     </tr>
+                                    <tr>
+                                    <br>
+                                        <td style="width: 5%;"></td>
+                                        <td style="width: 45%; text-align: right; font-size: 10px;">Grand Total</td>
+                                        <td style="width: 15%; text-align: right; font-size: 10px;"></td>
+                                        <td style="width: 30%; text-align: right; font-size: 10px; border-top: 1px solid #000; border-bottom: 1px solid #000;"><strong>'.number_format($GRANDTOTAL, 2).'</strong></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </td>
                         <td style="width: 50%;">
                             <table>
                                 <tbody>
+                                <br><br>
                                     <tr>
-                                        <td style="width: 50%; text-align: left; font-size: 10px;"><strong>INSTALLMENT SCHEDULE:</strong></td>
-                                    </tr><br>';
-                                    foreach($gsrddata as $gsrdd){
+                                        <td style="width: 100%; text-align: left; font-size: 10px;"><strong>INSTALLMENT SCHEDULE:</strong></td>
+                                    </tr>';
+                                    foreach($ibedrddata as $gsrdd){
                                         if($gsrdd['rateid'] == $gsrated['rateid']){
                                             $DNAME = $gsrdd['name'];
                                             $DDATE = $gsrdd['due'];
@@ -1203,18 +1233,13 @@ class IBEDController extends BaseController
                         </td>
                     </tr>
                 </tbody>
-            </table>
-            <br>
-            <br>
-            <br>
-            <br>';
+            </table>';
             $html .= '<table style="width: 100%;">
-            <br>
-            
                 <tr>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
                             <tbody>
+                            <br><br><br>
                                 <tr>
                                     <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
                                 </tr>
@@ -1227,6 +1252,7 @@ class IBEDController extends BaseController
                     <td style="width: 50%; vertical-align: top;">
                         <table  style="width: 100%;">
                             <tbody>
+                            <br><br><br>
                                 <tr>
                                     <td style="width: 30%; text-align: center;"></td>
                                     <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
@@ -1237,11 +1263,9 @@ class IBEDController extends BaseController
                                 </tr>
                             </tbody>
                         </table>
-                        <br>
-                        <br>
-                        <br>
                         <table  style="width: 100%;">
                             <tbody>
+                            <br><br><br>
                                 <tr>
                                     <td style="width: 30%; text-align: center;"></td>
                                     <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
@@ -1254,15 +1278,15 @@ class IBEDController extends BaseController
                         </table>
                     </td>
                 </tr>
-            </table>
-            <br>';
+            </table>';
         
         $html .='
             <table>
                 <tbody>
                     <tr>
+                    <br><br>
                         <td style="text-align: center;">
-                            <p style="font-size: 6px;">THIS IS NOT OFFICIAL UNLESS SIGNED BY THE REGISTRAR</p>
+                            <p style="font-size: 9px;">THIS IS NOT OFFICIAL UNLESS SIGNED BY THE REGISTRAR</p>
                         </td>
                     </tr>
                 </tbody>
@@ -1282,8 +1306,8 @@ class IBEDController extends BaseController
         $ehgsdata = [
             'status' => 'Payment',
         ];
-        $this->enrollmentHistoryGSModel->where('ehid', $id)->update($id, $ehgsdata);
+        $this->enrollmentHistoryIBEDModel->where('ehid', $id)->update($id, $ehgsdata);
         session()->setTempdata('success', 'Student is approved!', 2);
-        return redirect()->to(base_url()."gs-assessment");
+        return redirect()->to(base_url()."ibed-assessment");
     }
 }

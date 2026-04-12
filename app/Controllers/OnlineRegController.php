@@ -5,8 +5,10 @@ use App\Models\RegStudentsModel;
 use App\Models\PaymentTransactionsModel;
 use App\Models\PermanentRecordModel;
 use App\Models\SHSStudentsModel;
+use App\Models\IBEDStudentsModel;
 use App\Models\SHSPermanentRecordModel;
 use App\Models\EnrollmentHistorySHSModel;
+use App\Models\EnrollmentHistoryIBEDModel;
 class OnlineRegController extends BaseController
 {
     public $session;
@@ -15,7 +17,9 @@ class OnlineRegController extends BaseController
     public $permanentrecordModel;
     public $shspermanentrecordModel;
     public $shsStudentsModel;
+    public $ibedStudentsModel;
     public $enrollmentHistorySHSModel;
+    public $enrollmentHistoryIBEDModel;
     public function __construct() {
         helper('form');
         $this->session = session();
@@ -24,18 +28,17 @@ class OnlineRegController extends BaseController
         $this->permanentrecordModel = new PermanentRecordModel();
         $this->shspermanentrecordModel = new SHSPermanentRecordModel();
         $this->shsStudentsModel = new SHSStudentsModel();
+        $this->ibedStudentsModel = new IBEDStudentsModel();
         $this->enrollmentHistorySHSModel = new EnrollmentHistorySHSModel();
+        $this->enrollmentHistoryIBEDModel = new EnrollmentHistoryIBEDModel();
     }
-    public function index()
-    {
+    public function index() {
         return view('onlineregistration/onlineregview');
     }
-    public function stage2()
-    {
+    public function stage2() {
         return view('onlineregistration/onlineregstage2view');
     }
-    public function gsregistration()
-    {
+    public function gsregistration() {
         $data = [];
         if($this->request->is('post')) {
             $rules = [
@@ -180,9 +183,7 @@ class OnlineRegController extends BaseController
         }
         return view('onlineregistration/gsregview', $data);
     }
-
-    private function saveStudentPhoto($base64Image, $lastname, $firstname)
-    {
+    private function saveStudentPhoto($base64Image, $lastname, $firstname) {
         // Remove base64 header if present
         if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
             $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
@@ -219,9 +220,7 @@ class OnlineRegController extends BaseController
         // Return relative path for database storage
         return 'public/uploads/student_photos/' . $filename;
     }
-
-    public function shsregistration()
-    {
+    public function shsregistration() {
         $data = [];
         if($this->request->is('post')) {
             $rules = [
@@ -398,8 +397,7 @@ class OnlineRegController extends BaseController
         }
         return view('onlineregistration/shsregview', $data);
     }
-    public function collegeregistration()
-    {
+    public function collegeregistration() {
         $data = [];
         if($this->request->is('post')) {
             $rules = [
@@ -551,11 +549,6 @@ class OnlineRegController extends BaseController
                         'studstatus' => "COL",
                     ];
                     $this->regstudModel->save($data);
-                    $regdata = $this->regstudModel->where('studln', $lastname)->where('studfn', $firstname)->where('studmn', $middlename)
-                    ->findAll();
-                    foreach($regdata as $rdata){
-                        $studid = $rdata['studid'];
-                    }
                     $PRdata = [
                         'studid' => $studid,
                         'eschool' => $this->request->getVar('elementaryschool'),
@@ -582,10 +575,8 @@ class OnlineRegController extends BaseController
             }
         }
         return view('onlineregistration/collegeregview', $data);
-    }
-    
-    public function stage3()
-    {
+    }    
+    public function stage3() {
         $data = [];
     
         // Check if reference number exists in session
@@ -595,16 +586,13 @@ class OnlineRegController extends BaseController
         $REFERENCENO = session()->get('referenceno');
         return view('onlineregistration/onlineregstage3view', $data);
     }
-    public function kiosk1()
-    {
+    public function kiosk1() {
         return view('onlineregistration/kioskview');
     }
-    public function kiosk2()
-    {
+    public function kiosk2() {
         return view('onlineregistration/kiosk2view');
     }
-    public function kioskgsregistration()
-    {
+    public function kioskgsregistration() {
         $data = [];
         if($this->request->is('post')) {
             $rules = [
@@ -687,53 +675,78 @@ class OnlineRegController extends BaseController
                     ],
                 ],
             ];
-        }
-        if($this->validate($rules)){
-            // Check if student with same full name already exists
-            $lastname = $this->request->getVar('lastname');
-            $firstname = $this->request->getVar('firstname');
-            $middlename = $this->request->getVar('middlename');
+            if($this->validate($rules)){
+                // Check if student with same full name already exists
+                $lastname = $this->request->getVar('lastname');
+                $firstname = $this->request->getVar('firstname');
+                $middlename = $this->request->getVar('middlename');
 
-            $existingStudent = $this->regstudModel
-            ->where('studln', $lastname)
-            ->where('studfn', $firstname)
-            ->where('studmn', $middlename)
-            ->first();
+                $existingStudent = $this->regstudModel
+                ->where('studln', $lastname)
+                ->where('studfn', $firstname)
+                ->where('studmn', $middlename)
+                ->first();
 
-            if($existingStudent) {
-                // Student with same full name exists
-                session()->setTempdata('error', 'A student with the same full name already exists.', 3);
-                return redirect()->to(current_url());
+                // Handle image upload
+                $studentPhoto = $this->request->getVar('student_photo');
+                $photoPath = $this->saveStudentPhoto($studentPhoto, $lastname, $firstname);
+
+                // Get birthday and calculate age
+                $birthday = $this->request->getVar('birthday');
+                $age = $this->calculateAge($birthday);
+
+                if($existingStudent) {
+                    // Student with same full name exists
+                    session()->setTempdata('error', 'A student with the same full name already exists.', 3);
+                    return redirect()->to(current_url());
+                } else {
+                    $FN = $this->request->getVar('lastname');
+                    $MN = $this->request->getVar('middlename');
+                    $LN = $this->request->getVar('lastname');
+                    $FULLNAME = $lastname.', '.$firstname.' '.$middlename;
+                    $data = [
+                        'studln' => $this->request->getVar('lastname'),
+                        'studfn' => $this->request->getVar('firstname'),
+                        'studmn' => $this->request->getVar('middlename'),
+                        'studextension' => $this->request->getVar('extension'),
+                        'studfullname' => $lastname.', '.$firstname.' '.$middlename,
+                        'studbirthday' => $this->request->getVar('birthday'),
+                        'studage' => $age,
+                        'studgender' => $this->request->getVar('gender'),
+                        'studstbarangay' => $this->request->getVar('barangay'),
+                        'studcity' => $this->request->getVar('municipality'),
+                        'studprovince' => $this->request->getVar('province'),
+                        'studcontact' => $this->request->getVar('contact'),
+                        'studcitizenship' => $this->request->getVar('citizenship'),
+                        'studreligion' => $this->request->getVar('religion'),
+                        'studemail' => $this->request->getVar('email'),
+                        'studbirthplace' => $this->request->getVar('birthplace'),
+                        'studcreatedat' => date('Y-m-d H:i:s'),
+                        'studimage' => $photoPath,
+                    ];
+                    $this->ibedStudentsModel->save($data);
+                    $FINDSTUDENT = $this->ibedStudentsModel
+                    ->where('studfullname', $FULLNAME)
+                    ->findAll();
+                    foreach($FINDSTUDENT as $FS){
+                        $STUDENTID = $FS['studid'];
+                    }
+                    $EHSHSdata = [
+                        'studid' => $STUDENTID,
+                        'studfullname' => $FULLNAME,
+                        'date' => date('Y-m-d'),
+                        'status' => 'Registered',
+                    ];
+                    $this->enrollmentHistoryIBEDModel->save($EHSHSdata);
+                    return redirect()->to(base_url()."kiosk-registration-3");
+                }
             } else {
-                $FN = $this->request->getVar('lastname');
-                $MN = $this->request->getVar('middlename');
-                $LN = $this->request->getVar('lastname');
-                $FULLNAME = $lastname.', '.$firstname.' '.$middlename;
-                $data = [
-                    'studln' => $this->request->getVar('lastname'),
-                    'studfn' => $this->request->getVar('firstname'),
-                    'studmn' => $this->request->getVar('middlename'),
-                    'studextension' => $this->request->getVar('extension'),
-                    'studfullname' => $lastname.', '.$firstname.' '.$middlename,
-                    'studbirthday' => $this->request->getVar('birthday'),
-                    'studage' => $age,
-                    'studgender' => $this->request->getVar('gender'),
-                    'studstbarangay' => $this->request->getVar('barangay'),
-                    'studcity' => $this->request->getVar('municipality'),
-                    'studprovince' => $this->request->getVar('province'),
-                    'studcontact' => $this->request->getVar('contact'),
-                    'studcitizenship' => $this->request->getVar('citizenship'),
-                    'studreligion' => $this->request->getVar('religion'),
-                    'studemail' => $this->request->getVar('email'),
-                    'studbirthplace' => $this->request->getVar('birthplace'),
-                    'studcreatedat' => date('Y-m-d H:i:s'),
-                ];
+                $data['validation'] = $this->validator;
             }
         }
         return view('onlineregistration/kioskgsregview');
     }
-    public function kioskshsregistration()
-    {
+    public function kioskshsregistration() {
         $data = [];
         if($this->request->is('post')) {
             $rules = [
@@ -932,23 +945,19 @@ class OnlineRegController extends BaseController
         }
         return view('onlineregistration/kioskshsregview');
     }
-    public function kioskcollegeregistration()
-    {
+    public function kioskcollegeregistration() {
         return view('onlineregistration/kiosk2view');
     }
-    public function kiosk3()
-    {
+    public function kiosk3() {
         return view('onlineregistration/kiosk3view');
     }
-    private function calculateAge($birthday)
-    {
+    private function calculateAge($birthday) {
         $birthDate = new \DateTime($birthday);
         $today = new \DateTime();
         $age = $today->diff($birthDate)->y;
         return $age;
     }
-    private function generateReferenceNumber()
-    {
+    private function generateReferenceNumber() {
         $datePart = date('Ymd');
         $randomPart = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $referenceNumber = "RF-{$datePart}-{$randomPart}";

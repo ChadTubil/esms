@@ -4,8 +4,8 @@ use \CodeIgniter\Model;
 
 class IBEDLevelModel extends Model 
 {
-    protected $table = 'ibedlevel';
-    protected $primaryKey = 'ibedlvlid';
+    protected $table = 'levels_ibed';
+    protected $primaryKey = 'levelid';
     protected $allowedFields = [
         'code', 'name', 'isdel',
     ];

@@ -93,7 +93,7 @@ class SHSDepartmentController extends BaseController
                     ],
                 ],
                 'cluster' => [
-                    'rules' => 'required|is_unique[clusters.cluster]',
+                    'rules' => 'required|is_unique[clusters.name]',
                     'errors' => [
                         'required' => 'Cluster is required.',
                         'is_unique' => 'This cluster is already exists.'
@@ -472,6 +472,7 @@ class SHSDepartmentController extends BaseController
         ->where('NOT EXISTS (SELECT 1 FROM enrollmenthistory_shs 
             WHERE enrollmenthistory_shs.studfullname = regstudents.studfullname 
             AND enrollmenthistory_shs.isdel = 0)', NULL, FALSE)
+        ->where('studstatus', 'SHS')
         ->findAll();
         $data['registeredstudents'] = array_merge($shsStudentsInfo, $registeredstudentsinfo);
 
@@ -561,6 +562,7 @@ class SHSDepartmentController extends BaseController
         ->select('regstudents.*')
         ->join('enrollmenthistory_shs', 'enrollmenthistory_shs.studfullname = regstudents.studfullname AND enrollmenthistory_shs.isdel = 0', 'left')
         ->where('enrollmenthistory_shs.studfullname IS NULL') // Only those NOT in enrollment history
+        ->where('regstudents.studstatus', 'SHS') // Only SHS students
         ->groupBy('regstudents.studfullname') // Group by student fullname to avoid duplicates
         ->findAll();
 

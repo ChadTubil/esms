@@ -77,7 +77,7 @@
                                         <?php if($resstud['studisdel'] == 0): ?>
                                             <tr>
                                                 <td><?= $resstud['studentno']; ?></td>
-                                                <td style="text-transform: uppercase"><?= $resstud['studln']; ?>, <?= $resstud['studfn']; ?></td>
+                                                <td style="text-transform: uppercase"><?= $resstud['studln']; ?>, <?= $resstud['studfn']; ?> <?= $resstud['studmn']; ?></td>
                                                 <td>
                                                     <?php if(isset($resstud['account_count'])): ?>
                                                         <?= $resstud['account_count']; ?>

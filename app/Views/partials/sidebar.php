@@ -215,7 +215,7 @@
                             </a>
                             <ul class="sub-nav collapse" id="ibedenrollment" data-bs-parent="#sidebar-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>shs-registration-select">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>ibed-registration-select">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -228,7 +228,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-admission">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-admission">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -241,7 +241,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-advising">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-advising">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -254,7 +254,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-assessment">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-assessment">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -542,7 +542,7 @@
                             </a>
                             <ul class="sub-nav collapse" id="ibedenrollment" data-bs-parent="#sidebar-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>shs-registration-select">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>ibed-registration-select">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -555,7 +555,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-admission">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-admission">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -568,7 +568,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-advising">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-advising">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -581,7 +581,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>shs-assessment">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-assessment">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -954,7 +954,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>rates">
+                                    <a class="nav-link " href="<?= base_url(); ?>ibed-rates">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -1032,7 +1032,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="<?= base_url(); ?>cashier-transaction">
+                            <a class="nav-link" aria-current="page" href="<?= base_url(); ?>student-accounts">
                                 <i class="icon">
                                     <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
                                         <path opacity="0.4" d="M16.0756 2H19.4616C20.8639 2 22.0001 3.14585 22.0001 4.55996V7.97452C22.0001 9.38864 20.8639 10.5345 19.4616 10.5345H16.0756C14.6734 10.5345 13.5371 9.38864 13.5371 7.97452V4.55996C13.5371 3.14585 14.6734 2 16.0756 2Z" fill="currentColor"></path>
@@ -1120,7 +1120,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li><hr class="hr-horizontal"></li>
                         <!-- SCHOOL SETTINGS -->
                         <li class="nav-item static-item">
                             <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -1811,7 +1810,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link " href="<?= base_url(); ?>rates">
+                                        <a class="nav-link " href="<?= base_url(); ?>ibed-rates">
                                             <i class="icon">
                                                 <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                     <g>
