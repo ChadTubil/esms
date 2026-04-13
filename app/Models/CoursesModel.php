@@ -7,7 +7,7 @@ class CoursesModel extends Model
     protected $table = 'courses';
     protected $primaryKey = 'courid';
     protected $allowedFields = [
-        'code', 'name', 'courisdel',
+        'code', 'name', 'isdel',
     ];
     protected $returnType = 'array';
     

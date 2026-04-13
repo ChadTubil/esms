@@ -849,7 +849,7 @@ class IBEDDepartmentController extends BaseController
         ->findAll();
 
         // ASSESSED RATE DATA
-        $data['ibedratedata'] = $this->ibedRatesModel
+        $data['ibedratedata'] = $this->ibedRa
         ->where('rates_ibed.level', $LEVEL)
         ->where('rates_ibed.sy', $SY)
         ->findAll();

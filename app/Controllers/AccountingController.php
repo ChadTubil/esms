@@ -30,6 +30,7 @@ use App\Models\IBEDRatesModel;
 use App\Models\IBEDRateDuesModel;
 use App\Models\IBEDRateOtherFeesModel;
 use App\Models\IBEDStudentsModel;
+use App\Models\COLStudentsModel;
 use TCPDF;
 use NumberFormatter; // Add this line
 class AccountingController extends BaseController
@@ -63,6 +64,7 @@ class AccountingController extends BaseController
     public $ibedRateDuesModel;
     public $ibedRateOtherFeesModel;
     public $ibedStudentsModel;
+    public $colStudentsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -95,6 +97,7 @@ class AccountingController extends BaseController
         $this->ibedRateDuesModel = new IBEDRateDuesModel();
         $this->ibedRateOtherFeesModel = new IBEDRateOtherFeesModel();
         $this->ibedStudentsModel = new IBEDStudentsModel();
+        $this->colStudentsModel = new COLStudentsModel();
         $this->session = session();
     }
     public function index() {
@@ -111,9 +114,11 @@ class AccountingController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $data['ratesdata'] = $this->ratesModel->findAll();
         $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
-        $data['semdata'] = $this->semModel->where('semisdel', 0)->findAll();
-        $data['coursedata'] = $this->coursesModel->where('courisdel', 0)->findAll();
-        $data['leveldata'] = $this->levelsModel->where('levelisdel', 0)->findAll();
+        $data['coursedata'] = $this->coursesModel->where('isdel', '0')->findAll();
+        $data['ratesdata'] = $this->ratesModel
+        ->select('rates.*, courses.*')
+        ->join('courses', 'rates.course = courses.courid')
+        ->where('rates.isdel', '0')->findAll();
 
         if($this->request->is('post')) {
             $rules = [
@@ -129,13 +134,13 @@ class AccountingController extends BaseController
                         'required' => 'Semester is required.',
                     ],
                 ],
-                'program' => [
+                'course' => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'Program is required.',
+                        'required' => 'Course is required.',
                     ],
                 ],
-                'year' => [
+                'level' => [
                     'rules' => 'required',
                     'errors' => [
                         'required' => 'Level is required.',
@@ -146,8 +151,8 @@ class AccountingController extends BaseController
                 $data = [
                     'sy' => $this->request->getVar('sy'),
                     'sem' => $this->request->getVar('sem'),
-                    'course' => $this->request->getVar('program'),
-                    'year' => $this->request->getVar('year'),
+                    'course' => $this->request->getVar('course'),
+                    'level' => $this->request->getVar('level'),
                 ];
                 $this->ratesModel->save($data);
                 session()->setTempdata('addsuccess','Rate added successfully', 3);
@@ -170,7 +175,9 @@ class AccountingController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['ratesdata'] = $this->ratesModel->where('rateid', $id)->findAll();
+        $data['ratesdata'] = $this->ratesModel
+        ->select('rates.*, courses.*')
+        ->join('courses', 'rates.course = courses.courid')->where('rateid', $id)->findAll();
         $data['rddata'] = $this->rdModel->where('rateid', $id)->findAll();
         $data['rofdata'] = $this->rofModel->where('rateid', $id)->findAll();
 
@@ -204,13 +211,17 @@ class AccountingController extends BaseController
         }
     }
     public function rateduesupdate($id=null) {
+        $LocateRateID = $this->rdModel->where('rdid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
         if($this->request->is('post')) {
             $data = [
                 'due' => $this->request->getVar('due'),
             ];
 
             $this->rdModel->where('rdid', $id)->update($id, $data);
-            return redirect()->to(base_url()."rates/setup/".$id);
+            return redirect()->to(base_url()."rates/setup/".$rateID);
         }
     }
     public function raterof($id=null) {
@@ -226,6 +237,10 @@ class AccountingController extends BaseController
         }
     }
     public function raterofupdate($id=null) {
+        $LocateRateID = $this->rofModel->where('rofid', $id)->findAll();
+        foreach($LocateRateID as $rateid) {
+            $rateID = $rateid['rateid'];
+        }
         if($this->request->is('post')) {
             $data = [
                 'name' => $this->request->getVar('name'),
@@ -233,7 +248,7 @@ class AccountingController extends BaseController
             ];
 
             $this->rofModel->where('rofid', $id)->update($id, $data);
-            return redirect()->to(base_url()."rates/setup/".$id);
+            return redirect()->to(base_url()."rates/setup/".$rateID);
         }
     }
     public function shsRates() {
@@ -613,7 +628,7 @@ class AccountingController extends BaseController
         $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
 
         $Clusterdata = $this->clustersModel->where('isdel', '0')->findAll();
-        $Coursedata = $this->coursesModel->where('courisdel', 0)->findAll();
+        $Coursedata = $this->coursesModel->where('isdel', 0)->findAll();
         $data['coursedata'] = array_merge($Coursedata, $Clusterdata);
 
         $data['feestructuredata'] = $this->feeStructureModel->where('isdel', 0)->findAll();
@@ -810,9 +825,10 @@ class AccountingController extends BaseController
 
             if($searchStudent == ''){
                 $students = $this->studentsModel->where('studisdel', 0)->findAll();
+                $colStudents = $this->colStudentsModel->where('studisdel', 0)->findAll();
                 $shsStudents = $this->shsStudentsModel->where('studisdel', 0)->findAll();
                 $ibedStudents = $this->ibedStudentsModel->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $shsStudents, $ibedStudents);
+                $resultStudent = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
                 foreach($resultStudent as $key => $student) {
                     $accountCount = $this->studentAccountsModel
                         ->where('studentno', $student['studentno'])
@@ -837,13 +853,19 @@ class AccountingController extends BaseController
                 ->orLike('studfn', $searchStudent)
                 ->orLike('studfullname', $searchStudent)
                 ->where('studisdel', 0)->findAll();
+                $colStudents = $this->colStudentsModel
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->where('studisdel', 0)->findAll();
                 $ibedStudents = $this->ibedStudentsModel
                 ->like('studentno', $searchStudent)
                 ->orLike('studln', $searchStudent)
                 ->orLike('studfn', $searchStudent)
                 ->orLike('studfullname', $searchStudent)
                 ->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $shsStudents, $ibedStudents);
+                $resultStudent = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
 
                 // Add account count for each student
                 foreach($resultStudent as $key => $student) {
@@ -878,8 +900,9 @@ class AccountingController extends BaseController
         $students = $this->studentsModel->where('studentno', $id)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
         $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
-        $data['studentdata'] = array_merge($students, $shsStudents, $ibedStudents);
-        
+        $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
+        $data['studentdata'] = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
+
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $id)->where('isdel', 0)->findAll();
 
         return view('accounting/studentaccountsview', $data);
@@ -901,7 +924,8 @@ class AccountingController extends BaseController
         $students = $this->studentsModel->where('studentno', $studentno)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $studentno)->findAll();
         $ibedStudents = $this->ibedStudentsModel->where('studentno', $studentno)->findAll();
-        $data['studentdata'] = array_merge($students, $shsStudents, $ibedStudents);
+        $colStudents = $this->colStudentsModel->where('studentno', $studentno)->findAll();
+        $data['studentdata'] = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
         foreach($data['studentdata'] as $allstd){
             $STUDENTFULLNAME = $allstd['studfullname'];
             $STUDENTNO = $allstd['studentno'];

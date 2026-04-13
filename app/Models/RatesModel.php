@@ -7,7 +7,7 @@ class RatesModel extends Model
     protected $table = 'rates';
     protected $primaryKey = 'rateid';
     protected $allowedFields = [
-        'sy', 'sem', 'course', 'year', 'major', 'minor',
+        'sy', 'sem', 'course', 'level', 'major', 'minor',
         'nstp01', 'nstp02', 'status', 'isdel',
     ];
     protected $returnType = 'array';

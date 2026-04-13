@@ -364,6 +364,46 @@ $routes->get('ibed-assessment/view/(:segment)', 'IBEDDepartmentController::asses
 $routes->add('ibed-assessment/print/(:segment)', 'IBEDDepartmentController::assessmentPrint/$1');
 $routes->add('ibed-assessment/aprroved/(:segment)', 'IBEDDepartmentController::assessmentApproved/$1');
 
+//COLLEGE DEPARTMENT
+$routes->get('col-course', 'COLDepartmentController::course');
+$routes->post('col-course', 'COLDepartmentController::course');
+$routes->add('col-course/delete/(:segment)', 'COLDepartmentController::deletecourse/$1');
+$routes->post('col-course/update/(:segment)', 'COLDepartmentController::updatecourse/$1');
+$routes->get('col-subjects', 'COLDepartmentController::subjects');
+$routes->post('col-subjects', 'COLDepartmentController::subjects');
+$routes->add('col-subjects/delete/(:segment)', 'COLDepartmentController::deletesubjects/$1');
+$routes->post('col-subjects/update/(:segment)', 'COLDepartmentController::updatesubjects/$1');
+$routes->get('col-curriculum', 'COLDepartmentController::curriculum');
+$routes->post('col-curriculum', 'COLDepartmentController::curriculum');
+$routes->add('col-curriculum/delete/(:segment)', 'COLDepartmentController::deletecurriculum/$1');
+$routes->post('col-curriculum/update/(:segment)', 'COLDepartmentController::updatecurriculum/$1');
+$routes->get('col-curriculum/setup/(:segment)', 'COLDepartmentController::setupcurriculum/$1');
+$routes->post('col-curriculum/setup/(:segment)', 'COLDepartmentController::setupcurriculum/$1');
+$routes->get('col-sections', 'COLDepartmentController::sections');
+$routes->post('col-sections', 'COLDepartmentController::sections');
+$routes->add('col-sections/delete/(:segment)', 'COLDepartmentController::deletesections/$1');
+$routes->post('col-sections/update/(:segment)', 'COLDepartmentController::updatesections/$1');
+$routes->get('col-registration-select', 'COLDepartmentController::registrationselect');
+// OLD STUDENTS
+$routes->get('col-oldstudent-select', 'COLDepartmentController::oldstudentselect');
+$routes->post('col-oldstudent-process', 'COLDepartmentController::oldstudentprocess');
+// COLLEGE STUDENTS
+$routes->get('col-registeredstudent', 'COLDepartmentController::registeredstudent');
+$routes->add('col-registeredstudent/process/(:segment)', 'COLDepartmentController::registeredstudentProcess/$1');
+$routes->get('col-admission', 'COLDepartmentController::admission');
+$routes->get('col-admission/process/(:segment)', 'COLDepartmentController::admissionProcess/$1');
+$routes->post('col-admission/process/(:segment)', 'COLDepartmentController::admissionProcess/$1');
+$routes->get('col-admission/process-cancel/(:segment)', 'COLDepartmentController::admissionProcessCancel/$1');
+$routes->add('col-admission/process-generate/(:segment)', 'COLDepartmentController::admissionProcessGenerate/$1');
+$routes->get('col-advising', 'COLDepartmentController::advising');
+$routes->get('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
+$routes->post('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
+$routes->add('col-advising/submit-account/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1');
+$routes->add('col-advising/drop/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2');
+$routes->get('col-assessment', 'COLDepartmentController::assessment');
+$routes->get('col-assessment/view/(:segment)', 'COLDepartmentController::assessmentView/$1');
+$routes->add('col-assessment/print/(:segment)', 'COLDepartmentController::assessmentPrint/$1');
+$routes->add('col-assessment/aprroved/(:segment)', 'COLDepartmentController::assessmentApproved/$1');
 
 //GUIDANCE
 $routes->get('guidance-records', 'GuidanceController::index');

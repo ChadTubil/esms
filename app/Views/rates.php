@@ -35,7 +35,7 @@
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12">
                                     <label class="form-label" for="validationDefault01">SCHOOL YEAR</label>
-                                    <select name="sy" class="js-example-basic-single" id="SY" style="width: 100%;">
+                                    <select name="sy" class="form-select" id="SY" style="width: 100%;">
                                         <option selected="" disabled=""></option>
                                         <?php foreach ($sydata as $syd): ?>
                                             <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
@@ -44,29 +44,30 @@
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
                                     <label class="form-label" for="validationDefault01">SEMESTER</label>
-                                    <select name="sem" class="js-example-basic-single" id="SEM" style="width: 100%;">
+                                    <select name="sem" class="form-select" id="SEM" style="width: 100%;">
                                         <option selected="" disabled=""></option>
-                                        <?php foreach ($semdata as $semd): ?>
-                                            <option value="<?php echo $semd['semester']; ?>"><?php echo $semd['semester']; ?></option>
-                                        <?php endforeach; ?>
+                                        <option value="1st Semester">1st Semester</option>
+                                        <option value="2nd Semester">2nd Semester</option>
+                                        <option value="Summer">Summer</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
-                                    <label class="form-label" for="validationDefault01">PROGRAM</label>
-                                    <select name="program" class="js-example-basic-single" id="PROGRAM" style="width: 100%;">
+                                    <label class="form-label" for="validationDefault01">COURSE</label>
+                                    <select name="course" class="form-select" id="COURSE" style="width: 100%;">
                                         <option selected="" disabled=""></option>
-                                        <?php foreach ($coursedata as $coursed): ?>
-                                            <option value="<?php echo $coursed['courcode']; ?>"><?php echo $coursed['courcode']; ?></option>
-                                        <?php endforeach; ?>
+                                        <?php foreach ($coursedata as $course): ?>
+                                                <option value="<?php echo $course['courid']; ?>"><?php echo $course['code']; ?></option>
+                                            <?php endforeach; ?>
                                     </select>
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
                                     <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
-                                    <select name="year" class="js-example-basic-single" id="YEAR" style="width: 100%;">
+                                    <select name="level" class="form-select" id="YEAR" style="width: 100%;">
                                         <option selected="" disabled=""></option>
-                                        <?php foreach ($leveldata as $leveld): ?>
-                                            <option value="<?php echo $leveld['level']; ?>"><?php echo $leveld['level']; ?></option>
-                                        <?php endforeach; ?>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
                                     </select>
                                 </div>
                             </div>
@@ -104,7 +105,7 @@
                                 <thead>
                                     <tr>
                                         <th>SCHOOL YEAR</th>
-                                        <th>SEMESTER</th>
+                                        <th>LEVEL</th>
                                         <th>PROGRAM</th>
                                         <th>ACTION</th>
                                     </tr>
@@ -113,8 +114,8 @@
                                     <?php foreach($ratesdata as $ratesd):?>
                                         <tr>
                                             <td><?= $ratesd['sy']; ?></td>
-                                            <td><?= $ratesd['sem']; ?></td>
-                                            <td><?= $ratesd['course']; ?></td>
+                                            <td><?= $ratesd['level']; ?>-<?= $ratesd['sem']; ?></td>
+                                            <td><?= $ratesd['code']; ?></td>
                                             <td>
                                                 <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Set Up Rates"
                                                     onclick="window.location.href='<?= base_url(); ?>rates/setup/<?= $ratesd['rateid']; ?>'">

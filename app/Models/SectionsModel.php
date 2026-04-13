@@ -7,8 +7,8 @@ class SectionsModel extends Model
     protected $table = 'sections';
     protected $primaryKey = 'secid';
     protected $allowedFields = [
-        'section', 'seclevelid', 'secsyid', 'secsemid', 'seccourid',
-        'secstatus', 'secisdel',
+        'section', 'level', 'sy', 'sem', 'course',
+        'status', 'isdel',
     ];
     protected $returnType = 'array';
     

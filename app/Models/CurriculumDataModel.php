@@ -7,8 +7,8 @@ class CurriculumDataModel extends Model
     protected $table = 'currdata';
     protected $primaryKey = 'cdid';
     protected $allowedFields = [
-        'curriculumid', 'grade', 'subjectsid', 'level', 'sem',
-        'prerequisite', 'pregrade', 'status', 'isdel',
+        'curriculumid', 'subid', 'level', 'sem',
+        'status', 'isdel',
     ];
     protected $returnType = 'array';
     

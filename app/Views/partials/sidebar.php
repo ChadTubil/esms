@@ -57,7 +57,7 @@
                             </a>
                             <ul class="sub-nav collapse" id="collegestudent" data-bs-parent="#sidebar-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>registration-select">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>col-registration-select">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -70,7 +70,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>admission">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-admission">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -83,7 +83,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>assessment">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-advising">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -96,7 +96,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>assessment-cor">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-assessment">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -374,60 +374,70 @@
                                     </svg>
                                 </i>
                             </a>
-                            <ul class="sub-nav collapse" id="collegestudent" data-bs-parent="#sidebar-menu">
-                                <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>registration-select">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> + </i>
-                                        <span class="item-name">Registration</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>admission">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Admission </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>assessment">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Advising </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>assessment-cor">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Assessment </span>
-                                    </a>
-                                </li>
-                            </ul>
+                            <?php if($usera['uprogramchair'] == 1): ?>
+                                <ul class="sub-nav collapse" id="collegestudent" data-bs-parent="#sidebar-menu">
+                                    <!-- REGISTRATION  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href="<?= base_url(); ?>col-registration-select">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> + </i>
+                                            <span class="item-name">Registration</span>
+                                        </a>
+                                    </li>
+                                    <!-- ADMISSION  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>col-admission">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Admission </span>
+                                        </a>
+                                    </li>
+                                    <!-- ADVISING  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>col-advising">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Advising </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php endif; ?>
+                            <?php if($usera['uregistrar'] == 1): ?>
+                                <ul class="sub-nav collapse" id="collegestudent" data-bs-parent="#sidebar-menu">
+                                    <!-- ASSESSMENT  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>col-assessment">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Assessment </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php endif; ?>
                         </li>
                     <?php endif; ?>
                     <?php if($usera['ushs'] == 1): ?>
@@ -540,60 +550,70 @@
                                     </svg>
                                 </i>
                             </a>
-                            <ul class="sub-nav collapse" id="ibedenrollment" data-bs-parent="#sidebar-menu">
-                                <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>ibed-registration-select">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> + </i>
-                                        <span class="item-name">Registration</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>ibed-admission">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Admission </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>ibed-advising">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Advising </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>ibed-assessment">
-                                        <i class="icon">
-                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                        </i>
-                                        <i class="sidenav-mini-icon"> A </i>
-                                        <span class="item-name"> Assessment </span>
-                                    </a>
-                                </li>
-                            </ul>
+                            <?php if($usera['uprogramchair'] == 1): ?>
+                                <ul class="sub-nav collapse" id="ibedenrollment" data-bs-parent="#sidebar-menu">
+                                    <!-- REGISTRATION  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href="<?= base_url(); ?>ibed-registration-select">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> + </i>
+                                            <span class="item-name">Registration</span>
+                                        </a>
+                                    </li>
+                                    <!-- ADMISSION  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>ibed-admission">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Admission </span>
+                                        </a>
+                                    </li>
+                                    <!-- ADVISING  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>ibed-advising">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Advising </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php endif; ?>
+                            <?php if($usera['uregistrar'] == 1): ?>
+                                <ul class="sub-nav collapse" id="ibedenrollment" data-bs-parent="#sidebar-menu">
+                                    <!-- ASSESSMENT  -->
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>ibed-assessment">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> A </i>
+                                            <span class="item-name"> Assessment </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php endif; ?>
                         </li>
                     <?php endif; ?>
                 <?php endforeach; ?> 
@@ -1143,7 +1163,7 @@
                             </a>
                             <ul class="sub-nav collapse" id="collegesetup" data-bs-parent="#sidebar-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>courses">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-course">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -1156,7 +1176,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>sections">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-sections">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -1182,7 +1202,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>curriculum">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-curriculum">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -1195,7 +1215,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="<?= base_url(); ?>subjects">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-subjects">
                                         <i class="icon">
                                             <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <g>

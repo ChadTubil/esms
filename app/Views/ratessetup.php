@@ -24,7 +24,7 @@
                         <div class="header-title">
                             <h5 class="card-title">
                                 <?php foreach($ratesdata as $ratesd) :?>
-                                    <h3>RATE SET UP FOR: <strong><?= $ratesd['sy']; ?> - <?= $ratesd['sem']; ?> - <?= $ratesd['course']; ?> <?= $ratesd['year']; ?></strong></h3>
+                                    <h3>RATE SET UP FOR: <strong><?= $ratesd['sy']; ?> - <?= $ratesd['sem']; ?> - <?= $ratesd['code']; ?> <?= $ratesd['level']; ?></strong></h3>
                                 <?php endforeach; ?>
                             </h5>
                         </div>

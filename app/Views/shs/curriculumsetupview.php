@@ -59,6 +59,7 @@
                                     <select name="sem" class="form-select" style="width: 100%;">
                                         <option value="1st Semester">1st Semester</option>
                                         <option value="2nd Semester">2nd Semester</option>
+                                        <option value="Summer">Summer</option>
                                     </select>
                                 </div>
                             </div>

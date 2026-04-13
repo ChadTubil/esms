@@ -81,8 +81,6 @@ class SubjectsController extends BaseController
                     'units' => $this->request->getVar('lecunits') + $this->request->getVar('labunits'),
                     'major' => $MAJOR,
                     'prerequisite' => $this->request->getVar('prerequisite'),
-                    'status' => 0,
-                    'isdel' => 0,
                 ];
                 $this->subjectsModel->save($data);
                 session()->setTempdata('addsuccess','Subject is added successfully', 3);
