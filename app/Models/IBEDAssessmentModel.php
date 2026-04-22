@@ -8,7 +8,7 @@ class IBEDAssessmentModel extends Model
     protected $primaryKey = 'assid';
     protected $allowedFields = [
         'studid', 'sy', 'level', 'curriculum',
-        'section', 'date', 'status', 'isdel',
+        'section','vouchers','date', 'status', 'isdel',
     ];
     protected $returnType = 'array';
     

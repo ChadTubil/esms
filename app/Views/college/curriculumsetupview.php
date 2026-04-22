@@ -14,6 +14,76 @@
     <!-- ----------- SIDEBAR ------------------ -->
     <?= $this->include("partials/sidebar"); ?>  
     <!-- ----------- END OF SIDEBAR ------------------ --> 
+    
+    <style>
+        .custom-select2 + .select2-container .select2-selection {
+            height: 40px;
+            border: 1px solid #e1e5e9;
+            border-radius: 4px;
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+
+        .custom-select2 + .select2-container .select2-selection__arrow {
+            height: 48px;
+        }
+
+        .custom-select2 + .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 26px;
+            padding-left: 0;
+        }
+
+        .custom-select2 + .select2-container.select2-container--open .select2-selection {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .custom-select2 + .select2-container .select2-dropdown {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .custom-select2 + .select2-container .select2-results__option {
+            font-size: 10px;
+        }
+
+        .select2-results__option:hover {
+            background-color: #4a90e2;
+            color: #1a202c;
+        }
+
+        .custom-select2 + .select2-container .select2-results__option--highlighted {
+            background-color: #f8f9fa;
+            color: #2d3748;
+        }
+
+        .custom-select2 + .select2-container .select2-search__field {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Initialize all custom select2 elements
+            $('.custom-select2').select2({
+                theme: "custom-theme",
+                width: '100%'
+            });
+
+            // Initialize Select2 for modal selects 
+            $('.modal .custom-select2').select2({
+                theme: "custom-theme",
+                width: '100%',
+                dropdownParent: $('.modal')
+            });
+        });
+    </script>
 
     <!-- Begin Page Content -->
     <div class="conatiner-fluid content-inner mt-n5 py-0">

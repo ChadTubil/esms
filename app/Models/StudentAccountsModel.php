@@ -8,7 +8,7 @@ class StudentAccountsModel extends Model
     protected $primaryKey = 'said';
     protected $allowedFields = [
         'studentno', 'assessmentid', 'sy', 'sem', 'course',
-        'cluster', 'level', 'totalassessment', 'totalpayments', 'totalbalance', 'accountstatus',
+        'cluster', 'level', 'totalassessment', 'totalpayments', 'totalbalance', 'vouchers', 'accountstatus',
         'createddate', 'updateddate', 'isdel',
     ];
     protected $returnType = 'array';

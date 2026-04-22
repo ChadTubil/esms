@@ -24,7 +24,7 @@
                         <div class="header-title">
                             <h5 class="card-title">
                                 <?php foreach($ratesdata as $ratesd) :?>
-                                    <h3>RATE SET UP FOR: <strong><?= $ratesd['sy']; ?> - <?= $ratesd['sem']; ?> - <?= $ratesd['code']; ?> <?= $ratesd['level']; ?></strong></h3>
+                                    <h3>RATE SET UP FOR: <strong><?= $ratesd['sy']; ?> - <?= $ratesd['sem']; ?> - <?= $ratesd['code']; ?> <?= $ratesd['year']; ?></strong></h3>
                                 <?php endforeach; ?>
                             </h5>
                         </div>
@@ -166,7 +166,7 @@
                                                                                 <div class="modal-body" style="text-align: left;">
                                                                                     <div class="form-group">
                                                                                         <label for="email" class="form-label"><?= $rdd['name']; ?></label>
-                                                                                        <input type="date" name="due" class="form-control" value="<?php echo $rdd['due']; ?>">
+                                                                                        <input type="date" name="due" step="0.01" class="form-control" value="<?php echo $rdd['due']; ?>">
                                                                                     </div>
                                                                                     <br>
                                                                                     <div class="text-start">

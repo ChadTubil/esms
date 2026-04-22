@@ -14,7 +14,7 @@
     <!-- ----------- SIDEBAR ------------------ -->
     <?= $this->include("partials/sidebar"); ?>  
     <!-- ----------- END OF SIDEBAR ------------------ --> 
-
+    
     <!-- Begin Page Content -->
     <div class="conatiner-fluid content-inner mt-n5 py-0">
         <div class="row">
@@ -31,7 +31,6 @@
                                 <div class="row">
                                     <div class="col-lg-12 col-sm-12">
                                         <h5>NAME: <strong><?= $stud['studfullname']; ?></strong></h5>
-                                        <br>
                                         <div class="row">
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
@@ -58,7 +57,14 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-8 col-sm-12">
+                                            <div class="col-lg-4 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">LRN:</label>
+                                                    <input type="text" name="lrn" class="form-control" value=" ">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">LEVEL</label>
                                                     <select name="level" class="form-select" required>
@@ -100,37 +106,37 @@
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S NAME</label>
-                                                    <input type="text" name="fname" class="form-control form-control-x" style="text-transform: uppercase;" required>
+                                                    <input type="text" name="fname" class="form-control form-control-x" style="text-transform: uppercase;" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S DATE OF BIRTH</label>
-                                                    <input type="date" name="fdateofbirth" class="form-control" required>
+                                                    <input type="date" name="fdateofbirth" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S PLACE OF BIRTH</label>
-                                                    <input type="text" name="fplaceofbirth" class="form-control" required>
+                                                    <input type="text" name="fplaceofbirth" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S ADDRESS</label>
-                                                    <input type="text" name="faddress" class="form-control" required>
+                                                    <input type="text" name="faddress" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S CONTACT NUMBER</label>
-                                                    <input type="text" name="fcontact" class="form-control form-control-x" style="text-transform: uppercase;" required>
+                                                    <input type="text" name="fcontact" class="form-control form-control-x" style="text-transform: uppercase;" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S EDUCATIONAL ATTAINMENT</label>
-                                                    <input type="text" name="feduc" class="form-control" required>
+                                                    <input type="text" name="feduc" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
@@ -154,43 +160,43 @@
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">FATHER'S LANGUAGE SPOKEN</label>
-                                                    <input type="text" name="flanguage" class="form-control" required>
+                                                    <input type="text" name="flanguage" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHERS'S NAME</label>
-                                                    <input type="text" name="mname" class="form-control form-control-x" style="text-transform: uppercase;" required>
+                                                    <input type="text" name="mname" class="form-control form-control-x" style="text-transform: uppercase;" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHER'S DATE OF BIRTH</label>
-                                                    <input type="date" name="mdateofbirth" class="form-control" required>
+                                                    <input type="date" name="mdateofbirth" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHER'S PLACE OF BIRTH</label>
-                                                    <input type="text" name="mplaceofbirth" class="form-control" required>
+                                                    <input type="text" name="mplaceofbirth" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHER'S ADDRESS</label>
-                                                    <input type="text" name="maddress" class="form-control" required>
+                                                    <input type="text" name="maddress" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHERS'S CONTACT NUMBER</label>
-                                                    <input type="text" name="mcontact" class="form-control form-control-x" style="text-transform: uppercase;" required>
+                                                    <input type="text" name="mcontact" class="form-control form-control-x" style="text-transform: uppercase;" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHER'S EDUCATIONAL ATTAINMENT</label>
-                                                    <input type="text" name="meducation" class="form-control" required>
+                                                    <input type="text" name="meducation" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
@@ -214,14 +220,15 @@
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">MOTHER'S LANGUAGE SPOKEN</label>
-                                                    <input type="text" name="mlanguage" class="form-control" required>
+                                                    <input type="text" name="mlanguage" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">STATUS</label>
-                                                    <select name="pstatus" class="form-select" required>
+                                                    <select name="pstatus" class="form-select" >
                                                         <option value="">Select Status</option>
+                                                        <option value="Widowed">Widowed</option>
                                                         <option value="Living Together">Living Together</option>
                                                         <option value="Father w/ another partner">Father w/ another partner</option>
                                                         <option value="Mother w/ another partner">Mother w/ another partner</option>
@@ -230,37 +237,38 @@
                                                         <option value="Mother is OFW">Mother is OFW</option>
                                                         <option value="Father is OFW">Father is OFW</option>
                                                         <option value="Legally Separated">Legally Separated</option>
+                                                        <option value="Others">Others</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">NAME OF GUARDIAN</label>
-                                                    <input type="text" name="nameg" class="form-control" required>
+                                                    <input type="text" name="nameg" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">GUARDIAN'S CONTACT NUMBER</label>
-                                                    <input type="number" name="contactg" class="form-control" required>
+                                                    <input type="number" name="contactg" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">GUARDIAN'S ADDRESS</label>
-                                                    <input type="text" name="gaddress" class="form-control" required>
+                                                    <input type="text" name="gaddress" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">PERSON TO CONTACT</label>
-                                                    <input type="text" name="contactperson" class="form-control" required>
+                                                    <input type="text" name="contactperson" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">CONTACT NUMBER</label>
-                                                    <input type="number" name="personcontactno" class="form-control" required>
+                                                    <input type="number" name="personcontactno" class="form-control" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-5 col-sm-12">
@@ -484,5 +492,6 @@
             });
         });
     </script>
+    
 
 <?= $this->endSection(); ?>

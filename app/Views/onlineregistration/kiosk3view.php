@@ -381,7 +381,7 @@
                         <div class="container-fluid">
                             <div class="mx-2 navbar-center">
                                 <div class="logo-main">
-                                    <a href="<?php echo base_url() ?>online-registration">
+                                    <a href="<?php echo base_url() ?>kiosk-registration">
                                     <img src="<?= base_url(); ?>/public/assets/images/logohcc.png" alt="HCC Logo" style="width: 80px; height: auto;"></a>
                                 </div>
                                 <h1 class="logo-title"><strong>HOLY CROSS COLLEGE REGISTRATION</strong></h1>

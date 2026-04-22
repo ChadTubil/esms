@@ -7,7 +7,7 @@ class IBEDSchoolRecordModel extends Model
     protected $table = 'ibedstudentschoolrecord';
     protected $primaryKey = 'ssrid';
     protected $allowedFields = [
-        'studid', 'sy', 'level', 'status',
+        'studid', 'lrn', 'sy', 'level', 'status',
     ];
     protected $returnType = 'array';
     

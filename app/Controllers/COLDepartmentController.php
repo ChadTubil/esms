@@ -657,7 +657,12 @@ class COLDepartmentController extends BaseController
         foreach($registeredstudentpr as $rsp){
             $STUDID = $rsp['studid'];
         }
-        $this->colPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
+        $prdata = [
+            'studid' => $STUDID,
+            'studfullname' => $STUDFULLNAME,
+        ];
+        $this->colPermanentRecordModel->save($prdata);
+        // $this->colPermanentRecordModel->where('studfullname', $STUDFULLNAME)->set(['studid' => $STUDID])->update();
         $ehdata = [
             'studid' => $STUDID,
             'studfullname' => $STUDFULLNAME,
@@ -669,8 +674,8 @@ class COLDepartmentController extends BaseController
     }
     public function admission(){
         $data = [
-            'page_title' => 'Holy Cross College | College Admission',
-            'page_heading' => 'COLLEGE ADMISSION!',
+            'page_title' => 'Holy Cross College | Admission',
+            'page_heading' => 'ADMISSION!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -688,8 +693,8 @@ class COLDepartmentController extends BaseController
     }
     public function admissionProcess($id=null){
         $data = [
-            'page_title' => 'Holy Cross College | College Admission Process',
-            'page_heading' => 'COLLEGE ADMISSION PROCESS!',
+            'page_title' => 'Holy Cross College | Admission Process',
+            'page_heading' => 'ADMISSION PROCESS!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -708,6 +713,7 @@ class COLDepartmentController extends BaseController
         $data['coursedata'] = $this->coursesModel->where('isdel', 0)->findAll();
 
         if($this->request->is('post')){
+            
             // SHS SCHOOL RECORD 
             $schoolrecorddata = [
                 'studid' => $id,
@@ -833,22 +839,7 @@ class COLDepartmentController extends BaseController
     }
     public function admissionProcessGenerate($id=null) {
         $year = date('y');
-        // print_r($year);
-        $laststudentno = $this->colStudentsModel
-        ->like('studentno', $year . 'C', 'after')
-        ->orderBy('studentno', 'DESC')
-        ->get()
-        ->getFirstRow();
-
-        if ($laststudentno) {
-            $lastNumber = (int)substr($laststudentno->studentno, 3);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = '1';
-        }
-
-        $studentNumber = $year . 'C' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-        // print_r($studentNumber);
+        $studentNumber = $year . 'C' . str_pad($id, 4, '0', STR_PAD_LEFT);
         $data = [
             'studentno' => $studentNumber,
         ];
@@ -877,8 +868,8 @@ class COLDepartmentController extends BaseController
     }
     public function advisingProcess($id=null) {
         $data = [
-            'page_title' => 'Holy Cross College | College Advising',
-            'page_heading' => 'COLLEGE ADVISING!',
+            'page_title' => 'Holy Cross College | Advising',
+            'page_heading' => 'ADVISING!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -984,31 +975,52 @@ class COLDepartmentController extends BaseController
         // ->where('currdata.sem', $SEM)
         // ->findAll();
 
-        $data['selectedsubjects'] = $this->colAssessmentModel
-        ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        // $data['selectedsubjects'] = $this->colAssessmentModel
+        // ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
+        // ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'inner')
+        // ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'inner')
+        // ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'inner')
+        // ->join('subjects', 'subjects.subid = currdata.subid', 'inner')
+        // ->where('student_subjects.studid', $STUDID)
+        // // ->where('assessment_col.sy', $SY)
+        // // ->where('assessment_col.level', $LEVEL)
+        // // ->where('currdata.sem', $SEM)
+        // ->where('student_subjects.isdel', 0)
+        // ->findAll();
+        $data['selectedsubjects'] = $this->studentSubjectsModel
+        ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
-
         
 
 
         // //SHS ASSESSED RATE DATA
         $data['shsratedata'] = $this->ratesModel
         ->where('course', $COURSE)
-        ->where('level', $LEVEL)
+        ->where('year', $LEVEL)
         ->where('sy', $SY)
         ->where('sem', $SEM)
         ->findAll();
         foreach($data['shsratedata'] as $rates){
             $RATEID = $rates['rateid'];
+            $RATESID = $rates['rateid'];
+            $RATEMAJOR = $rates['major'];
+            $RATEMINOR = $rates['minor'];
+            $RATENSTP1 = $rates['nstp01'];
+            $RATENSTP2 = $rates['nstp02'];
+            if($RATENSTP2 == '0.00'){
+                $NSTP = $RATENSTP1;
+            }else{
+                $NSTP = $RATENSTP2;
+            }
         }
 
         $data['shsrofdata'] = $this->rateOtherFeesModel->where('rateid', $RATEID)->findAll();
@@ -1019,68 +1031,94 @@ class COLDepartmentController extends BaseController
             ')->join('rates', 'rates.rateid = rateotherfees.rateid')
             ->where('rates.rateid', $RATEID)
             ->findAll();
+        foreach($data['totalotherfees'] as $dtof){
+            $TOTALOTHERFEES = $dtof['totalrof'];
+        }
 
-        $data['totalminorunits'] = $this->colAssessmentModel
+        $data['totalminorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalminorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
         ->findAll();
-        $data['totalmajorunits'] = $this->colAssessmentModel
+        foreach($data['totalminorunits'] as $tmnu){
+            $TOTALMINORUNITS = $tmnu['totalminorunits'];
+        }
+        
+        $data['totalmajorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalmajorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
             ->findAll();
-        $data['totalmajorhours'] = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalmajorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 1)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('student_subjects.isdel', 0)
+        foreach($data['totalmajorunits'] as $tmju){
+            $TOTALMAJORUNITS = $tmju['totalmajorunits'];
+        }
+        $TOTALUNITS = $TOTALMAJORUNITS + $TOTALMINORUNITS;
+        $data['totalmajorhours'] = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalmajorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 1)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
             ->findAll();
-        $data['totalminorhours'] = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalminorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 0)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('subjects.major', 0)
-            ->where('student_subjects.isdel', 0)
-            ->findAll();
+        foreach($data['totalmajorhours'] as $tmh){
+            $TOTALMAJORHOURS = $tmh['totalmajorhours'];
+        }
+        $data['totalminorhours'] = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalminorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 0)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
+        ->findAll();
+        foreach($data['totalminorhours'] as $tmih){
+            $TOTALMINORHOURS = $tmih['totalminorhours'];
+        }
+        //MAJOR COMPUTATION
+        $MAJORAMOUNT = $RATEMAJOR * $TOTALMAJORHOURS;
+        //MINOR COMPUTATION
+        $MINORAMOUNT = $RATEMINOR * $TOTALMINORHOURS;
+        //TOTAL TUITION FEE
+        $TOTALTUITIONFEE = $MAJORAMOUNT + $MINORAMOUNT + $NSTP;
+        
+        
+        
+        $data['totalfee'] = $GRANDTOTAL = $TOTALTUITIONFEE + $TOTALOTHERFEES;
 
         return view('college/advisingviewprocess', $data);
     }
@@ -1090,7 +1128,7 @@ class COLDepartmentController extends BaseController
         session()->setTempdata('success', 'Subject is dropped successfully!', 2);
         return redirect()->to(base_url()."col-advising/process/".$studid);
     }
-    public function advisingSubmitAccount($id=null) {
+    public function advisingSubmitAccount($id=null, $totalfeee=null) {
         $ASSESSMENTDATACHECKING = $this->colAssessmentModel
         ->select('assessment_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = assessment_col.studid')
@@ -1131,6 +1169,7 @@ class COLDepartmentController extends BaseController
         
         $shsassessment = [
             'status' => 'Finalized',
+            'ttfcollege' => $totalfeee,
         ];
 
         $this->colAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
@@ -1141,8 +1180,8 @@ class COLDepartmentController extends BaseController
     }
     public function assessment() {
         $data = [
-            'page_title' => 'Holy Cross College | COLLEGE Assessment',
-            'page_heading' => 'COLLEGE ASSESSMENT!',
+            'page_title' => 'Holy Cross College | Assessment',
+            'page_heading' => 'ASSESSMENT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -1195,23 +1234,23 @@ class COLDepartmentController extends BaseController
         ->where('assessment_col.sem', $SEM)
         ->findAll();
         // SHS ASSESSED CURRICULUM DATA
-        $data['selectedsubjects'] = $this->colAssessmentModel
-        ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        $data['selectedsubjects'] = $this->studentSubjectsModel
+        ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
 
         //SHS ASSESSED RATE DATA
         $data['shsratedata'] = $this->ratesModel
         ->where('course', $COURSE)
-        ->where('level', $LEVEL)
+        ->where('year', $LEVEL)
         ->where('sy', $SY)
         ->where('sem', $SEM)
         ->findAll();
@@ -1228,67 +1267,67 @@ class COLDepartmentController extends BaseController
             ->where('rates.rateid', $RATEID)
             ->findAll();
 
-        $data['totalminorunits'] = $this->colAssessmentModel
+         $data['totalminorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalminorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
         ->findAll();
-        $data['totalmajorunits'] = $this->colAssessmentModel
+        
+        $data['totalmajorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalmajorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
             ->findAll();
-        $data['totalmajorhours'] = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalmajorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 1)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('student_subjects.isdel', 0)
+        $data['totalmajorhours'] = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalmajorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 1)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
             ->findAll();
-        $data['totalminorhours'] = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalminorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 0)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('subjects.major', 0)
-            ->where('student_subjects.isdel', 0)
-            ->findAll();
+        $data['totalminorhours'] = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalminorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 0)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
+        ->findAll();
         
         return view('college/assessmentviewing', $data);
     }
@@ -1361,23 +1400,36 @@ class COLDepartmentController extends BaseController
         }
         
         // SHS ASSESSED CURRICULUM DATA
-        $firstsemester = $this->colAssessmentModel
-        ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        // $firstsemester = $this->colAssessmentModel
+        // ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
+        // ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
+        // ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
+        // ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        // ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        // ->where('assessment_col.studid', $STUDID)
+        // ->where('assessment_col.sy', $SY)
+        // ->where('assessment_col.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
+        // ->where('student_subjects.isdel', 0)
+        // ->findAll();
+        
+         $firstsemester = $this->studentSubjectsModel
+        ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
 
         //SHS ASSESSED RATE DATA
         $shsratedata = $this->ratesModel
         ->where('course', $COURSE)
-        ->where('level', $LEVEL)
+        ->where('year', $LEVEL)
         ->where('sy', $SY)
         ->where('sem', $SEM)
         ->findAll();
@@ -1407,17 +1459,53 @@ class COLDepartmentController extends BaseController
         foreach($dtotalotherfees as $dtof){
             $TOTALOTHERFEES = $dtof['totalrof'];
         }
-
-        $totalminorunits = $this->colAssessmentModel
-        ->select('SUM(subjects.units) as totalminorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        
+        $totalnstpunitminornstp = $this->studentSubjectsModel
+        ->select('SUM(subjects.units) as totalminorunitsnstp')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 0)
+        
+        ->where('student_subjects.isdel', 0)
+        ->findAll();
+        foreach($totalnstpunitminornstp as $nemonstp){
+            $TOTALMINORUNITSNSTP = $nemonstp['totalminorunitsnstp'];
+        }
+        $totalnstpunitmajornstp = $this->studentSubjectsModel
+        ->select('SUM(subjects.units) as totalmajorunitsnstp')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 1)
+        
+        ->where('student_subjects.isdel', 0)
+            ->findAll();
+        foreach($totalnstpunitmajornstp as $nemonstp){
+            $TOTALMAJORUNITSNSTP = $nemonstp['totalmajorunitsnstp'];
+        }
+        $TOTALUNITSNSTP = $TOTALMAJORUNITSNSTP + $TOTALMINORUNITSNSTP;
+
+        $totalminorunits = $this->studentSubjectsModel
+        ->select('SUM(subjects.units) as totalminorunits')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1426,63 +1514,107 @@ class COLDepartmentController extends BaseController
         foreach($totalminorunits as $tmnu){
             $TOTALMINORUNITS = $tmnu['totalminorunits'];
         }
-        $totalmajorunits = $this->colAssessmentModel
+        
+        $totalmajorunits = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalmajorunits')
-        ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        ->where('assessment_col.studid', $STUDID)
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $LEVEL)
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
-        ->findAll();
+            ->findAll();
         foreach($totalmajorunits as $tmju){
             $TOTALMAJORUNITS = $tmju['totalmajorunits'];
         }
         $TOTALUNITS = $TOTALMAJORUNITS + $TOTALMINORUNITS;
 
-        $totalmajorhours = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalmajorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 1)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('student_subjects.isdel', 0)
+        $totalmajorhours = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalmajorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 1)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
             ->findAll();
+            
         foreach($totalmajorhours as $tmh){
             $TOTALMAJORHOURS = $tmh['totalmajorhours'];
         }
-        $totalminorhours = $this->colAssessmentModel->select('
-            SUM(subjects.hours) as totalminorhours
-            ')->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-            ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-            ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'left')
-            ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-            ->where('assessment_col.studid', $STUDID)
-            ->where('assessment_col.sy', $SY)
-            ->where('assessment_col.level', $LEVEL)
-            ->where('currdata.sem', $SEM)
-            ->where('subjects.major', 0)
-            ->where('subjects.subcode !=', "NSTP01")
-            ->where('subjects.subcode !=', "NSTP02")
-            ->where('subjects.major', 0)
-            ->where('student_subjects.isdel', 0)
+        
+        $totalnstpmajorhours = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalmajorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 1)
+        // ->where('subjects.subcode !=', "NSTP01")
+        // ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
             ->findAll();
+            
+        foreach($totalnstpmajorhours as $tnstpmj){
+            $TOTALMAJORHOURSNSTP = $tnstpmj['totalmajorhours'];
+        }
+        $totalminorhours = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalminorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 0)
+        ->where('subjects.subcode !=', "NSTP01")
+        ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
+        ->findAll();
         foreach($totalminorhours as $tmih){
             $TOTALMINORHOURS = $tmih['totalminorhours'];
         }
+        
+        
+        $totalnstpminorhours = $this->studentSubjectsModel
+        ->select('SUM(subjects.hours) as totalminorhours')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
+        ->join('subjects', 'subjects.subid = currdata.subid', 'left')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('currdata.level', $LEVEL)
+        ->where('currdata.sem', $SEM)
+        ->where('curriculum.course', $COURSE)
+        ->where('curriculum.sy', $SY)
+        ->where('subjects.major', 0)
+        // ->where('subjects.subcode !=', "NSTP01")
+        // ->where('subjects.subcode !=', "NSTP02")
+        ->where('student_subjects.isdel', 0)
+        ->findAll();
+        foreach($totalnstpminorhours as $tnstpmi){
+            $TOTALMINORHOURSNSTP = $tnstpmi['totalminorhours'];
+        }
+        
+        $TOTALHOURSNSTP = $TOTALMAJORHOURSNSTP + $TOTALMINORHOURSNSTP;
+        
         $TOTALHOURS = $TOTALMAJORHOURS + $TOTALMINORHOURS;
 
         //MAJOR COMPUTATION
@@ -1582,8 +1714,8 @@ class COLDepartmentController extends BaseController
                     <tr>
                         <td style="width: 10%; text-align: right;"></td>
                         <td style="width: 50%; text-align: center"><strong>TOTAL</strong></td>
-                        <td style="width: 7%; text-align: center;"><strong>'.$TOTALUNITS.'</strong></td>
-                        <td style="width: 7%; text-align: center;"><strong>'.$TOTALHOURS.'</strong></td>
+                        <td style="width: 7%; text-align: center;"><strong>'.$TOTALUNITSNSTP.'</strong></td>
+                        <td style="width: 7%; text-align: center;"><strong>'.$TOTALHOURSNSTP.'</strong></td>
                         <td style="width: 26%; text-align: center;"></td>
                     </tr>
                 </tbody>

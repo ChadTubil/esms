@@ -67,10 +67,10 @@
                                             </td>
                                             <td style="text-align: center;">
                                                 <?php 
-                                                    if($enrollmenthistoryibedd['level'] == '') {
+                                                    if($enrollmenthistoryibedd['name'] == '') {
                                                         echo "-";
                                                     } else {
-                                                        echo $enrollmenthistoryibedd['level'];
+                                                        echo $enrollmenthistoryibedd['name'];
                                                     }
                                                 ?>
                                             </td>

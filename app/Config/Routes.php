@@ -225,6 +225,7 @@ $routes->post('chartofaccounts', 'AccountingController::chartofAccounts');
 $routes->add('chartofaccounts/delete/(:segment)', 'AccountingController::deleteCOA/$1');
 $routes->post('chartofaccounts/update/(:segment)', 'AccountingController::updateCOA/$1');
 $routes->get('feestructure', 'AccountingController::feeStructure');
+$routes->get('feestructure', 'AccountingController::feeStructure');
 $routes->post('feestructure', 'AccountingController::feeStructure');
 $routes->add('feestructure/delete/(:segment)', 'AccountingController::deleteFEE/$1');
 $routes->post('feestructure/update/(:segment)', 'AccountingController::updateFEE/$1');
@@ -239,6 +240,7 @@ $routes->post('student-accounts', 'AccountingController::studentAccounts');
 $routes->get('student-accounts/view/(:segment)', 'AccountingController::viewStudentAccounts/$1');
 $routes->get('student-accounts/view/details/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetails/$1/$2');
 $routes->post('student-accounts/view/details-add', 'AccountingController::viewStudentAccountsDetailsAdd');
+$routes->post('student-accounts/view/update-nemo/(:segment)', 'AccountingController::viewnemo/$1');
 $routes->add('student-accounts/view/allocate-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAllocate/$1/$2');
 $routes->add('student-accounts/view/add-discount/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAddDiscount/$1/$2');
 $routes->post('student-accounts/view/details-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2');
@@ -270,19 +272,17 @@ $routes->get('registrar-onlineregistration-reports', 'RegistrarController::onlin
 $routes->get('registrar-onlineregistration-reports/export', 'RegistrarController::exportPDF');
 $routes->post('registrar-onlineregistration-update/(:segment)', 'RegistrarController::registrarOnlineRegUpdate/$1');
 // CASHIER 
-// $routes->get('cashier-transaction', 'CashierController::index');
-// $routes->post('cashier-transaction', 'CashierController::index');
-// $routes->get('cashier-transaction-view/(:segment)', 'CashierController::transactionView/$1');
-// $routes->get('cashier-transaction-view/open/(:segment)', 'CashierController::transactionViewOpen/$1');
-
 $routes->get('cashier-onlineregistration', 'CashierController::cashierOnlineRegistration');
 $routes->get('cashier-onlineregistration-payment/(:segment)', 'CashierController::cashierOnlineRegistrationPayment/$1');
 $routes->post('cashier/onlineregistration-process-payment/(:segment)', 'CashierController::cashierOnlineRegistrationprocessPayment/$1');
 
 $routes->add('cashier-onlineregistration-print/(:segment)', 'CashierController::onlineregPrint/$1');
 $routes->get('cashier-dailytransactions', 'CashierController::cashierDailyTransactions');
-$routes->get('cashier-dailytransactions-pdf', 'CashierController::cashierDailyTransactionsPDF');
+$routes->post('cashier-dailytransactions', 'CashierController::cashierDailyTransactions');
+$routes->get('cashier-dailytransactions-2', 'CashierController::cashierDailyTransactions2');
+$routes->post('cashier-dailytransactions-pdf', 'CashierController::cashierDailyTransactionsPDF');
 $routes->post('cashier-dailytransactions-update/(:segment)', 'CashierController::cashierDailyTransactionsUpdate/$1');
+$routes->post('cashier-dailytransactions-export', 'CashierController::cashierDailyTransactionsExport');
 
 // SHS DEPARTMENT
 $routes->get('shs-cluster', 'SHSDepartmentController::cluster');
@@ -398,18 +398,14 @@ $routes->add('col-admission/process-generate/(:segment)', 'COLDepartmentControll
 $routes->get('col-advising', 'COLDepartmentController::advising');
 $routes->get('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
 $routes->post('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
-$routes->add('col-advising/submit-account/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1');
+$routes->add('col-advising/submit-account/(:segment)/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1/$2');
 $routes->add('col-advising/drop/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2');
 $routes->get('col-assessment', 'COLDepartmentController::assessment');
 $routes->get('col-assessment/view/(:segment)', 'COLDepartmentController::assessmentView/$1');
 $routes->add('col-assessment/print/(:segment)', 'COLDepartmentController::assessmentPrint/$1');
 $routes->add('col-assessment/aprroved/(:segment)', 'COLDepartmentController::assessmentApproved/$1');
 
-//GUIDANCE
-$routes->get('guidance-records', 'GuidanceController::index');
-$routes->post('guidance-records', 'GuidanceController::index');
-$routes->get('guidance-records/print/(:segment)', 'GuidanceController::printStudInfo/$1');
-$routes->post('guidance-records/print/(:segment)', 'GuidanceController::printStudInfo/$1');
+
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

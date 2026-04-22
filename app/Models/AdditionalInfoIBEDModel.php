@@ -7,7 +7,7 @@ class AdditionalInfoIBEDModel extends Model
     protected $table = 'additionalinfo_ibed';
     protected $primaryKey = 'aiid';
     protected $allowedFields = [
-        'stuid','fdateofbirth', 'fplaceofbirth', 'faddress', 'feduc', 'flanguage',
+        'studid','fdateofbirth', 'fplaceofbirth', 'faddress', 'feduc', 'flanguage',
         'mdateofbirth', 'mplaceofbirth', 'maddress', 'meducation', 'mlanguage',
         'pstatus', 'nameg', 'contactg', 'gaddress', 'contactperson', 'personcontactno',
         'siblingname', 'siblingwork', 'siblingage', 'interest',

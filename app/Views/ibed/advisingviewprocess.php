@@ -56,8 +56,6 @@
                                                 <input type="text" name="level" class="form-control" value="<?= $stud['name']; ?>" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 col-sm-12">
-                                        </div>
                                         <?php if(!empty($ibedassessmentdata)): ?>
                                             
                                         <?php else: ?>
@@ -82,6 +80,15 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">VOUCHER</label>
+                                                    <select name="vouchers" class="form-select" required>
+                                                        <option value="ESC">ESC</option>
+                                                        <option value="NON-ESC">NON-ESC</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         <?php endif; ?>
                                         <?php if(empty($ibedassessmentdata)): ?>
                                             <div class="col-lg-3 col-sm-12">
@@ -101,7 +108,7 @@
                                             </div>
                                             <?= form_close(); ?>
                                         <?php else: ?>
-                                            <div class="col-lg-3 col-sm-12">
+                                            <div class="col-lg-4 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">ACTION</label><br>
                                                     <a class="btn btn-success" style="width: 100%;"
@@ -177,13 +184,13 @@
                                             <table class="table" style="font-size: 11px;">
                                                 <thead>
                                                     <tr>
-                                                        <th>SUBJECT</th>
+                                                        <th style = "text-align:center;">SUBJECT</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php foreach($firstsemester as $firstsem): ?>
                                                         <tr>
-                                                            <td><?= $firstsem['subject']; ?></td>
+                                                            <td style = "text-align:center;"><?= $firstsem['subject']; ?></td>
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>

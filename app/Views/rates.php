@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="col-lg-12 col-sm-12">
                                     <label class="form-label" for="validationDefault01">YEAR LEVEL</label>
-                                    <select name="level" class="form-select" id="YEAR" style="width: 100%;">
+                                    <select name="yearlevel" class="form-select" id="YEAR" style="width: 100%;">
                                         <option selected="" disabled=""></option>
                                         <option value="1st Year">1st Year</option>
                                         <option value="2nd Year">2nd Year</option>
@@ -114,7 +114,7 @@
                                     <?php foreach($ratesdata as $ratesd):?>
                                         <tr>
                                             <td><?= $ratesd['sy']; ?></td>
-                                            <td><?= $ratesd['level']; ?>-<?= $ratesd['sem']; ?></td>
+                                            <td><?= $ratesd['code']; ?>-<?= $ratesd['sem']; ?></td>
                                             <td><?= $ratesd['code']; ?></td>
                                             <td>
                                                 <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Set Up Rates"

@@ -59,7 +59,7 @@ class AttendanceController extends BaseController
                         $EMPTIMEIN = $CRFE['timein'];
                         $EMPTIMEOUT = $CRFE['timeout'];
                     }
-                    if(empty($EMPTIMEIN) || empty($EMPTIMEOUT) || $EMPTIMEIN == '00:00:00' || $EMPTIMEOUT == '00:00:00') {
+                    if(empty($EMPTIMEIN) || empty($EMPTIMEOUT)) {
                         session()->setTempdata('message', 'RFID IS NOT YET SET! Please go to HRD Office.', 2);
                         return redirect()->to(base_url()."biometrics");
                     }else{
@@ -163,7 +163,6 @@ class AttendanceController extends BaseController
         }
         return view('biometricsview', $data);
     }
-    
     public function biometricsoout($id=null) {
         $DATETODAY = date('Y-m-d');
         $data['attdata'] = $this->attendancesModel->where('date', $DATETODAY)->orderBy('attid', 'DESC')->limit(5)->findall();
@@ -314,9 +313,6 @@ class AttendanceController extends BaseController
                     $row++;
                 }
             }
-
-
-
         }
         $writer = new Xlsx($spreadsheet);
         $filename = 'attendance_export.xlsx';

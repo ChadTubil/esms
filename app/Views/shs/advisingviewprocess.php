@@ -62,6 +62,7 @@
                                                 <input type="text" name="cluster" class="form-control" value="<?= $stud['code']; ?>" readonly>
                                             </div>
                                         </div>
+                                        
                                         <?php if(!empty($shsassessmentdata)): ?>
                                             
                                         <?php else: ?>
@@ -75,7 +76,6 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        
                                             <div class="col-lg-3 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">SECTION</label>
@@ -86,9 +86,20 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-2 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">VOUCHER</label>
+                                                    <select name="vouchers" class="form-select" required>
+                                                        <option value="QVR-PUBLIC">QVR-PUBLIC</option>
+                                                        <option value="QVR-PRIVATE">QVR-PRIVATE</option>
+                                                        <option value="NON-QVR">NON-QVR</option>
+                                                        <option value="ESC">ESC</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         <?php endif; ?>
                                         <?php if(empty($shsassessmentdata)): ?>
-                                            <div class="col-lg-3 col-sm-12">
+                                            <div class="col-lg-2 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">ACTION</label><br>
                                                     <button type="submit" class="btn btn-success" style="width: 100%;"
@@ -105,12 +116,12 @@
                                             </div>
                                             <?= form_close(); ?>
                                         <?php else: ?>
-                                            <div class="col-lg-3 col-sm-12">
+                                            <div class="col-lg-4 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">ACTION</label><br>
                                                     <a class="btn btn-success" style="width: 100%;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE"
-                                                        onclick="window.location.href='<?= base_url(); ?>shs-advising/submit-account/<?= $stud['studid']; ?>'">
+                                                         data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE"
+                                                    onclick="window.location.href='<?= base_url(); ?>shs-advising/submit-account/<?= $stud['studid']; ?>'">
                                                         <span class="btn-inner">
                                                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
@@ -121,10 +132,9 @@
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-                                    
                                     <?php if(!empty($shsassessmentdata)): ?>
                                     <?php else: ?>
-                                        <div class="col-lg-3 col-sm-12">
+                                        <div class="col-lg-2 col-sm-12">
                                             <div class="form-group">
                                                 <label class="form-label">ACTION</label><br>
                                                 <a class="btn btn-danger" style="width: 100%;" data-bs-toggle="tooltip" data-bs-placement="top" title="CANCEL"

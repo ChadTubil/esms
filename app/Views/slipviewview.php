@@ -237,7 +237,7 @@
                                 <div class="col-6" style="text-align: right;">
                                     <h6>₱<?= $payslipdatad['cbsloan']; ?></h6>
                                 </div>
-                                <div class="col-6" style="text-align: left;">
+                                 <div class="col-6" style="text-align: left;">
                                     <h6>Bank Loan - LBP</h6>
                                 </div>
                                 <div class="col-6" style="text-align: right;">

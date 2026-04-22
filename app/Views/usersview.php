@@ -71,6 +71,8 @@
                                     <input class="form-check-input" type="checkbox" name="cibed" value="1"><span> IBED Department</span>
                                     <br>
                                     <input class="form-check-input" type="checkbox" name="cadmindept" value="1"><span> ADMIN Department</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="ucashierhead" value="1"><span> CASHIER HEAD</span>
                                 </div>
                             </div>
                             <br>
@@ -215,6 +217,9 @@
                                                                         <br>
                                                                         <input class="form-check-input" type="checkbox" name="cadmindept" value="1"
                                                                             <?php if($user['uadmindept'] == 1){ echo 'checked'; }else{ } ?>><span> ADMIN Department</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="ucashierhead" value="1"
+                                                                            <?php if($user['ucashierhead'] == 1){ echo 'checked'; }else{ } ?>><span> CASHIER HEAD</span>
                                                                     </div>
                                                                     <div class="text-start">
                                                                         <button type="submit" name="update" class="btn btn-primary">Update</button>

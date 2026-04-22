@@ -8,7 +8,7 @@ class COLAssessmentModel extends Model
     protected $primaryKey = 'assid';
     protected $allowedFields = [
         'studid', 'sy', 'level', 'sem', 'course', 'curriculum',
-        'section', 'date', 'status', 'isdel',
+        'section', 'ttfcollege', 'date', 'status', 'isdel',
     ];
     protected $returnType = 'array';
     

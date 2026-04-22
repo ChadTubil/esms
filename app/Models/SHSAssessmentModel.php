@@ -8,7 +8,7 @@ class SHSAssessmentModel extends Model
     protected $primaryKey = 'assid';
     protected $allowedFields = [
         'studid', 'sy', 'level', 'cluster', 'curriculum',
-        'section', 'date', 'status', 'isdel',
+        'section', 'vouchers', 'date', 'status', 'isdel',
     ];
     protected $returnType = 'array';
     
