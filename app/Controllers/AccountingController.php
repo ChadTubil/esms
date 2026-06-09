@@ -31,6 +31,12 @@ use App\Models\IBEDRateDuesModel;
 use App\Models\IBEDRateOtherFeesModel;
 use App\Models\IBEDStudentsModel;
 use App\Models\COLStudentsModel;
+use App\Models\BooksModel;
+use App\Models\BooksAssessment;
+use App\Models\StudentOtherBillsModel;
+use App\Models\UniformsModel;
+use App\Models\UniformsAssessmentModel;
+
 use TCPDF;
 use NumberFormatter; // Add this line
 class AccountingController extends BaseController
@@ -65,6 +71,12 @@ class AccountingController extends BaseController
     public $ibedRateOtherFeesModel;
     public $ibedStudentsModel;
     public $colStudentsModel;
+    public $booksModel;
+    public $booksAssessmentModel;
+    public $studentOtherBillsModel;
+    public $uniformsModel;
+    public $uniformsAssessmentModel;
+
     public $session;
     public function __construct() {
         helper('form');
@@ -98,6 +110,12 @@ class AccountingController extends BaseController
         $this->ibedRateOtherFeesModel = new IBEDRateOtherFeesModel();
         $this->ibedStudentsModel = new IBEDStudentsModel();
         $this->colStudentsModel = new COLStudentsModel();
+        $this->booksModel = new BooksModel();
+        $this->booksAssessmentModel = new BooksAssessment();
+        $this->studentOtherBillsModel = new StudentOtherBillsModel();
+        $this->uniformsModel = new UniformsModel();
+        $this->uniformsAssessmentModel = new UniformsAssessmentModel();
+
         $this->session = session();
     }
     public function index() {
@@ -669,6 +687,7 @@ class AccountingController extends BaseController
                     'sy' => $this->request->getVar('sy'),
                     'semester' => $this->request->getVar('sem'),
                     'ismandatory' => $this->request->getVar('mandatory'),
+                    'istf' => $this->request->getVar('tfis'),
                     'createdate' => date('Y-m-d'),
                     'isdel' => 0,
                 ];
@@ -704,6 +723,7 @@ class AccountingController extends BaseController
                 'sy' => $this->request->getVar('sy'),
                 'semester' => $this->request->getVar('sem'),
                 'ismandatory' => $this->request->getVar('mandatory'),
+                'istf' => $this->request->getVar('tfis'),
                 'createdate' => date('Y-m-d'),
                 'isdel' => 0,
             ];
@@ -825,11 +845,11 @@ class AccountingController extends BaseController
             $searchStudent = $this->request->getVar('searchstud');
 
             if($searchStudent == ''){
-                $students = $this->studentsModel->where('studisdel', 0)->findAll();
+                // $students = $this->studentsModel->where('studisdel', 0)->findAll();
                 $colStudents = $this->colStudentsModel->where('studisdel', 0)->findAll();
                 $shsStudents = $this->shsStudentsModel->where('studisdel', 0)->findAll();
                 $ibedStudents = $this->ibedStudentsModel->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
+                $resultStudent = array_merge($colStudents, $shsStudents, $ibedStudents);
                 foreach($resultStudent as $key => $student) {
                     $accountCount = $this->studentAccountsModel
                         ->where('studentno', $student['studentno'])
@@ -842,12 +862,12 @@ class AccountingController extends BaseController
 
             }
             else{
-                $students = $this->studentsModel
-                ->like('studentno', $searchStudent)
-                ->orLike('studln', $searchStudent)
-                ->orLike('studfn', $searchStudent)
-                ->orLike('studfullname', $searchStudent)
-                ->where('studisdel', 0)->findAll();
+                // $students = $this->studentsModel
+                // ->like('studentno', $searchStudent)
+                // ->orLike('studln', $searchStudent)
+                // ->orLike('studfn', $searchStudent)
+                // ->orLike('studfullname', $searchStudent)
+                // ->where('studisdel', 0)->findAll();
                 $shsStudents = $this->shsStudentsModel
                 ->like('studentno', $searchStudent)
                 ->orLike('studln', $searchStudent)
@@ -866,7 +886,7 @@ class AccountingController extends BaseController
                 ->orLike('studfn', $searchStudent)
                 ->orLike('studfullname', $searchStudent)
                 ->where('studisdel', 0)->findAll();
-                $resultStudent = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
+                $resultStudent = array_merge($colStudents, $shsStudents, $ibedStudents);
 
                 // Add account count for each student
                 foreach($resultStudent as $key => $student) {
@@ -898,11 +918,11 @@ class AccountingController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
         // $data['studentdata'] = $this->studentsModel->where('studentno', $id)->findAll();
-        $students = $this->studentsModel->where('studentno', $id)->findAll();
+        // $students = $this->studentsModel->where('studentno', $id)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
         $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
         $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
-        $data['studentdata'] = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
+        $data['studentdata'] = array_merge($colStudents, $shsStudents, $ibedStudents);
 
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $id)->where('isdel', 0)->findAll();
 
@@ -922,11 +942,11 @@ class AccountingController extends BaseController
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
         // $data['studentdata'] = $this->studentsModel->where('studentno', $studentno)->findAll();
-        $students = $this->studentsModel->where('studentno', $studentno)->findAll();
+        // $students = $this->studentsModel->where('studentno', $studentno)->findAll();
         $shsStudents = $this->shsStudentsModel->where('studentno', $studentno)->findAll();
         $ibedStudents = $this->ibedStudentsModel->where('studentno', $studentno)->findAll();
         $colStudents = $this->colStudentsModel->where('studentno', $studentno)->findAll();
-        $data['studentdata'] = array_merge($students, $colStudents, $shsStudents, $ibedStudents);
+        $data['studentdata'] = array_merge($colStudents, $shsStudents, $ibedStudents);
         foreach($data['studentdata'] as $allstd){
             $STUDENTFULLNAME = $allstd['studfullname'];
             $STUDENTNO = $allstd['studentno'];
@@ -948,8 +968,10 @@ class AccountingController extends BaseController
             ->findAll();
 
         $assessments = $this->studentAccountsAssessmentModel
-            ->where('said', $studentaccountno)
-            ->where('isdel', 0)
+            ->select('feestructure.*, studentassessment.*')
+            ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
+            ->where('studentassessment.said', $studentaccountno)
+            ->where('studentassessment.isdel', 0)
             ->findAll();
             
         foreach($assessments as $key => $assessment) {
@@ -992,6 +1014,8 @@ class AccountingController extends BaseController
         $discountall = $this->discountsModel->where('isdel', '0')->where('studentno', '')->findAll();
         $discountstudent = $this->discountsModel->where('studentno', $STUDENTNO)->findAll();
         $data['discountdata'] = array_merge($discountall, $discountstudent);
+        //STUDENT OTHER BILLS
+        $data['studentotherbillsdata'] = $this->studentOtherBillsModel->where('studno', $STUDENTNO)->where('isdel', 0)->findAll();
         
         return view('accounting/studentaccountassessmentview', $data);
     }
@@ -1140,6 +1164,7 @@ class AccountingController extends BaseController
             $TOTALPAYMENTS = $SAAD['totalpayments'];
             $TOTALBALANCE = $SAAD['totalbalance'];
             $FEENAME = $SAAD['feename'];
+            $ASSBALANCE = $SAAD['balance'];
         }
 
         $allocatedata = [
@@ -1156,7 +1181,7 @@ class AccountingController extends BaseController
 
         $studentaccassessdata = [
             'paidamount' => $TOTALPAIDAMOUNT +$AMOUNTPAID,
-            'balance' => $TOTALBALANCE - $AMOUNTPAID,
+            'balance' => $ASSBALANCE - $AMOUNTPAID,
         ];
 
         $studentaccountsdata = [
@@ -1193,6 +1218,7 @@ class AccountingController extends BaseController
         $this->schoolLedgerModel->save($schoolLedgerData);
         session()->setTempdata('message','Fee added successfully', 3);
         return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAID);
+        // print_r($studentaccassessdata);
     }
     public function viewStudentAccountsAddDiscount($discountid=null, $studaccountassessid=null){
         $uid = session()->get('logged_user');
@@ -1226,7 +1252,7 @@ class AccountingController extends BaseController
             $DISCOUNTPERCENTAGE = $dd['discountpercentage'];
             $DISCOUNTAMOUNT = $dd['discountamount'];
             if($DISCOUNTAMOUNT == '0.00'){
-                $DISCOUNT = '0.'.$DISCOUNTPERCENTAGE;
+                $DISCOUNT = $ASSESSMENTAMOUNT * ($DISCOUNTPERCENTAGE / 100);
             }else{
                 $DISCOUNT = $DISCOUNTAMOUNT;
             }
@@ -1441,5 +1467,1186 @@ class AccountingController extends BaseController
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'inline; filename="hello_world.pdf"')
             ->setBody($pdfContent);
+    }
+    public function booksSetup() {
+        $data = [
+            'page_title' => 'Holy Cross College | Books Setup Year',
+            'page_heading' => 'BOOKS SETUP YEAR! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['booksdata'] = $this->booksModel->where('isdel', 0)->findAll();
+        $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
+        if($this->request->is('post')) {
+            $rules = [
+                'title' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Title is required.',
+                    ],
+                ],
+                'price' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Price is required.',
+                    ],
+                ],
+                'level' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Level is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $data = [
+                    'name' => $this->request->getVar('title'),
+                    'price' => $this->request->getVar('price'),
+                    'level' => $this->request->getVar('level'),
+                    'cluster' => $this->request->getVar('cluster'),
+                ];
+                $this->booksModel->save($data);
+                session()->setTempdata('addsuccess','Book added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        return view('accounting/bookssetupview', $data);
+    }
+    public function deleteBooks($id=null) {
+        $data = [
+            'isdel' => '1',
+        ];
+
+        $this->booksModel->where('bookid', $id)->update($id, $data);
+        session()->setTempdata('deletesuccess', 'Book is deleted!', 2);
+        return redirect()->to(base_url()."books-setup");
+    }
+    public function booksAssessment($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Books Assessment',
+            'page_heading' => 'BOOKS ASSESSMENT! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['bookassessmentdata'] = $this->booksAssessmentModel
+        ->select('*, SUM(price) as total')
+        ->where('studno', $id)
+        ->where('isdel', 0)
+        ->groupBy('transactionno')
+        ->findAll();
+
+        $checkStudent = $this->studentAccountsModel->where('studentno', $id)->findAll();
+        if(!$checkStudent) {
+            session()->setTempdata('message', 'Student does not have an student number yet. Please create an student number first.', 3);
+            return redirect()->to(base_url()."student-accounts/view/".$id);
+        } else {
+            foreach($checkStudent as $cs) {
+                $studentlevel = $cs['level'];
+                $studentcluster = $cs['cluster'];
+            }
+        }
+        // if($studentcluster == 0) {
+        //     $STUDCLUSTER = 0;
+        // }else{
+        //     $STUDCLUSTER = $studentcluster;
+        // }
+        $querybooks = $this->booksModel;
+
+        $querybooks->where('level', $studentlevel);
+        $querybooks->where('isdel', 0);
+
+        if($studentlevel == 'Grade 12') {
+        $querybooks->Where('cluster', 'General');
+        $querybooks->orwhere('cluster', $studentcluster);
+        }
+
+        $data['booksdata'] = $querybooks->findAll();
+        
+        $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $data['studentdata'] = array_merge($shsStudents, $ibedStudents);
+        $data['booksassessmentdata'] = $this->booksAssessmentModel
+        ->select('booksassessment.*, books.*')
+        ->join('books', 'books.bookid = booksassessment.bookid', 'left')
+        ->where('booksassessment.status', 'Assessed')
+        ->where('booksassessment.studno', $id)
+        ->where('booksassessment.isdel', 0)
+        ->findAll();
+
+        return view('accounting/booksassessmentview', $data);
+    }
+    public function addBooksAssessment($id=null, $bookid=null) {
+
+        $bookdata= $this->booksModel->where('bookid', $bookid)->findAll();
+
+        foreach ($bookdata as $bd) {
+            
+            $price = $bd['price'];
+        }
+
+        $data = [
+            'studno' => $id,
+            'bookid' => $bookid,
+            'price' => $price,
+            'status' => 'Assessed',
+            'isdel' => 0,
+        ];
+        $this->booksAssessmentModel->save($data);
+        session()->setTempdata('addsuccess','Book added successfully', 3);
+        return redirect()->to(base_url()."books-assessment/".$id);
+    }
+    public function addallBooksAssessment($id=null, $level=null) {
+
+        $bookdata= $this->booksModel->where('level', $level)->findAll();
+
+        foreach ($bookdata as $bd) {
+            
+    
+        $data = [
+            'studno' => $id,
+            'bookid' => $bd['bookid'],
+            'price' => $bd['price'],
+            'status' => 'Assessed',
+            'isdel' => 0,
+        ];
+
+        $this->booksAssessmentModel->save($data);
+
+        }
+        session()->setTempdata('addsuccess','All Books added successfully', 3);
+        return redirect()->to(base_url()."books-assessment/".$id);
+    }
+    public function deleteBooksAssessment($id=null) {
+        $BAID = $this->booksAssessmentModel->where('baid', $id)->findAll();
+
+        foreach($BAID as $baid) {
+            $STUDNO = $baid['studno'];
+        }
+
+        $data = [
+            'isdel' => '1',
+        ];
+        
+        $this->booksAssessmentModel->where('baid', $id)->update($id, $data);
+        session()->setTempdata('addsuccess', 'Book is deleted!', 2);
+        return redirect()->to(base_url()."books-assessment/".$STUDNO);
+    }
+    public function processBooksAssessment($id=null) {
+        
+        $BAID = $this->booksAssessmentModel->where('studno', $id)->where('status', 'Assessed')->where('isdel', 0)->findAll();
+        $GETTRANSACTIONNO = $this->booksAssessmentModel
+        ->where('studno', $id)
+        ->groupBy('transactionno')
+        ->where('isdel', 0)->findAll();
+        foreach($GETTRANSACTIONNO as $GTN) {
+            $TRANSACTIONNO = $GTN['transactionno'];
+        }
+        if($GETTRANSACTIONNO==0) {
+            $TRANNO = 0;
+        }else{
+            $TRANNO = $TRANSACTIONNO + 1;
+        }
+
+        $TOTAL = 0;
+
+        foreach($BAID as $baid) {
+
+            $TOTAL += $baid['price'];
+            
+        }
+
+        $data = [
+            'studno' => $id,
+            'name' => 'Books Assessment',
+            'totalamount' => $TOTAL,
+            'tablename' => 'booksassessment',
+            'id' => 0,
+            'status' => 'Payment',
+            'isdel' => 0,
+
+        ];
+
+        $bookassessmentdata = [
+            'status' => 'Payment',
+            'transactionno' => $TRANNO,
+        ];
+
+        $this->studentOtherBillsModel->save($data);
+        $this->booksAssessmentModel->where('studno', $id)->where('status', 'Assessed')->where('isdel', 0)->set($bookassessmentdata)->update();
+        session()->setTempdata('addsuccess', 'Book is deleted!', 2);
+        return redirect()->to(base_url()."student-accounts/view/".$id);
+    }
+    public function submitSOB($sadid = null, $sobid = null){
+        
+            // $FEES = $this->feeStructureModel->where('feeid', $feeid)->findAll();
+
+            $STUDOTHERBILLS = $this->studentOtherBillsModel->where('sobid', $sobid)->findAll();
+
+            foreach($STUDOTHERBILLS as $sob){
+
+                $STUDNO = $sob['studno'];
+                $NAME = $sob['name'];
+                $BOOKTOTALAMOUNT = $sob['totalamount'];
+            }
+            
+            $NEMOFINDNA = $this->studentAccountsAssessmentModel->where('sadid', $sadid)->findAll();
+            foreach($NEMOFINDNA as $NEMOF){
+                $STUDNO = $NEMOF['studentno'];
+                $SAIDNEMO = $NEMOF['said'];
+            }
+            
+            $STUDENTACCOUNT = $this->studentAccountsModel->where('said', $SAIDNEMO)->findAll();
+            foreach($STUDENTACCOUNT as $account) {
+                $TOTALASSESSMENT = $account['totalassessment'];
+                $TOTALBALANCE = $account['totalbalance'];
+            }
+            
+            $data = [
+                'amount' => $BOOKTOTALAMOUNT,
+                'netamount' => $BOOKTOTALAMOUNT,
+                'balance' => $BOOKTOTALAMOUNT,
+            ];
+            
+            $studAccData = [
+                'totalassessment' => $TOTALASSESSMENT + $BOOKTOTALAMOUNT,
+                'totalbalance' => $TOTALBALANCE + $BOOKTOTALAMOUNT,
+                'updateddate' => date('Y-m-d'),
+            ];
+            
+            $this->studentAccountsModel->where('said', $SAIDNEMO)->set($studAccData)->update();
+
+            $this->studentAccountsAssessmentModel->where('sadid', $sadid)->update($sadid, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."student-accounts/view/details/".$STUDNO."/".$SAIDNEMO);
+    }
+    public function bookassessmentPrint($id=null) {
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Assessment of Fees');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $studentdata = array_merge($shsStudents, $ibedStudents);
+        foreach($studentdata as $sd) {
+            $STUDFULLNAME = $sd['studfullname'];
+            $STUDNO = $sd['studentno'];
+        }
+        
+        $bookassessementd = $this->booksAssessmentModel
+        ->select('booksassessment.*, books.*')
+        ->join('books', 'books.bookid = booksassessment.bookid', 'left')
+        // ->join('students_shs', 'students_shs.studentno = booksassessment.studno', 'left')
+        // ->join('students_ibed', 'students_ibed.studentno = booksassessment.studno', 'left')
+        ->where('booksassessment.studno', $id)
+        ->where('booksassessment.isdel', 0)
+        ->where('booksassessment.status', 'Assessed')
+        ->findAll();
+
+        foreach($bookassessementd as $bookassd) {
+            // $STUDFULLNAME = $bookassd['studfullname'];
+            // $STUDNO = $bookassd['studno'];
+            $BOOKTITLE = $bookassd['name'];
+            $BOOKLEVEL = $bookassd['level'];
+            $BOOKPRICE = $bookassd['price'];
+        }
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+                .wrap-title {
+                word-wrap: break-word;      /* Allow words to break if needed */
+                white-space: normal;        /* Allow wrapping */
+                max-width: 250px;           /* Optional: set a max width */
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">STUDENTS COPY</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 65%;">STUDENT No.: <strong>'. strtoupper($STUDNO) .' </strong></td>
+                    <td>LEVEL: <strong>'. strtoupper($BOOKLEVEL) .'</strong></td>
+                </tr>
+                <tr>
+                    <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">#</th>
+                        <th style="width: 50%;text-align: center; font-weight: bold;">BOOK TITLE</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">BOOK LEVEL</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">BOOK PRICE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <br><br>
+        ';
+        $counter = 1;
+        $totalPrice = 0;
+        foreach($bookassessementd as $bookassd) {
+            $STUDFULLNAME = $bookassd['studfullname'];
+            $STUDNO = $bookassd['studno'];
+            $BOOKTITLE = $bookassd['name'];
+            $BOOKLEVEL = $bookassd['level'];
+            $BOOKPRICE = $bookassd['price'];
+            $totalPrice += $BOOKPRICE;
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$counter++.'</td>
+                        <td style="text-align: left; word-wrap: break-word; max-width: 250px; width: 50%;">'.strtoupper($BOOKTITLE).'</td>
+                        <td style="width: 20%;text-align: center;">'.strtoupper($BOOKLEVEL).'</td>
+                        <td style="width: 20%;text-align: center;">'.number_format($BOOKPRICE, 2).'</td>
+                    </tr>
+                        
+                    ';
+        }
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 50%;"></td>
+                        <td style="text-align: center; width: 20%; font-weight: bold;">TOTAL:</td>
+                        <td style="text-align: center; font-weight: bold; width: 20%;">'.number_format($totalPrice, 2).'</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br><br>'
+            ;
+            
+
+        $html .= '<table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%;">
+                            <tbody>
+                            <br><br><br><br><br><br><br>
+                                <tr>
+                                    <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%; text-align: left;"><p style="font-size: 10px;">SIGNATURE OVER STUDENTS PRINTED NAME</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">BOOKSTORE</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">CASHIER</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br><br><br><br><br><br><br><br><br><br><br>';
+            
+            $html .= '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+                .wrap-title {
+                word-wrap: break-word;      /* Allow words to break if needed */
+                white-space: normal;        /* Allow wrapping */
+                max-width: 250px;           /* Optional: set a max width */
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">BOOKSTORE COPY</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 65%;">STUDENT No.: <strong>'. strtoupper($STUDNO) .' </strong></td>
+                    <td>LEVEL: <strong>'. strtoupper($BOOKLEVEL) .'</strong></td>
+                </tr>
+                <tr>
+                    <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">#</th>
+                        <th style="width: 50%;text-align: center; font-weight: bold;">BOOK TITLE</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">BOOK LEVEL</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">BOOK PRICE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <br><br>
+        ';
+        $counter = 1;
+        $totalPrice = 0;
+        foreach($bookassessementd as $bookassd) {
+            $STUDFULLNAME = $bookassd['studfullname'];
+            $STUDNO = $bookassd['studno'];
+            $BOOKTITLE = $bookassd['name'];
+            $BOOKLEVEL = $bookassd['level'];
+            $BOOKPRICE = $bookassd['price'];
+            $totalPrice += $BOOKPRICE;
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$counter++.'</td>
+                        <td style="text-align: left; word-wrap: break-word; max-width: 250px; width: 50%;">'.strtoupper($BOOKTITLE).'</td>
+                        <td style="width: 20%;text-align: center;">'.strtoupper($BOOKLEVEL).'</td>
+                        <td style="width: 20%;text-align: center;">'.number_format($BOOKPRICE, 2).'</td>
+                    </tr>
+                        
+                    ';
+        }
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 50%;"></td>
+                        <td style="text-align: center; width: 20%; font-weight: bold;">TOTAL:</td>
+                        <td style="text-align: center; font-weight: bold; width: 20%;">'.number_format($totalPrice, 2).'</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br><br>'
+            ;
+            
+
+        $html .= '<table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%;">
+                            <tbody>
+                            <br><br><br><br><br><br><br>
+                                <tr>
+                                    <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%; text-align: left;"><p style="font-size: 10px;">SIGNATURE OVER STUDENTS PRINTED NAME</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">BOOKSTORE</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">CASHIER</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>';
+        
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($STUDFULLNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
+    }
+    public function submitOR($studno=null, $transactionno=null){
+        if($this->request->is('post')) {
+            // $GETSTUDNO = $this->booksAssessmentModel->where('transactionno', $id)->findAll();
+            // foreach($GETSTUDNO as $GSN) {
+            //     $STUDNO = $GSN['studno'];
+            // }
+
+            $bookassessmentdata = [
+                'ornumber' => $this->request->getVar('ornumber'),
+                'status' => 'Paid',
+            ];
+
+            $this->booksAssessmentModel->where('status', 'Payment')->where('studno', $studno)->where('transactionno', $transactionno)->set($bookassessmentdata)->update();
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."books-assessment/".$studno);
+        }
+    }
+    public function releaseBooksAssessment($id=null, $ornumber=null){
+        $GETSTUDNO = $this->booksAssessmentModel->where('transactionno', $id)->findAll();
+        foreach($GETSTUDNO as $GSN) {
+            $STUDNO = $GSN['studno'];
+        }
+
+        $bookassessmentdata = [
+            'status' => 'Released',
+        ];
+
+        $this->booksAssessmentModel->where('transactionno', $id)->where('status', 'Paid')->set($bookassessmentdata)->update();
+        session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+        return redirect()->to(base_url()."books-assessment/".$STUDNO);
+    }
+    public function uniformSetup() {
+        $data = [
+            'page_title' => 'Holy Cross College | Uniform Setup',
+            'page_heading' => 'UNIFORM SETUP',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['uniformsdata'] = $this->uniformsModel->where('isdel', 0)->findAll();
+        if($this->request->is('post')) {
+            $rules = [
+                'name' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Name is required.',
+                    ],
+                ],
+                'price' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Price is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $data = [
+                    'name' => $this->request->getVar('name'),
+                    'size' => $this->request->getVar('size'),
+                    'price' => $this->request->getVar('price'),
+                ];
+                $this->uniformsModel->save($data);
+                session()->setTempdata('addsuccess','Uniform added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        return view('accounting/uniformsetupview', $data);
+    }
+    public function uniformsAssessment($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Uniforms Assessment',
+            'page_heading' => 'UNIFORMS ASSESSMENT! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['uniformassessmentdata'] = $this->uniformsAssessmentModel
+        ->select('*, SUM(totalamount) as total')
+        ->where('studentno', $id)
+        ->where('isdel', 0)
+        ->groupBy('transactionno')
+        ->findAll();
+
+        $checkStudent = $this->studentAccountsModel->where('studentno', $id)->findAll();
+        if(!$checkStudent) {
+            session()->setTempdata('message', 'Student does not have an student number yet. Please create an student number first.', 3);
+            return redirect()->to(base_url()."student-accounts/view/".$id);
+        } else {
+            foreach($checkStudent as $cs) {
+                $studentlevel = $cs['level'];
+                $studentcluster = $cs['cluster'];
+            }
+        }
+        // if($studentcluster == 0) {
+        //     $STUDCLUSTER = 0;
+        // }else{
+        //     $STUDCLUSTER = $studentcluster;
+        // }
+        // $querybooks = $this->booksModel;
+
+        // $querybooks->where('level', $studentlevel);
+        // $querybooks->where('isdel', 0);
+
+        // if($studentlevel == 'Grade 12') {
+        // $querybooks->Where('cluster', 'General');
+        // $querybooks->orwhere('cluster', $studentcluster);
+        // }
+
+        // $data['booksdata'] = $querybooks->findAll();
+
+        $data['uniformsdata'] = $this->uniformsModel->where('isdel', 0)->findAll();
+        
+        $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
+        
+        $data['studentdata'] = array_merge($shsStudents, $ibedStudents, $colStudents);
+
+        foreach($data['studentdata'] as $sd){
+            $STUDNO = $sd['studentno'];
+        }
+        
+        $data['uniformsassessmentdata'] = $this->uniformsAssessmentModel
+        ->select('uniformsassessment.*, uniforms.*')
+        ->join('uniforms', 'uniforms.uniformid = uniformsassessment.uniformid', 'left')
+        ->where('uniformsassessment.status', 'Assessed')
+        ->where('uniformsassessment.studentno', $STUDNO)
+        ->where('uniformsassessment.isdel', 0)
+        ->findAll();
+
+        return view('accounting/uniformsassessmentview', $data);
+    }
+    public function addUniformsAssessment($id=null, $uniformid=null) {
+
+        $uniformdata= $this->uniformsModel->where('uniformid', $uniformid)->findAll();
+
+        foreach ($uniformdata as $ud) {
+
+            $price = $ud['price'];
+
+        }
+
+        $data = [
+            'studentno' => $id,
+            'uniformid' => $uniformid,
+            'status' => 'Assessed',
+            'isdel' => 0,
+        ];
+
+        $this->uniformsAssessmentModel->save($data);
+        session()->setTempdata('addsuccess','Uniform added successfully', 3);
+        return redirect()->to(base_url()."uniforms-assessment/".$id);
+    }
+    public function updateUniformsAssessmentQty($uniformaid=null) {
+        if($this->request->is('post')) {
+            $QUANTITY = $this->request->getVar('qty');
+            $uniformadata= $this->uniformsAssessmentModel->where('uniaid', $uniformaid)->findAll();
+            foreach ($uniformadata as $uad) {
+                $UNID = $uad['uniformid'];
+                $STUDNO = $uad['studentno'];
+            }
+            $uniformdata= $this->uniformsModel->where('uniformid', $UNID)->findAll();
+            foreach ($uniformdata as $ud){
+                $PRICE = $ud['price'];
+            }
+            $data = [
+                'qty' => $QUANTITY,
+                'totalamount' => $QUANTITY * $PRICE,
+            ];
+
+            $this->uniformsAssessmentModel->where('uniaid', $uniformaid)->update($uniformaid, $data);
+            session()->setTempdata('addsuccess','Uniform added successfully', 3);
+            return redirect()->to(base_url()."uniforms-assessment/".$STUDNO);
+        }
+    }
+    public function processUniformsAssessment($id=null) {
+
+        $UAID = $this->uniformsAssessmentModel->where('studentno', $id)->where('status', 'Assessed')->where('isdel', 0)->findAll();
+        
+        $GETTRANSACTIONNO = $this->uniformsAssessmentModel
+        ->where('studentno', $id)
+        ->groupBy('transactionno')
+        ->where('isdel', 0)->findAll();
+        
+        foreach($GETTRANSACTIONNO as $GTN) {
+            $TRANSACTIONNO = $GTN['transactionno'];
+        }
+        if($GETTRANSACTIONNO==0) {
+            $TRANNO = 0;
+        }else{
+            $TRANNO = $TRANSACTIONNO + 1;
+        }
+
+        $TOTAL= 0;
+
+        foreach($UAID as $uaid) {
+
+            $TOTAL += $uaid['totalamount'];
+            
+        }
+
+        $data = [
+            'studno' => $id,
+            'name' => 'Uniforms Assessment',
+            'totalamount' => $TOTAL,
+            'tablename' => 'uniformsassessment',
+            'status' => 'Payment',
+            'isdel' => 0,
+
+        ];
+
+        $uniformassessmentdata = [
+            'status' => 'Payment',
+            'transactionno' => $TRANNO,
+        ];
+
+        $this->studentOtherBillsModel->save($data);
+        $this->uniformsAssessmentModel->where('studentno', $id)->where('status', 'Assessed')->where('isdel', 0)->set($uniformassessmentdata)->update();
+        session()->setTempdata('addsuccess', 'Book is deleted!', 2);
+        return redirect()->to(base_url()."student-accounts/view/".$id);
+    }
+    public function uniformsassessmentPrint($id=null) {
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Assessment of Fees');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
+        $studentdata = array_merge($shsStudents, $ibedStudents, $colStudents);
+        
+        foreach($studentdata as $sd) {
+            $STUDFULLNAME = $sd['studfullname'];
+            $STUDNO = $sd['studentno'];
+        }
+        
+        $uniformsassessment = $this->uniformsAssessmentModel
+        ->select('uniformsassessment.*, uniforms.*')
+        ->join('uniforms', 'uniforms.uniformid = uniformsassessment.uniformid', 'left')
+        ->join('students_shs', 'students_shs.studentno = uniformsassessment.studentno', 'left')
+        ->join('students_ibed', 'students_ibed.studentno = uniformsassessment.studentno', 'left')
+        ->join('students_col', 'students_col.studentno = uniformsassessment.studentno', 'left')
+        ->where('uniformsassessment.studentno', $STUDNO)
+        ->where('uniformsassessment.isdel', 0)
+        ->where('uniformsassessment.status', 'Assessed')
+        ->findAll();
+
+        foreach($uniformsassessment as $uniassd) {
+            $STUDNO = $uniassd['studentno'];
+            $SIZE = $uniassd['size'];
+            $UNIFORMNAME = $uniassd['name'];
+            $QUANTITY = $uniassd['qty'];
+            $TOTAL = $uniassd['totalamount'];
+        }
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+                .wrap-title {
+                word-wrap: break-word;      /* Allow words to break if needed */
+                white-space: normal;        /* Allow wrapping */
+                max-width: 250px;           /* Optional: set a max width */
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">STUDENTS COPY</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 65%;">STUDENT No.: <strong>'. strtoupper($STUDNO) .' </strong></td>
+                    
+                </tr>
+                <tr>
+                    <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">#</th>
+                        <th style="width: 50%;text-align: left; font-weight: bold;">NAME</th>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">QTY</th>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">PRICE</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <br><br>
+        ';
+        $counter = 1;
+        $totalPrice = 0;
+        foreach($uniformsassessment as $uniassd) {
+            $STUDNO = $uniassd['studentno'];
+            $UNIFORMNAME = $uniassd['name'];
+            $QUANTITY = $uniassd['qty'];
+            $TOTAL = $uniassd['totalamount'];
+
+            $totalPrice += $TOTAL;
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$counter++.'</td>
+                        <td style="text-align: left; word-wrap: break-word; max-width: 250px; width: 50%;">'.strtoupper($UNIFORMNAME).' - '.strtoupper($SIZE).'</td>
+                        <td style="width: 10%;text-align: center;">'.strtoupper($QUANTITY).'</td>
+                        <td style="width: 10%;text-align: center;">'.number_format($uniassd['price'], 2).'</td>
+                        <td style="width: 20%;text-align: center;">'.number_format($TOTAL, 2).'</td>
+                    </tr>
+                        
+                    ';
+        }
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 50%;"></td>
+                        <td style="text-align: center; width: 20%; font-weight: bold;">GRAND TOTAL:</td>
+                        <td style="text-align: center; font-weight: bold; width: 20%;">'.number_format($totalPrice, 2).'</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br><br>'
+            ;
+            
+
+        $html .= '<table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%;">
+                            <tbody>
+                            <br><br><br><br><br><br><br>
+                                <tr>
+                                    <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%; text-align: left;"><p style="font-size: 10px;">SIGNATURE OVER STUDENTS PRINTED NAME</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">BOOKSTORE</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">CASHIER</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br><br><br><br><br><br><br><br><br><br><br>';
+            
+            $html .= '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+                .wrap-title {
+                word-wrap: break-word;      /* Allow words to break if needed */
+                white-space: normal;        /* Allow wrapping */
+                max-width: 250px;           /* Optional: set a max width */
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">BOOKSTORE COPY</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 65%;">STUDENT No.: <strong>'. strtoupper($STUDNO) .' </strong></td>
+                    
+                </tr>
+                <tr>
+                    <td>STUDENT: <strong>'. strtoupper($STUDFULLNAME) .'</strong></td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">#</th>
+                        <th style="width: 50%;text-align: left; font-weight: bold;">NAME</th>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">QTY</th>
+                        <th style="width: 10%;text-align: center; font-weight: bold;">PRICE</th>
+                        <th style="width: 20%;text-align: center; font-weight: bold;">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <br><br>
+        ';
+        $counter = 1;
+        $totalPrice = 0;
+        foreach($uniformsassessment as $uniassd) {
+            $STUDNO = $uniassd['studentno'];
+            $UNIFORMNAME = $uniassd['name'];
+            $QUANTITY = $uniassd['qty'];
+            $TOTAL = $uniassd['totalamount'];
+
+            $totalPrice += $TOTAL;
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$counter++.'</td>
+                        <td style="text-align: left; word-wrap: break-word; max-width: 250px; width: 50%;">'.strtoupper($UNIFORMNAME).' - '.strtoupper($SIZE).'</td>
+                        <td style="width: 10%;text-align: center;">'.strtoupper($QUANTITY).'</td>
+                        <td style="width: 10%;text-align: center;">'.number_format($uniassd['price'], 2).'</td>
+                        <td style="width: 20%;text-align: center;">'.number_format($TOTAL, 2).'</td>
+                    </tr>
+                        
+                    ';
+        }
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 50%;"></td>
+                        <td style="text-align: center; width: 20%; font-weight: bold;">GRAND TOTAL:</td>
+                        <td style="text-align: center; font-weight: bold; width: 20%;">'.number_format($totalPrice, 2).'</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br><br>'
+            ;
+            
+
+        $html .= '<table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%;">
+                            <tbody>
+                            <br><br><br><br><br><br><br>
+                                <tr>
+                                    <td style="width: 70%; text-align: left; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%; text-align: left;"><p style="font-size: 10px;">SIGNATURE OVER STUDENTS PRINTED NAME</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">BOOKSTORE</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table  style="width: 100%;">
+                            <tbody>
+                            <br><br><br>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center; border-bottom: 1px solid black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%; text-align: center;"></td>
+                                    <td style="width: 70%; text-align: center;"><p style="font-size: 12px;">CASHIER</p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>';
+        
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($STUDFULLNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
+    }
+    public function submitORUniform($studno=null, $transactionno=null){
+        if($this->request->is('post')) {
+
+            // $GETSTUDNO = $this->booksAssessmentModel->where('transactionno', $id)->findAll();
+            // foreach($GETSTUDNO as $GSN) {
+            //     $STUDNO = $GSN['studno'];
+            // }
+
+            $uniformassessmentdata = [
+                'ornumber' => $this->request->getVar('ornumber'),
+                'status' => 'Paid',
+            ];
+
+            $this->uniformsAssessmentModel->where('status', 'Payment')->where('studentno', $studno)->where('transactionno', $transactionno)->set($uniformassessmentdata)->update();
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."uniforms-assessment/".$studno);
+        }
+    }
+    public function releaseUniformsAssessment($id=null, $ornumber=null){
+        
+        $GETSTUDNO = $this->uniformsAssessmentModel->where('transactionno', $id)->findAll();
+        foreach($GETSTUDNO as $GSN) {
+            $STUDNO = $GSN['studentno'];
+        }
+
+        $uniformassessmentdata = [
+            'status' => 'Released',
+        ];
+
+        $this->uniformsAssessmentModel->where('transactionno', $id)->where('status', 'Paid')->set($uniformassessmentdata)->update();
+        session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+        return redirect()->to(base_url()."uniforms-assessment/".$STUDNO);
     }
 }

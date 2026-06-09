@@ -1034,7 +1034,9 @@ class SHSDepartmentController extends BaseController
         ->select('enrollmenthistory_shs.*, students_shs.*, clusters.*')
         ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid')
         ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster')
-        ->where('enrollmenthistory_shs.status', 'Assessed')->where('enrollmenthistory_shs.isdel', 0)->findAll();
+        ->where('enrollmenthistory_shs.status', 'Assessed')
+        ->orWhere('enrollmenthistory_shs.status', 'Payment')
+        ->where('enrollmenthistory_shs.isdel', 0)->findAll();
 
         return view('shs/assessmentview', $data);
     }
@@ -1484,5 +1486,408 @@ class SHSDepartmentController extends BaseController
         $this->enrollmentHistorySHSModel->where('ehid', $id)->update($id, $ehshsdata);
         session()->setTempdata('success', 'Student is approved!', 2);
         return redirect()->to(base_url()."shs-assessment");
+    }
+    public function studentinfoView(){
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Department',
+            'page_heading' => 'SHS STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentdata'] = $this->shsStudentsModel->where('studisdel', 0)->findAll();
+
+        return view('shs/studinfoview', $data);
+    }
+    public function studentinfoEdit($id=null){
+        $data = [
+            'page_title' => 'Holy Cross College | SHS Department',
+            'page_heading' => 'SHS STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusters'] = $this->clustersModel->findAll();
+
+        $data['studentdata'] = $this->enrollmentHistorySHSModel
+        ->select('enrollmenthistory_shs.*, students_shs.*, permanentrecord_shs.*, shsstudentschoolrecord.*, assessment_shs.*, clusters.*, additionalinfo_shs.*')
+        ->join('clusters', 'clusters.cluid = enrollmenthistory_shs.cluster', 'left')
+        ->join('additionalinfo_shs', 'additionalinfo_shs.studid = enrollmenthistory_shs.studid', 'left')
+        ->join('students_shs', 'students_shs.studid = enrollmenthistory_shs.studid', 'left')
+        ->join('permanentrecord_shs', 'permanentrecord_shs.studid = enrollmenthistory_shs.studid', 'left')
+        ->join('shsstudentschoolrecord', 'shsstudentschoolrecord.studid = enrollmenthistory_shs.studid', 'left')
+        ->join('assessment_shs', 'assessment_shs.studid = enrollmenthistory_shs.studid', 'left')
+        ->where('enrollmenthistory_shs.studid', $id)
+        ->findAll();
+
+        if($this->request->is('post')){
+            
+            //SHS STUDENTS
+            $FINDSTUDENT = $this->enrollmentHistorySHSModel
+            ->where('studid', $id)
+            ->findAll();
+
+            foreach($FINDSTUDENT as $FS){
+                $studid = $FS['studid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                $email = $this->request->getVar('email');
+                $contactno = $this->request->getVar('contactno');
+                $gender = $this->request->getVar('gender');
+                $age = $this->request->getVar('age');
+                $bday = $this->request->getVar('bday');
+                $birthplace = $this->request->getVar('birthplace');
+                $citizen = $this->request->getVar('citizen');
+                $barangay = $this->request->getVar('barangay');
+                $city = $this->request->getVar('city');
+                $province = $this->request->getVar('province');
+                $religion = $this->request->getVar('religion');
+            }
+
+            $STUDATA = [
+                'studln' => $lastname,
+                'studfn' => $firstname,
+                'studmn' => $middlename,
+                'studextension' => $extension,
+                'studfullname' => $studfullname,
+                'studlname' => $lastname,
+                'studextension' => $extension,
+                'studfname' => $firstname,
+                'studmname' => $middlename,
+                'studemail' => $email,
+                'studcontact' => $contactno,
+                'studgender' => $gender,
+                'studage' => $age,
+                'studbirthday' => $bday,
+                'studbirthplace' => $birthplace,
+                'studcitizenship' => $citizen,
+                'studstbarangay' => $barangay,
+                'studcity' => $city,
+                'studprovince' => $province,
+                'studreligion' => $religion
+
+            ];
+            $this->shsStudentsModel->where('studid',$studid)->update($studid,$STUDATA);
+
+            $STUDSHSAss = $this->shsAssessmentModel->where('studid', $id)->findAll();
+            foreach($STUDSHSAss as $SAshs) {
+                $STUDSHSAss = $SAshs['assid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                
+            }
+            $STUDASSDATA = [
+                'vouchers' => $this->request->getVar('voucher'),
+                'studfullname' => $studfullname,
+            ];
+            $this->shsAssessmentModel->where('studid',$studid)->update($STUDSHSAss,$STUDASSDATA);
+
+            $STUDSHSSrec = $this->shsSchoolRecordModel->where('studid', $id)->findAll();
+            foreach($STUDSHSSrec as $SSshs) {
+                $STUDSHSSrec = $SSshs['ssrid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+
+            }
+            $STUDRECDATA = [
+                'lrn' => $this->request->getVar('lrn'),
+                'studfullname' => $studfullname,
+            ];
+            $this->shsSchoolRecordModel->where('studid',$studid)->update($STUDSHSSrec,$STUDRECDATA);
+
+            $STUDSHSPerm = $this->shsPermanentRecordModel->where('studid', $id)->findAll();
+            foreach($STUDSHSPerm as $SPshs) {
+                $STUDSHSPerm = $SPshs['prid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+            }
+            $STUDPERDATA = [
+                'eschool' => $this->request->getVar('eshool'),
+                'eyeargraduate' => $this->request->getVar('eshoolyr'),
+                'jhschool' => $this->request->getVar('jshool'),
+                'jhyeargraduate' => $this->request->getVar('jshoolyr'),
+                'studfullname' => $studfullname,
+            ];        
+            $this->shsPermanentRecordModel->where('studid',$studid)->update($STUDSHSPerm,$STUDPERDATA);
+
+            $STUDSHSAI = $this->additionalInfoSHSModel->where('studid', $id)->findAll();
+            foreach($STUDSHSAI as $AIshs) {
+                $STUDSHSAI = $AIshs['aiid'];
+            }
+            $STUDAIDATA = [
+                'nameg' => $this->request->getVar('guardian'),
+                'contactg' => $this->request->getVar('guardianno'),
+            ];        
+            $this->additionalInfoSHSModel->where('studid',$studid)->update($STUDSHSAI,$STUDAIDATA);
+
+            session()->setTempdata('success', 'Student updated successfully!', 2);
+            return redirect()->to(base_url()."shs-student-info");
+
+        }
+
+        return view('shs/studinfoedit', $data);
+    }
+    public function classlist() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'cluster' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Cluster is required.',
+                    ],
+                ],
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School Year is required.',
+                    ],
+                ],
+                'level' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Level is required.',
+                    ],
+                ],
+            ];
+
+            if($this->validate($rules)){
+                $PROGRAM = $this->request->getVar('cluster');
+                $SY = $this->request->getVar('sy');
+                $LEVEL = $this->request->getVar('level');
+
+                session()->set('selected_program', $PROGRAM);
+                session()->set('selected_sy', $SY);
+                session()->set('selected_level', $LEVEL);
+
+                return redirect()->to(base_url()."shs-classlist-result");
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('shs/classlistview', $data);
+    }
+    public function classlistResult() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $LEVEL = session()->get('selected_level');
+
+        $data['assessmentdata'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, sections_shs.*')
+        ->join('sections_shs', 'sections_shs.secid = assessment_shs.section')
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.cluster', $PROGRAM)
+        ->where('assessment_shs.level', $LEVEL)
+        ->where('assessment_shs.isdel', 0)
+        ->groupBy('assessment_shs.section')
+        ->findAll();
+        
+        return view('shs/classlistresultview', $data);
+    }
+    public function classlistStudents($secid=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusterdata'] = $this->clustersModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $LEVEL = session()->get('selected_level');
+
+        $data['assessmentdata'] = $this->shsAssessmentModel
+        ->select('assessment_shs.*, students_shs.*')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        // ->where('assessment_shs.sem', $SEM)
+        ->where('assessment_shs.cluster', $PROGRAM)
+        // ->where('assessment_shs.curriculum', $curriculumid)
+        ->where('assessment_shs.section', $secid)
+        ->orderby('students_shs.studfullname','ASC')
+        ->findAll();
+
+        return view('shs/classliststudentsview', $data);
+    }
+    public function classlistPrint($secid=null) {
+
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Classlist');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $LEVEL = session()->get('selected_level');
+
+        $shsassessmentdata = $this->shsAssessmentModel
+        ->select('assessment_shs.*, students_shs.*')
+        ->join('students_shs', 'students_shs.studid = assessment_shs.studid')
+        ->where('assessment_shs.sy', $SY)
+        ->where('assessment_shs.level', $LEVEL)
+        // ->where('assessment_shs.sem', $SEM)
+        ->where('assessment_shs.cluster', $PROGRAM)
+        // ->where('assessment_shs.curriculum', $curriculumid)
+        ->where('assessment_shs.section', $secid)
+        ->orderby('students_shs.studfullname','ASC')
+        ->findAll();
+
+        $totalStudents = count($shsassessmentdata);
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">CLASS LIST</td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center;">#</th>
+                        <th style="width: 30%;text-align: center;">STUDENT NUMBER</th>
+                        <th style="width: 60%;text-align: center;">STUDENT FULLNAME</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        $count = 1;
+        foreach($shsassessmentdata as $sad) {
+            $STUDENTNO = $sad['studentno'];
+            $STUDFULLNAME = $sad['studfullname'];
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$count++.'</td>
+                        <td style="width: 30%;text-align: center;">'.strtoupper($sad['studentno']).'</td>
+                        <td style="width: 60%;text-align: left;">'.strtoupper($sad['studfullname']).'</td>
+                    </tr>
+                    
+                        
+                    ';
+        }
+
+        $html .= '
+            <br>
+            </tbody>
+            <br>
+            <table style="width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="text-align: left; font-weight: bold; font-size: 12px; border-top: 1px solid #000; padding-top: 5px;">
+                        TOTAL NUMBER OF STUDENTS: ' . $totalStudents . '
+                    </td>
+                </tr>
+            </table>';
+            
+        $html .= '
+                </tbody>
+            </table>';
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($STUDFULLNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
     }
 }

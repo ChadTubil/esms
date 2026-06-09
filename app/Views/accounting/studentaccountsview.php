@@ -54,8 +54,28 @@
                 <div class="card">
                     <div class="card-body">
                         <?php foreach($studentdata as $studentd): ?>
-                            <h2 style="text-transform: uppercase;"><?= $studentd['studfullname']; ?></h2>
-                            <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h2 style="text-transform: uppercase;"><?= $studentd['studfullname']; ?></h2>
+                                    <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <a href="<?= base_url(); ?>books-assessment/<?= $studentd['studentno']; ?>" class="btn btn-warning me-2">
+                                        <i class="bi bi-journal-text"></i> Buy Book
+                                    </a>
+                                    <a href="<?= base_url(); ?>uniforms-assessment/<?= $studentd['studentno']; ?>" class="btn btn-primary me-2">
+                                        <i class="bi bi-journal-text"></i> Buy Uniform
+                                    </a>
+                                    <a href="<?= base_url(); ?>student-accounts/view/<?= $studentd['studentno']; ?>" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Back to Accounts
+                                    </a>
+                                </div>
+                                <?php if(session()->getTempdata('paymentmessage')) :?>
+                                    <div class="alert alert-info">
+                                        <?= session()->getTempdata('paymentmessage');?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </div>

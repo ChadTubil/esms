@@ -88,13 +88,20 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="col-lg-6 col-sm-12">
+                                <div class="col-lg-5 col-sm-12">
                                     <label class="form-label" for="validationDefault01">AMOUNT</label>
                                     <input type="text" name="amount" class="form-control">
                                 </div>
-                                <div class="col-lg-6 col-sm-12">
+                                <div class="col-lg-4 col-sm-12">
                                     <label class="form-label" for="validationDefault01">IS MANDATORY</label>
                                     <select name="mandatory" class="form-select">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-sm-12">
+                                    <label class="form-label" for="validationDefault01">IS TF</label>
+                                    <select name="tfis" class="form-select">
                                         <option value="0">No</option>
                                         <option value="1">Yes</option>
                                     </select>
@@ -158,6 +165,11 @@
                                                     <span class="status-badge status-active">Mandatory</span>
                                                 <?php else: ?>
                                                     <span class="status-badge status-not-active">Not Mandatory</span>
+                                                <?php endif; ?>
+                                                <?php if($feestructured['istf'] == 1): ?>
+                                                    <span class="status-badge status-active">TF</span>
+                                                <?php else: ?>
+                                                    <span class="status-badge status-not-active">Not TF</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
@@ -265,12 +277,28 @@
                                                                             <input type="text" name="amount" class="form-control" value="<?= $feestructured['amount']; ?>">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-lg-6 col-sm-12">
+                                                                    <div class="col-lg-3 col-sm-12">
                                                                         <div class="form-group">
                                                                             <label for="email" class="form-label">IS MANDATORY</label>
                                                                             <select name="mandatory" class="form-select">
                                                                                 <option value="<?php echo $feestructured['ismandatory']; ?>">
                                                                                     <?php if($feestructured['ismandatory'] == 1): ?>
+                                                                                        Yes
+                                                                                    <?php else: ?>
+                                                                                        No
+                                                                                    <?php endif; ?>
+                                                                                </option>
+                                                                                <option value="0">No</option>
+                                                                                <option value="1">Yes</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="email" class="form-label">IS TF</label>
+                                                                            <select name="tfis" class="form-select">
+                                                                                <option value="<?php echo $feestructured['istf']; ?>">
+                                                                                    <?php if($feestructured['istf'] == 1): ?>
                                                                                         Yes
                                                                                     <?php else: ?>
                                                                                         No

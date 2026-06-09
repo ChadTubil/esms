@@ -895,8 +895,14 @@ class COLDepartmentController extends BaseController
         ->select('curriculum.*, courses.*')
         ->join('courses', 'courses.courid = curriculum.course')
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->findAll();
+
+        foreach($data['colcurriculumdata'] as $colcurrdata){
+            $COLCURRID = $colcurrdata['currid'];
+        }
+
+        
 
         $data['colsectiondata'] = $this->sectionsModel
         ->select('sections.*, courses.*')
@@ -906,6 +912,17 @@ class COLDepartmentController extends BaseController
         ->where('sections.sy', $SY)
         ->where('sections.sem', $SEM)
         ->findAll();
+        
+        foreach($data['colsectiondata'] as &$colsecdata){
+            $sectionCount = $this->colAssessmentModel
+                ->where('section', $colsecdata['secid'])
+                ->where('sy', $SY)
+                ->where('level', $LEVEL)
+                ->where('sem', $SEM)
+                ->countAllResults();
+            
+            $colsecdata['student_count'] = $sectionCount;
+        }
 
         if($this->request->is('post')) {
             $SELECTEDCURRICULUM = $this->request->getVar('curriculum');
@@ -940,6 +957,9 @@ class COLDepartmentController extends BaseController
                     $ssdata = [
                         'studid' => $STUDID,
                         'cdid' => $ss['cdid'],
+                        'sy' => $SY,
+                        'sem' => $SEM,
+                        'section' => $SELECTEDSECTION,
                     ];
 
                     $this->studentSubjectsModel->save($ssdata);
@@ -962,41 +982,22 @@ class COLDepartmentController extends BaseController
         ->where('assessment_col.level', $LEVEL)
         ->where('assessment_col.sem', $SEM)
         ->findAll();
-
-        // SHS ASSESSED CURRICULUM DATA
-        // $data['selectedsemester'] = $this->colAssessmentModel
-        // ->select('assessment_col.*, curriculum.*, currdata.*, subjects.*')
-        // ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'left')
-        // ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'left')
-        // ->join('subjects', 'subjects.subid = currdata.subid', 'left')
-        // ->where('assessment_col.studid', $STUDID)
-        // ->where('assessment_col.sy', $SY)
-        // ->where('assessment_col.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
-        // ->findAll();
-
-        // $data['selectedsubjects'] = $this->colAssessmentModel
-        // ->select('assessment_col.*, student_subjects.*, curriculum.*, currdata.*, subjects.*')
-        // ->join('curriculum', 'curriculum.currid = assessment_col.curriculum', 'inner')
-        // ->join('currdata', 'currdata.curriculumid = curriculum.currid', 'inner')
-        // ->join('student_subjects', 'student_subjects.cdid = currdata.cdid', 'inner')
-        // ->join('subjects', 'subjects.subid = currdata.subid', 'inner')
-        // ->where('student_subjects.studid', $STUDID)
-        // // ->where('assessment_col.sy', $SY)
-        // // ->where('assessment_col.level', $LEVEL)
-        // // ->where('currdata.sem', $SEM)
-        // ->where('student_subjects.isdel', 0)
-        // ->findAll();
+        
+        $data['colcurrdataasssubjects'] = $this->curriculumDataModel
+        ->select('currdata.*, subjects.*')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where('curriculumid', $COLCURRID)->findAll();
+        
         $data['selectedsubjects'] = $this->studentSubjectsModel
         ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*')
         ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
-        ->where('currdata.sem', $SEM)
+        // ->where('currdata.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
         
@@ -1041,10 +1042,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
-        ->where('currdata.sem', $SEM)
+        // ->where('currdata.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1060,10 +1061,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
-        ->where('currdata.sem', $SEM)
+        // ->where('currdata.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1079,10 +1080,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
-        ->where('currdata.sem', $SEM)
+        // ->where('currdata.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1097,10 +1098,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
-        ->where('currdata.sem', $SEM)
+        // ->where('currdata.level', $LEVEL)
+        // ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1121,6 +1122,18 @@ class COLDepartmentController extends BaseController
         $data['totalfee'] = $GRANDTOTAL = $TOTALTUITIONFEE + $TOTALOTHERFEES;
 
         return view('college/advisingviewprocess', $data);
+    }
+    public function advisingProcessAdd($id=null) {
+        if($this->request->is('post')) {
+            $ssdata = [
+                'studid' => $id,
+                'cdid' => $this->request->getVar('addsubjectassessment'),
+            ];
+            // print_r($ssdata);
+            $this->studentSubjectsModel->save($ssdata);
+            session()->setTempdata('addssuccess','Subject added successfully', 3);
+            return redirect()->to(base_url()."col-advising/process/".$id);
+        }
     }
     public function advisingDrop($id=null, $studid=null) {
 
@@ -1194,7 +1207,10 @@ class COLDepartmentController extends BaseController
         ->select('enrollmenthistory_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
         ->join('courses', 'courses.courid = enrollmenthistory_col.course')
-        ->where('enrollmenthistory_col.status', 'Assessed')->where('enrollmenthistory_col.isdel', 0)->findAll();
+        ->where('enrollmenthistory_col.isdel', 0)
+        ->where('enrollmenthistory_col.status', 'Assessed')
+        ->orWhere('enrollmenthistory_col.status', 'Payment')
+        ->findAll();
 
         return view('college/assessmentview', $data);
     }
@@ -1895,5 +1911,851 @@ class COLDepartmentController extends BaseController
         $this->enrollmentHistoryCOLModel->where('ehid', $id)->update($id, $ehshsdata);
         session()->setTempdata('success', 'Student is approved!', 2);
         return redirect()->to(base_url()."col-assessment");
+    }
+    public function studentinfoView(){
+        $data = [
+            'page_title' => 'Holy Cross College | COLLEGE Department',
+            'page_heading' => 'COLLEGE STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentdata'] = $this->colStudentsModel
+        ->where('studisdel', 0)
+        ->groupBy('studid')
+        ->findAll();
+
+        return view('college/studinfoview', $data);
+    }
+    public function studentinfoEdit($id=null){
+        $data = [
+            'page_title' => 'Holy Cross College | COLLEGE Department',
+            'page_heading' => 'COLLEGE STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusters'] = $this->coursesModel->findAll();
+
+        $data['studentdata'] = $this->enrollmentHistoryCOLModel
+        ->select('enrollmenthistory_col.*, students_col.*, permanentrecord_col.*, colstudentschoolrecord.*, assessment_col.*, courses.*, additionalinfo_col.*')
+        ->join('courses', 'courses.courid = enrollmenthistory_col.course', 'left')
+        ->join('additionalinfo_col', 'additionalinfo_col.studid = enrollmenthistory_col.studid', 'left')
+        ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid', 'left')
+        ->join('permanentrecord_col', 'permanentrecord_col.studid = enrollmenthistory_col.studid', 'left')
+        ->join('colstudentschoolrecord', 'colstudentschoolrecord.studid = enrollmenthistory_col.studid', 'left')
+        ->join('assessment_col', 'assessment_col.studid = enrollmenthistory_col.studid', 'left')
+        ->where('enrollmenthistory_col.studid', $id)
+        ->findAll();
+
+        if($this->request->is('post')){
+            
+            //SHS STUDENTS
+            $FINDSTUDENT = $this->enrollmentHistoryCOLModel
+            ->where('studid', $id)
+            ->findAll();
+
+            foreach($FINDSTUDENT as $FS){
+                $studid = $FS['studid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                $email = $this->request->getVar('email');
+                $contactno = $this->request->getVar('contactno');
+                $gender = $this->request->getVar('gender');
+                $age = $this->request->getVar('age');
+                $bday = $this->request->getVar('bday');
+                $birthplace = $this->request->getVar('birthplace');
+                $citizen = $this->request->getVar('citizen');
+                $barangay = $this->request->getVar('barangay');
+                $city = $this->request->getVar('city');
+                $province = $this->request->getVar('province');
+                $religion = $this->request->getVar('religion');
+            }
+
+            $STUDATA = [
+                'studln' => $lastname,
+                'studfn' => $firstname,
+                'studmn' => $middlename,
+                'studextension' => $extension,
+                'studfullname' => $studfullname,
+                'studlname' => $lastname,
+                'studextension' => $extension,
+                'studfname' => $firstname,
+                'studmname' => $middlename,
+                'studemail' => $email,
+                'studcontact' => $contactno,
+                'studgender' => $gender,
+                'studage' => $age,
+                'studbirthday' => $bday,
+                'studbirthplace' => $birthplace,
+                'studcitizenship' => $citizen,
+                'studstbarangay' => $barangay,
+                'studcity' => $city,
+                'studprovince' => $province,
+                'studreligion' => $religion
+
+            ];
+            $this->colStudentsModel->where('studid',$studid)->update($studid,$STUDATA);
+
+            // $STUDSHSAss = $this->colAssessmentModel->where('studid', $id)->findAll();
+            // foreach($STUDSHSAss as $SAshs) {
+            //     $STUDSHSAss = $SAshs['assid'];
+            //     $lastname = $this->request->getVar('studln');
+            //     $firstname = $this->request->getVar('studfn');
+            //     $middlename = $this->request->getVar('studmn');
+            //     $extension = $this->request->getVar('extension');
+            //     $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                
+            // }
+            // $STUDASSDATA = [
+
+            //     'studfullname' => $studfullname,
+            // ];
+            // $this->colAssessmentModel->where('studid',$studid)->update($STUDSHSAss,$STUDASSDATA);
+
+            // $STUDSHSSrec = $this->colSchoolRecordModel->where('studid', $id)->findAll();
+            // foreach($STUDSHSSrec as $SSshs) {
+            //     $STUDSHSSrec = $SSshs['ssrid'];
+            //     $lastname = $this->request->getVar('studln');
+            //     $firstname = $this->request->getVar('studfn');
+            //     $middlename = $this->request->getVar('studmn');
+            //     $extension = $this->request->getVar('extension');
+            //     $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+
+            // }
+            // $STUDRECDATA = [
+            //     'studfullname' => $studfullname,
+            // ];
+
+            // $this->colSchoolRecordModel->where('studid',$studid)->update($STUDSHSSrec,$STUDRECDATA);
+
+            $STUDSHSPerm = $this->colPermanentRecordModel->where('studid', $id)->findAll();
+            foreach($STUDSHSPerm as $SPshs) {
+                $STUDSHSPerm = $SPshs['prid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+            }
+            $STUDPERDATA = [
+                'eschool' => $this->request->getVar('eshool'),
+                'eyeargraduate' => $this->request->getVar('eshoolyr'),
+                'jhschool' => $this->request->getVar('jshool'),
+                'jhyeargraduate' => $this->request->getVar('jshoolyr'),
+                'shschool' => $this->request->getVar('sshool'),
+                'shyeargraduate' => $this->request->getVar('sshoolyr'),
+                'studfullname' => $studfullname,
+            ];        
+            $this->colPermanentRecordModel->where('studid',$studid)->update($STUDSHSPerm,$STUDPERDATA);
+
+            $STUDSHSAI = $this->additionalInfoCOLModel->where('studid', $id)->findAll();
+            foreach($STUDSHSAI as $AIshs) {
+                $STUDSHSAI = $AIshs['aiid'];
+            }
+            $STUDAIDATA = [
+                'nameg' => $this->request->getVar('guardian'),
+                'contactg' => $this->request->getVar('guardianno'),
+            ];        
+            $this->additionalInfoCOLModel->where('studid',$studid)->update($STUDSHSAI,$STUDAIDATA);
+
+            session()->setTempdata('success', 'Student updated successfully!', 2);
+            return redirect()->to(base_url()."col-student-info");
+
+        }
+
+        return view('college/studinfoedit', $data);
+    }
+    public function printStudInfo($id=null){
+        // Load TCPDF library
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Copy of Student Information');
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(5,40,5);
+        //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // set font
+        $pdf->SetFont('dejavusans', '', 10);
+        // add a page
+        $pdf->AddPage();
+
+        // HEADER
+        $imagePath = FCPATH .'public/uploads/hccheader.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 206, $h = 36); 
+        $pdf->Line(5, 37, 211, 37);
+
+        $db = \Config\Database::connect();
+        $studinfo = $db->query("SELECT * FROM students_col WHERE studid = '$id'");
+        $studresult = $studinfo->getRow(0);
+        $studinfoData = $this->colAssessmentModel->select('assessment_col.*, permanentrecord_col.*, colstudentschoolrecord.*, familybackground_col.*, additionalinfo_col.*, courses.*')
+        ->join('courses', 'courses.courid = assessment_col.course', 'left')
+        ->join('permanentrecord_col', 'permanentrecord_col.studid = assessment_col.studid', 'left')
+        ->join('colstudentschoolrecord', 'colstudentschoolrecord.studid = assessment_col.studid', 'left')
+        ->join('familybackground_col', 'familybackground_col.studid = assessment_col.studid', 'left')
+        ->join('additionalinfo_col', 'additionalinfo_col.studid = assessment_col.studid', 'left')
+        ->where('assessment_col.studid', $id)
+        ->findAll();
+
+        $data2day = date('Y-m-d');
+
+        foreach ($studinfoData as $std){
+            $STDStudId = $std['studid'];
+            $COURSE =$std['course'];
+        }
+
+        $regData = $this->colStudentsModel->where('studid',$STDStudId)->findAll();
+        foreach($regData as $regD){
+            $STUDNO = $regD['studentno'];
+            $STUDLN = $regD['studln'];
+            $STUDFN = $regD['studfn'];
+            $STUDMN = $regD['studmn'];
+            $STUDFULLNAME = $STUDLN .',' .' ' .$STUDFN .' ' .$STUDMN;
+            $STUDEXT = $regD['studextension'];
+            $STUDBDAY = $regD['studbirthday'];
+            $STUDAGE = $regD['studage'];
+            $STUDGENDER = $regD['studgender'];
+            $STUDBRGY = $regD['studstbarangay'];
+            $STUDCITY = $regD['studcity'];
+            $STUDPROV = $regD['studprovince'];
+            $STUDADD = $STUDBRGY .',' . ' ' . $STUDCITY . ',' .' ' . $STUDPROV;
+            $STUDCONTACT = $regD['studcontact'];
+            $STUDCITIZEN = $regD['studcitizenship'];
+            $STUDREL = $regD['studreligion'];
+            $STUDEMAIL = $regD['studemail'];
+            $STUDBP = $regD['studbirthplace'];
+            $STUDIMG = $regD['studimage'];
+        }
+        $ssrData = $this->colSchoolRecordModel->where('ssrid', $STDStudId)->findAll();
+        foreach($ssrData as $ssrD){
+            $SRSY=$ssrD['sy'];
+            $SRSEM=$ssrD['sem'];
+            $SRLEVEL=$ssrD['level'];
+            $SRSTUDID=$ssrD['studid'];
+            $SRCOURSE=$ssrD['course'];
+        }
+        $fbData = $this->colFamilyBackgroundModel->where('studid',$STDStudId)->findAll();
+        foreach($fbData as $fbD){
+            $NFATHER=$fbD['nfather'];
+            $FMOB=$fbD['fmobile'];
+            $FWORK=$fbD['fwork'];
+            $FEMAIL=$fbD['femail'];
+            $FOFFICE=$fbD['foffice'];
+            $NMOTHER=$fbD['nmother'];
+            $MMOB=$fbD['mmobile'];
+            $MWORK=$fbD['mwork'];
+            $MEMAIL=$fbD['memail'];
+            $MOFFICE=$fbD['moffice'];
+        }
+        $prData = $this->colPermanentRecordModel->where('studid',$STDStudId)->findAll();
+        foreach($prData as $prD){
+            $ESCHOOL=$prD['eschool'];
+            $EYRGRAD=$prD['eyeargraduate'];
+            $JHSCHOOL=$prD['jhschool'];
+            $JHSYRGRAD=$prD['jhyeargraduate'];
+            $SHSCHOOL=$prD['shschool'];
+            $SHYRGRAD=$prD['shyeargraduate'];
+        }
+        $aiData = $this->additionalInfoCOLModel->where('studid',$STDStudId)->findAll();
+        foreach($aiData as $aiD){
+            $SIBNAME=$aiD['siblingname'];
+            $SIBWORK=$aiD['siblingwork'];
+            $SIBAGE=$aiD['siblingage'];
+            $INT=$aiD['interest'];
+            $TALENTS=$aiD['talents'];
+            $HOBBIES=$aiD['hobbies'];
+            $GOALS=$aiD['goals'];
+            $CHAR=$aiD['characteristics'];
+            $FEARS=$aiD['fears'];
+            $DISABILITIES=$aiD['disabilities'];
+            $CHRONIC=$aiD['chronic_illnesses'];
+            $MEDS=$aiD['medicine'];
+            $VITS=$aiD['vitamins'];
+            $RECACC=$aiD['recent_accidents'];
+            $EXPACC=$aiD['experience_accidents'];
+            $RECSUR=$aiD['recent_surgical'];
+            $EXPSUR=$aiD['experience_surgical'];
+            $VACC=$aiD['vaccines'];
+            $CONPSY=$aiD['con_psy'];
+            $CONPSYDATE=$aiD['con_psy_date'];
+            $CONPSYSESS=$aiD['con_psy_sessions'];
+            $CONPSYDIAG=$aiD['con_psy_diagnosis'];
+            $CONREGPSY=$aiD['con_regpsy'];
+            $CONREGPSYDATE=$aiD['con_regpsy_date'];
+            $CONREGPSYSESS=$aiD['con_regpsy_sessions'];
+            $CONREGPSYDIAG=$aiD['con_regpsy_diagnosis'];
+            $CONREGGUID=$aiD['con_regguid'];
+            $CONREGGUIDDATE=$aiD['con_regguid_date'];
+            $CONREGGUIDSESS=$aiD['con_regguid_sessions'];
+            $CONREGGUIDDIAG=$aiD['con_regguid_diagnosis'];
+        }
+        
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="width:100%; text-align: center"><h3>GUIDANCE AND COUNSELING SERVICES DIVISION</h3></td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td style="font-size: 20px; font-weight: bold; text-align: center; width: 100%;">INDIVIDUAL INFORMATION SHEET</td>
+                </tr>
+            </table>
+
+            <table style="border: 1px thin black">
+                <tr>
+                    <td style="width: 100%; text-align: right;">Date: <strong> '. $data2day .' </strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Student Fullname: <strong> '. $STUDFULLNAME .' </strong></td>
+                    <td style="width: 25%;">Student No.: <strong> '. $STUDNO .' </strong></td>
+                    <td style="width: 25%;">Year Level: <strong> '. $SRLEVEL .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Course: <strong> '. $COURSE .'</strong></td>
+                    <td style="width: 25%;">Gender: <strong> '. $STUDGENDER .'</strong></td>
+                    <td style="width: 25%;">Contact No.: <strong> '. $STUDCONTACT .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Address: <strong> '. $STUDADD .' </strong></td>
+                    <td style="width: 25%;">Age: <strong> '. $STUDAGE .'</strong></td>
+                    <td style="width: 25%;">Citizenship: <strong> '. $STUDCITIZEN .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Birthplace: <strong> '. $STUDBP .'</strong></td> 
+                    <td style="width: 25%;">Religion: <strong> '. $STUDREL .' </strong></td>
+                    <td style="width: 25%;">Birthday: <strong> '. $STUDBDAY .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Email: <strong> '. $STUDEMAIL .'</strong></td>
+                </tr>
+            </table>
+
+            <table>
+                <tr><td></td></tr>
+            </table>
+
+            <table style="border: 1px thin black; width: 100%">
+                <tr>
+                    <td style="font-size: 12; font-weight: bold; text-align: left;">EDUCATIONAL BACKGROUND</td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+                    <td style="width: 50%;">Elementary: <strong> '. $ESCHOOL .' </strong></td>
+                    <td style="width: 50%;">Year Graduated: <strong> '. $EYRGRAD .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Junior High School: <strong> '. $JHSCHOOL .' </strong></td>
+                    <td style="width: 50%;">Year Graduated: <strong> '. $JHSYRGRAD .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Senior High School: <strong> '. $SHSCHOOL .' </strong></td>
+                    <td style="width: 50%;">Year Graduated: <strong> '. $SHYRGRAD .'</strong></td>
+                </tr>
+                
+            </table>
+
+            <table>
+                <tr><td></td></tr>
+            </table>
+
+            <table style="border: 1px thin black;">
+                <tr>
+                    <td style="font-size: 12; font-weight: bold; text-align: left;">OTHER INFORMATION</td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+                    <td style="width: 40%;">Characteristics: <strong> '. $CHAR .' </strong></td>
+                    <td style="width: 30%;">Talents: <strong> '. $TALENTS .'</strong></td> 
+                    <td style="width: 30%;">Interests: <strong> '. $INT .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;">Hobbies: <strong> '. $HOBBIES .'</strong></td>
+                    <td style="width: 30%;">Goals: <strong> '. $GOALS .' </strong></td>
+                    <td style="width: 30%;">Fears: <strong> '. $FEARS .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;">Birthplace: <strong> '. $STUDBP .'</strong></td> 
+                    <td style="width: 30%;">Citizenship: <strong> '. $STUDCITIZEN .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;">Sibling Name: <strong> '. $SIBNAME .' </strong></td>
+                    <td style="width: 30%;">Sibling Work: <strong> '. $SIBWORK .'</strong></td> 
+                    <td style="width: 30%;">Sibling Age: <strong> '. $SIBAGE .'</strong></td>
+                </tr>
+            </table>
+
+            <table>
+                <tr><td></td></tr>
+            </table>
+
+            <table style="border: 1px thin black;">
+                <tr>
+                    <td style="font-size: 12; font-weight: bold; text-align: left;">FAMILY BACKGROUND</td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+                    <td style="width: 40%;">Name of Father: <strong> '. $NFATHER .' </strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;">Contact No.: <strong> '. $FMOB .' </strong></td>
+                    <td style="width: 30%;">Work: <strong> '. $FWORK .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;">Office Number: <strong> '. $FOFFICE .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;">Name of Mother: <strong> '. $NMOTHER .' </strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;">Work: <strong> '. $MWORK .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;">Office Number: <strong> '. $MOFFICE .'</strong></td> 
+                </tr>
+                
+            </table>
+
+            <table>
+                <tr><td></td></tr>
+                <tr><td></td></tr>
+            </table>
+
+            <table style="border: 1px thin black">
+                <tr>
+                    <td style="font-size: 12; font-weight: bold; text-align: left;">HEALTH INFORMATION</td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+                    <td style="width: 40%;">Medications: <strong> '. $MEDS .'</strong></td>
+                    <td style="width: 30%;">Vitamins: <strong> '. $VITS .'</strong></td>
+                    <td style="width: 30%;">Vaccinations: <strong> '. $VACC .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Disabilities: <strong> '. $DISABILITIES .' </strong></td>
+                    <td style="width: 50%;">Chronic Illnesses: <strong> '. $CHRONIC .'</strong></td> 
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Recent Accident: <strong> '. $RECACC .' </strong></td>
+                    <td style="width: 50%;">Experience from Accident: <strong> '. $EXPACC .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Recent Surgery: <strong> '. $RECSUR .'</strong></td>
+                    <td style="width: 50%;">Experience from Surgery: <strong> '. $EXPSUR .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Consultation with Psychiatrist: <strong> '. $CONPSY .'</strong></td>
+                    <td style="width: 50%;">Date of Consultation: <strong> '. $CONPSYDATE .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">How many sessions?: <strong> '. $CONPSYSESS .'</strong></td>
+                    <td style="width: 50%;">Diagnosis: <strong> '. $CONPSYDIAG .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Consultation with Registred Pyschologist: <strong> '. $CONREGPSY .'</strong></td>
+                    <td style="width: 50%;">Date of Consultation: <strong> '. $CONREGPSYDATE .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">How many sessions?: <strong> '. $CONREGPSYSESS .'</strong></td>
+                    <td style="width: 50%;">Diagnosis: <strong> '. $CONREGPSYDIAG .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">Consultation with Registred Guidance Counselor: <strong> '. $CONREGGUID .'</strong></td>
+                    <td style="width: 50%;">Date of Consultation: <strong> '. $CONREGGUIDDATE .'</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">How many sessions?: <strong> '. $CONREGGUIDSESS .'</strong></td>
+                    <td style="width: 50%;">Diagnosis: <strong> '. $CONREGGUIDDIAG .'</strong></td>
+                </tr>
+            </table>
+            
+
+        ';
+
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($studresult->studfullname).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
+    }
+    public function classlist() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'course' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Program is required.',
+                    ],
+                ],
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School Year is required.',
+                    ],
+                ],
+                'sem' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $PROGRAM = $this->request->getVar('course');
+                $SY = $this->request->getVar('sy');
+                $SEM = $this->request->getVar('sem');
+
+                session()->set('selected_program', $PROGRAM);
+                session()->set('selected_sy', $SY);
+                session()->set('selected_sem', $SEM);
+
+                return redirect()->to(base_url()."col-classlist-result");
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('college/classlistview', $data);
+    }
+    public function classlistResult() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->select('assessment_col.*, sections.*')
+        ->join('sections', 'sections.secid = assessment_col.section')
+        ->where('assessment_col.sy', $SY)
+        ->where('assessment_col.sem', $SEM)
+        ->where('assessment_col.course', $PROGRAM)
+        ->groupBy('assessment_col.section')
+        ->findAll();
+
+        return view('college/classlistresultview', $data);
+    }
+    public function classlistSection($curriculumid=null, $level=null, $section=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+        session()->set('selected_section', $section);
+
+        $data['curriculumdata'] = $this->curriculumDataModel
+        ->select('currdata.*, subjects.*, assessment_col.*, sections.*')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->join('assessment_col', 'assessment_col.curriculum = currdata.curriculumid')
+        ->join('sections', 'sections.secid = assessment_col.section')
+        ->where('currdata.curriculumid', $curriculumid)
+        ->where('currdata.level', $level)
+        ->where('currdata.sem', $SEM)
+        ->groupBy('currdata.subid')
+        ->findAll();
+
+        return view('college/classlistsectionview', $data);
+    }
+    public function classlistStudents($curriculumid=null, $level=null) { 
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+        $SECTION = session()->get('selected_section');
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->select('assessment_col.*, students_col.*')
+        ->join('students_col', 'students_col.studid = assessment_col.studid')
+        ->where('assessment_col.sy', $SY)
+        ->where('assessment_col.level', $level)
+        ->where('assessment_col.sem', $SEM)
+        ->where('assessment_col.course', $PROGRAM)
+        ->where('assessment_col.curriculum', $curriculumid)
+        ->where('assessment_col.section', $SECTION)
+        ->groupBy('students_col.studfullname')
+        ->orderby('students_col.studfullname','ASC')
+        
+        ->findAll();
+
+        return view('college/classliststudentsview', $data);
+    }
+    public function classlistPrint($curriculumid=null, $level=null, $cdidd=null) {
+
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Classlist');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+        $SECTION = session()->get('selected_section');
+
+        // $shsassessmentdata = $this->colAssessmentModel
+        // ->select('assessment_col.*, students_col.*')
+        // ->join('students_col', 'students_col.studid = assessment_col.studid')
+        // ->where('assessment_col.sy', $SY)
+        // ->where('assessment_col.level', $level)
+        // ->where('assessment_col.sem', $SEM)
+        // ->where('assessment_col.course', $PROGRAM)
+        // ->where('assessment_col.curriculum', $curriculumid)
+        // ->where('assessment_col.section', $SECTION)
+        // ->orderby('students_col.studfullname','ASC')
+        // ->findAll();
+
+        $shsassessmentdata = $this->studentSubjectsModel
+        ->select('student_subjects.cdid, students_col.studentno, students_col.studfullname')
+        ->join('students_col', 'students_col.studid = student_subjects.studid')
+        ->join('assessment_col', 'assessment_col.studid = students_col.studid')
+        ->join('studentsaccounts', 'studentsaccounts.studentno = students_col.studentno')
+        ->where('assessment_col.sy', $SY)
+        ->where('assessment_col.sem', $SEM)
+        ->where('assessment_col.course', $PROGRAM)
+        ->where('assessment_col.level', $level)
+        ->where('assessment_col.curriculum', $curriculumid)
+        ->where('assessment_col.section', $SECTION)
+        ->where('studentsaccounts.totalpayments !=', '0.00')
+        ->where('student_subjects.cdid', $cdidd)
+        ->orderby('students_col.studfullname','ASC')
+        ->groupBy('students_col.studfullname')
+        ->findAll();
+
+        $cddata = $this->curriculumDataModel
+        ->select('subjects.subcode, subjects.subject')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where('cdid', $cdidd)->findAll();
+        foreach($cddata as $cdD){
+            $SUBJCODE = $cdD['subcode'];
+            $SUBJDESC = $cdD['subject'];
+        }
+
+        $sectiondata = $this->sectionsModel->where('secid', $SECTION)->findAll();
+        foreach($sectiondata as $secD){
+            $SECTIONNAME = $secD['section'];
+        }
+
+        $totalStudents = count($shsassessmentdata);
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">CLASS LIST</td>
+                </tr>
+            </table><br><br>
+            <table>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">('.strtoupper($SECTIONNAME).') '.strtoupper($SUBJCODE).' - '.strtoupper($SUBJDESC).'</td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center;">#</th>
+                        <th style="width: 30%;text-align: center;">STUDENT NUMBER</th>
+                        <th style="width: 60%;text-align: center;">STUDENT FULLNAME</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        $count = 1;
+        foreach($shsassessmentdata as $sad) {
+            $STUDENTNO = $sad['studentno'];
+            $STUDFULLNAME = $sad['studfullname'];
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$count++.'</td>
+                        <td style="width: 30%;text-align: center;">'.strtoupper($sad['studentno']).'</td>
+                        <td style="width: 60%;text-align: left;">'.strtoupper($sad['studfullname']).'</td>
+                    </tr>
+
+                    ';
+        }
+
+        $html .= '
+            <br>
+            </tbody>
+            <br>
+            <table style="width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="text-align: left; font-weight: bold; font-size: 12px; border-top: 1px solid #000; padding-top: 5px;">
+                        TOTAL NUMBER OF STUDENTS: ' . $totalStudents . '
+                    </td>
+                </tr>
+            </table>';
+        
+        $html .= '
+                </tbody>
+            </table>';
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($SECTIONNAME).' - '.strtoupper($SUBJCODE).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
+    }
+    public function pasokMoSectionDito() {
+        $assessmentdata = $this->colAssessmentModel
+        ->findAll();
+        foreach($assessmentdata as $ad){
+            $STUDID = $ad['studid'];
+            $SECTION = $ad['section'];
+            
+            $data = [
+                'section' => $SECTION,
+            ];
+            $this->studentSubjectsModel->where('studid', $STUDID)->set($data)->update();
+        }
     }
 }

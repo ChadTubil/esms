@@ -30,7 +30,7 @@ use App\Models\IBEDStudentsModel;
 use App\Models\PaymentAllocationModel;
 use App\Models\StudentAccountAssessmentModel;
 use App\Models\StudentAccountsModel;
-use App\Models\FeestructureModel;
+use App\Models\FeeStructureModel;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -102,7 +102,7 @@ class CashierController extends BaseController
         $this->paymentallocationModel = new PaymentAllocationModel();
         $this->studentaccountassessmentModel = new StudentAccountAssessmentModel();
         $this->studentsaccountsModel = new StudentAccountsModel();
-        $this->feestructureModel = new FeestructureModel();
+        $this->feestructureModel = new FeeStructureModel();
         
         $this->session = session();
     }
@@ -549,7 +549,7 @@ class CashierController extends BaseController
             ->select('paymentallocation.*, paymenttransactions.*, 
             studentassessment.said, 
             studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-            feestructure.feeid, feestructure.feecode')
+            feestructure.feeid, feestructure.feecode, feestructure.istf')
             ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
             ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
             ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -563,7 +563,7 @@ class CashierController extends BaseController
             ->select('paymentallocation.*, paymenttransactions.*, 
             studentassessment.said, 
             studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-            feestructure.feeid, feestructure.feecode')
+            feestructure.feeid, feestructure.feecode, feestructure.istf')
             ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
             ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
             ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -574,6 +574,7 @@ class CashierController extends BaseController
             ->where('paymenttransactions.receivedby', $CASHIER)
             ->findAll();
         }
+        $uniqueFeecodes = [];
         foreach($data['transactionsdata'] as $td) {
             $feedata = $this->feestructureModel->where('isdel', 0)
             ->groupBy('feecode')
@@ -599,6 +600,7 @@ class CashierController extends BaseController
             $STARTTIME = $this->request->getVar('start_time');
             $ENDTIME = $this->request->getVar('end_time');
             $CASHIER = $this->request->getVar('cashier');
+            
             if($STARTTIME == ''){
                 $TIMESTART = '00:01';
             }else{
@@ -619,7 +621,7 @@ class CashierController extends BaseController
                 ->select('paymentallocation.*, paymenttransactions.*, 
                 studentassessment.said, 
                 studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-                feestructure.feeid, feestructure.feecode')
+                feestructure.feeid, feestructure.feecode, feestructure.istf')
                 ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
                 ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -633,7 +635,7 @@ class CashierController extends BaseController
                 ->select('paymentallocation.*, paymenttransactions.*, 
                 studentassessment.said, 
                 studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-                feestructure.feeid, feestructure.feecode')
+                feestructure.feeid, feestructure.feecode, feestructure.istf')
                 ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
                 ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -645,12 +647,19 @@ class CashierController extends BaseController
                 ->findAll();
             }
             
-
-            // Extract unique feecodes
-            $uniqueFeecodes = [];
+            // Separate ISTF and regular fees
+            $regularFeecodes = [];
+            $istfData = [];
+            
             foreach ($TRANSACTIONSDATA as $data) {
-                if (!empty($data['feecode']) && !in_array($data['feecode'], $uniqueFeecodes)) {
-                    $uniqueFeecodes[] = $data['feecode'];
+                if ($data['istf'] == 1) {
+                    // Collect ISTF data for FEE and TF columns
+                    $istfData[] = $data;
+                } else {
+                    // Regular fees for headers
+                    if (!empty($data['feecode']) && !in_array($data['feecode'], $regularFeecodes)) {
+                        $regularFeecodes[] = $data['feecode'];
+                    }
                 }
             }
 
@@ -660,157 +669,164 @@ class CashierController extends BaseController
             $spreadsheet->getProperties()->setCreator('MIS Department')
                 ->setTitle('Cashier Daily Transactions');
 
-            // Calculate the range for feecode columns
-            $feecodeCount = count($uniqueFeecodes);
-            $startColumn = 'G'; // Assuming first 6 columns are used (A-F)
-            $endColumn = $feecodeCount > 0 ? chr(ord('G') + $feecodeCount - 1) : 'G';
+            // Calculate the range for regular feecode columns
+            $feecodeCount = count($regularFeecodes);
             
-            // Set the merged header for "CURRENT T.FEE" on row 1
-            if ($feecodeCount > 0) {
-                $sheet->mergeCells($startColumn . '1:' . $endColumn . '1');
-                $sheet->setCellValue($startColumn . '1', 'CURRENT T.FEE');
-                // Optional: Center the merged text
-                $sheet->getStyle($startColumn . '1:' . $endColumn . '1')->getAlignment()->setHorizontal('center');
-            }
-
-            // Set row 2 headers (individual feecodes)
+            // Set row 2 headers
             $colIndex2 = 'A';
-            $sheet->setCellValue($colIndex2++ . '2', 'STUDENT NUMBER');
-            $sheet->setCellValue($colIndex2++ . '2', 'STUDENT NAME');
-            $sheet->setCellValue($colIndex2++ . '2', 'OR NUMBER');
-            $sheet->setCellValue($colIndex2++ . '2', 'COURSE');
-            $sheet->setCellValue($colIndex2++ . '2', 'CLUSTER');
-            $sheet->setCellValue($colIndex2++ . '2', 'LEVEL');
+            $sheet->setCellValue($colIndex2++ . '1', 'STUDENT NUMBER');
+            $sheet->setCellValue($colIndex2++ . '1', 'STUDENT NAME');
+            $sheet->setCellValue($colIndex2++ . '1', 'LEVEL');
+            $sheet->setCellValue($colIndex2++ . '1', 'OR NUMBER');
+            $sheet->setCellValue($colIndex2++ . '1', 'FEE'); // ISTF feecode will appear here
+            $sheet->setCellValue($colIndex2++ . '1', 'TF');  // ISTF amount will appear here
             
-            // Store column positions for fee codes to use later for totals
             $feeColumns = [];
-            foreach ($uniqueFeecodes as $feecode) {
+            foreach ($regularFeecodes as $feecode) {
                 $currentCol = $colIndex2;
-                $sheet->setCellValue($colIndex2++ . '2', $feecode);
+                $sheet->setCellValue($colIndex2++ . '1', $feecode);
                 $feeColumns[$feecode] = $currentCol;
             }
             
-            // Store positions for other columns
-            $paymentMethodCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT METHOD');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT METHOD');
+            $sheet->setCellValue($colIndex2++ . '1', 'PARTICULARS');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT DATE');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT TIME');
+            $sheet->setCellValue($colIndex2++ . '1', 'CASHIER');
             
-            $totalAmountCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'TOTAL AMOUNT PAID');
-            
-            $particularsCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PARTICULARS');
-            
-            $paymentDateCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT DATE');
-            
-            $paymentTimeCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT TIME');
-            
-            $cashierCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'CASHIER');
-
-            // Group data by student and payment transaction
-            $groupedData = [];
-            foreach ($TRANSACTIONSDATA as $TRANSD) {
-                $key = $TRANSD['studentno'] . '_' . $TRANSD['paymentid'];
-                if (!isset($groupedData[$key])) {
-                    $groupedData[$key] = [
-                        'studentno' => $TRANSD['studentno'],
-                        'studfullname' => $TRANSD['studfullname'],
-                        'course' => $TRANSD['course'] ?? '',
-                        'cluster' => $TRANSD['cluster'] ?? '',
-                        'level' => $TRANSD['level'] ?? '',
-                        'ornumber' => $TRANSD['ornumber'] ?? '',
-                        'paymentmethod' => $TRANSD['paymentmethod'] ?? '',
-                        'particulars' => $TRANSD['particulars'] ?? '',
-                        'paymentdate' => $TRANSD['paymentdate'] ?? '',
-                        'paymenttime' => $TRANSD['paymenttime'] ?? '',
-                        'receivedby' => $TRANSD['receivedby'] ?? '',
-                        'total_amount' => 0,
-                        'feecodes' => []
-                    ];
-                }
-                
-                // Store feecode amounts
-                $groupedData[$key]['feecodes'][$TRANSD['feecode']] = $TRANSD['amountpaid'] ?? 0;
-                $groupedData[$key]['total_amount'] += ($TRANSD['amountpaid'] ?? 0);
-            }
-
             // Initialize totals array
-            $feeTotals = array_fill_keys($uniqueFeecodes, 0);
-            $grandTotal = 0;
-
-            // Write data rows
-            $row = 3;
-            foreach ($groupedData as $data) {
+            $totals = [
+                'TF' => 0,  // For TF column (ISTF amounts)
+                'FEE' => 0  // For FEE column (ISTF amounts - actually just count, not sum)
+            ];
+            
+            // Initialize totals for regular fee columns
+            foreach ($regularFeecodes as $feecode) {
+                $totals[$feecode] = 0;
+            }
+            
+            // Write data rows - start from row 3
+            $row = 2;
+            foreach ($TRANSACTIONSDATA as $TRANSD) {
                 $colIndex = 'A';
-                $sheet->setCellValue($colIndex++ . $row, $data['studentno']);
-                $sheet->setCellValue($colIndex++ . $row, $data['studfullname']);
-                $sheet->setCellValue($colIndex++ . $row, $data['ornumber']);
-                $sheet->setCellValue($colIndex++ . $row, $data['course']);
-                $sheet->setCellValue($colIndex++ . $row, $data['cluster']);
-                $sheet->setCellValue($colIndex++ . $row, $data['level']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['studentno']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['studfullname']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['level']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['ornumber'] ?? '');
                 
-                // Fill feecode amounts and accumulate totals
-                foreach ($uniqueFeecodes as $feecode) {
-                    $amount = isset($data['feecodes'][$feecode]) ? $data['feecodes'][$feecode] : 0;
-                    $sheet->setCellValue($colIndex++ . $row, $amount);
-                    $feeTotals[$feecode] += $amount;
+                // Handle FEE column (ISTF feecode)
+                if ($TRANSD['istf'] == 1) {
+                    $sheet->setCellValue($colIndex++ . $row, $TRANSD['feecode'] ?? '');
+                    // Handle TF column (ISTF amount)
+                    $tfAmount = $TRANSD['amountpaid'] ?? 0;
+                    $sheet->setCellValue($colIndex++ . $row,$tfAmount);
+                    // Add to TF total
+                    $totals['TF'] += $tfAmount;
+                } else {
+                    $sheet->setCellValue($colIndex++ . $row, ''); // Empty FEE column
+                    $sheet->setCellValue($colIndex++ . $row, ''); // Empty TF column
                 }
                 
-                // Fill remaining data
-                $sheet->setCellValue($colIndex++ . $row, $data['paymentmethod']);
-                $sheet->setCellValue($colIndex++ . $row, $data['total_amount']);
-                $grandTotal += $data['total_amount'];
-                $sheet->setCellValue($colIndex++ . $row, $data['particulars']);
-                $sheet->setCellValue($colIndex++ . $row, $data['paymentdate']);
-                $sheet->setCellValue($colIndex++ . $row, $data['paymenttime']);
-                $sheet->setCellValue($colIndex++ . $row, $data['receivedby']);
+                // Place payment amount under the corresponding regular feecode column
+                foreach ($regularFeecodes as $feecode) {
+                    if ($TRANSD['istf'] == 0 && $TRANSD['feecode'] == $feecode) {
+                        $feeAmount = $TRANSD['amountpaid'] ?? 0;
+                        $sheet->setCellValue($feeColumns[$feecode] . $row, $feeAmount);
+                        // Add to regular fee column total
+                        $totals[$feecode] += $feeAmount;
+                    } else {
+                        $sheet->setCellValue($feeColumns[$feecode] . $row, '');
+                    }
+                    $colIndex++;
+                }
                 
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymentmethod'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['particulars'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymentdate'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymenttime'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['receivedby'] ?? '');
                 $row++;
             }
             
-            // Add two blank rows before total
-            $row += 2; // This creates two empty rows
+            // Add total row
+            $totalRow = $row + 1;
             
-            // Add Total Row
-            $totalRow = $row;
-            // Merge cells for the "TOTAL" label
-            $sheet->mergeCells('A' . $totalRow . ':F' . $totalRow);
-            $sheet->setCellValue('A' . $totalRow, 'TOTAL');
-            $sheet->getStyle('A' . $totalRow)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $totalRow)->getAlignment()->setHorizontal('right');
-            // Add fee totals
-            $colIndex = 'G';
-            foreach ($uniqueFeecodes as $feecode) {
-                $sheet->setCellValue($colIndex++ . $totalRow, $feeTotals[$feecode]);
+            // Calculate grand total (sum of all amounts)
+            $grandTotal = array_sum(array_column($TRANSACTIONSDATA, 'amountpaid'));
+            
+            // Reset column index for total row
+            $colIndexTotal = 'A';
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, 'TOTAL:');
+            $sheet->getStyle($colIndexTotal . $totalRow)->getFont()->setBold(true);
+            
+            // Add TF total (this is in column E, after FEE column)
+            // Since FEE column is D and TF column is E
+            $sheet->setCellValue('F' . $totalRow, $totals['TF']);
+            $sheet->getStyle('F' . $totalRow)->getFont()->setBold(true);
+            
+            // Add totals for regular fee columns
+            $feeColumnsTotal = $feeColumns; // Get the starting columns for each fee
+            foreach ($regularFeecodes as $feecode) {
+                $colLetter = $feeColumns[$feecode];
+                if ($totals[$feecode] > 0) {
+                    $sheet->setCellValue($colLetter . $totalRow, $totals[$feecode]);
+                    $sheet->getStyle($colLetter . $totalRow)->getFont()->setBold(true);
+                } else {
+                    $sheet->setCellValue($colLetter . $totalRow, '-');
+                }
             }
-            $colIndex = $totalAmountCol;
-            $sheet->setCellValue($colIndex . $totalRow, $grandTotal);
             
-            // Style the total row
-            $lastColumn = $cashierCol;
-            $sheet->getStyle('A' . $totalRow . ':' . $lastColumn . $totalRow)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $totalRow . ':' . $lastColumn . $totalRow)->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FFE0E0E0'); // Light gray background
+            // Add grand total in a separate row below
+            $grandTotalRow = $totalRow + 1;
+            $sheet->setCellValue('E' . $grandTotalRow, 'GRAND TOTAL:');
+            $sheet->getStyle('E' . $grandTotalRow)->getFont()->setBold(true);
+            $sheet->setCellValue('F' . $grandTotalRow, $grandTotal);
+            $sheet->getStyle('F' . $grandTotalRow)->getFont()->setBold(true);
             
-            // Optional: Add a summary row with counts
-            $summaryRow = $totalRow + 1;
-            $sheet->mergeCells('A' . $summaryRow . ':F' . $summaryRow);
-            $sheet->setCellValue('A' . $summaryRow, 'Number of Transactions: ' . count($groupedData));
+            // Optionally, add a summary row that shows totals by payment method
+            $summaryRow = $grandTotalRow + 1;
+            $sheet->setCellValue('A' . $summaryRow, 'Number of Transactions: ' . count($TRANSACTIONSDATA));
             $sheet->getStyle('A' . $summaryRow)->getFont()->setItalic(true);
-
-            // Auto-size columns for better readability
-            $highestColumn = $sheet->getHighestColumn();
-            foreach (range('A', $highestColumn) as $columnID) {
+            
+            // Calculate payment method totals
+            $paymentMethodTotals = [];
+            foreach ($TRANSACTIONSDATA as $TRANSD) {
+                $method = $TRANSD['paymentmethod'] ?? 'Unknown';
+                if (!isset($paymentMethodTotals[$method])) {
+                    $paymentMethodTotals[$method] = 0;
+                }
+                $paymentMethodTotals[$method] += ($TRANSD['amountpaid'] ?? 0);
+            }
+            
+            // Add payment method summary
+            $summaryRow++;
+            $sheet->setCellValue('A' . $summaryRow, 'Payment Method Summary:');
+            $sheet->getStyle('A' . $summaryRow)->getFont()->setBold(true);
+            
+            foreach ($paymentMethodTotals as $method => $total) {
+                $summaryRow++;
+                $sheet->setCellValue('A' . $summaryRow, $method . ':');
+                $sheet->setCellValue('B' . $summaryRow, $total);
+            }
+            
+            // Auto-size columns
+            $lastColumn = $colIndex2;
+            $lastColumnLetter = chr(ord('A') + count(range('A', $lastColumn)) - 1);
+            
+            $columns = range('A', $lastColumnLetter);
+            foreach ($columns as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-
-            $password = "misis10mb"; // Change this to your desired password
+            
+            // Protect sheet
+            $password = "misis10mb";
             $sheet->getProtection()->setPassword($password);
-            $sheet->getProtection()->setSheet(true); // This enables sheet protection
-
+            $sheet->getProtection()->setSheet(true);
+            
             $writer = new Xlsx($spreadsheet);
             $filename = 'cashier_daily_transactions_' . date('Y-m-d') . '.xlsx';
             
@@ -828,6 +844,7 @@ class CashierController extends BaseController
             $STARTTIME = $this->request->getVar('start_time');
             $ENDTIME = $this->request->getVar('end_time');
             $CASHIER = $this->request->getVar('cashier');
+            
             if($STARTTIME == ''){
                 $TIMESTART = '00:01';
             }else{
@@ -848,7 +865,7 @@ class CashierController extends BaseController
                 ->select('paymentallocation.*, paymenttransactions.*, 
                 studentassessment.said, 
                 studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-                feestructure.feeid, feestructure.feecode')
+                feestructure.feeid, feestructure.feecode, feestructure.istf')
                 ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
                 ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -862,7 +879,7 @@ class CashierController extends BaseController
                 ->select('paymentallocation.*, paymenttransactions.*, 
                 studentassessment.said, 
                 studentsaccounts.said, studentsaccounts.course, studentsaccounts.cluster, studentsaccounts.level,
-                feestructure.feeid, feestructure.feecode')
+                feestructure.feeid, feestructure.feecode, feestructure.istf')
                 ->join('paymenttransactions',   'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
                 ->join('studentassessment',   'studentassessment.sadid = paymentallocation.sadid', 'left')
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
@@ -874,12 +891,19 @@ class CashierController extends BaseController
                 ->findAll();
             }
             
-
-            // Extract unique feecodes
-            $uniqueFeecodes = [];
+            // Separate ISTF and regular fees
+            $regularFeecodes = [];
+            $istfData = [];
+            
             foreach ($TRANSACTIONSDATA as $data) {
-                if (!empty($data['feecode']) && !in_array($data['feecode'], $uniqueFeecodes)) {
-                    $uniqueFeecodes[] = $data['feecode'];
+                if ($data['istf'] == 1) {
+                    // Collect ISTF data for FEE and TF columns
+                    $istfData[] = $data;
+                } else {
+                    // Regular fees for headers
+                    if (!empty($data['feecode']) && !in_array($data['feecode'], $regularFeecodes)) {
+                        $regularFeecodes[] = $data['feecode'];
+                    }
                 }
             }
 
@@ -889,153 +913,164 @@ class CashierController extends BaseController
             $spreadsheet->getProperties()->setCreator('MIS Department')
                 ->setTitle('Cashier Daily Transactions');
 
-            // Calculate the range for feecode columns
-            $feecodeCount = count($uniqueFeecodes);
-            $startColumn = 'G'; // Assuming first 6 columns are used (A-F)
-            $endColumn = $feecodeCount > 0 ? chr(ord('G') + $feecodeCount - 1) : 'G';
+            // Calculate the range for regular feecode columns
+            $feecodeCount = count($regularFeecodes);
             
-            // Set the merged header for "CURRENT T.FEE" on row 1
-            if ($feecodeCount > 0) {
-                $sheet->mergeCells($startColumn . '1:' . $endColumn . '1');
-                $sheet->setCellValue($startColumn . '1', 'CURRENT T.FEE');
-                // Optional: Center the merged text
-                $sheet->getStyle($startColumn . '1:' . $endColumn . '1')->getAlignment()->setHorizontal('center');
-            }
-
-            // Set row 2 headers (individual feecodes)
+            // Set row 2 headers
             $colIndex2 = 'A';
-            $sheet->setCellValue($colIndex2++ . '2', 'STUDENT NUMBER');
-            $sheet->setCellValue($colIndex2++ . '2', 'STUDENT NAME');
-            $sheet->setCellValue($colIndex2++ . '2', 'OR NUMBER');
-            $sheet->setCellValue($colIndex2++ . '2', 'COURSE');
-            $sheet->setCellValue($colIndex2++ . '2', 'CLUSTER');
-            $sheet->setCellValue($colIndex2++ . '2', 'LEVEL');
+            $sheet->setCellValue($colIndex2++ . '1', 'STUDENT NUMBER');
+            $sheet->setCellValue($colIndex2++ . '1', 'STUDENT NAME');
+            $sheet->setCellValue($colIndex2++ . '1', 'LEVEL');
+            $sheet->setCellValue($colIndex2++ . '1', 'OR NUMBER');
+            $sheet->setCellValue($colIndex2++ . '1', 'FEE'); // ISTF feecode will appear here
+            $sheet->setCellValue($colIndex2++ . '1', 'TF');  // ISTF amount will appear here
             
-            // Store column positions for fee codes to use later for totals
             $feeColumns = [];
-            foreach ($uniqueFeecodes as $feecode) {
+            foreach ($regularFeecodes as $feecode) {
                 $currentCol = $colIndex2;
                 $sheet->setCellValue($colIndex2++ . '2', $feecode);
                 $feeColumns[$feecode] = $currentCol;
             }
             
-            // Store positions for other columns
-            $paymentMethodCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT METHOD');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT METHOD');
+            $sheet->setCellValue($colIndex2++ . '1', 'PARTICULARS');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT DATE');
+            $sheet->setCellValue($colIndex2++ . '1', 'PAYMENT TIME');
+            $sheet->setCellValue($colIndex2++ . '1', 'CASHIER');
             
-            $totalAmountCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'TOTAL AMOUNT PAID');
-            
-            $particularsCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PARTICULARS');
-            
-            $paymentDateCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT DATE');
-            
-            $paymentTimeCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'PAYMENT TIME');
-            
-            $cashierCol = $colIndex2;
-            $sheet->setCellValue($colIndex2++ . '2', 'CASHIER');
-
-            // Group data by student and payment transaction
-            $groupedData = [];
-            foreach ($TRANSACTIONSDATA as $TRANSD) {
-                $key = $TRANSD['studentno'] . '_' . $TRANSD['paymentid'];
-                if (!isset($groupedData[$key])) {
-                    $groupedData[$key] = [
-                        'studentno' => $TRANSD['studentno'],
-                        'studfullname' => $TRANSD['studfullname'],
-                        'course' => $TRANSD['course'] ?? '',
-                        'cluster' => $TRANSD['cluster'] ?? '',
-                        'level' => $TRANSD['level'] ?? '',
-                        'ornumber' => $TRANSD['ornumber'] ?? '',
-                        'paymentmethod' => $TRANSD['paymentmethod'] ?? '',
-                        'particulars' => $TRANSD['particulars'] ?? '',
-                        'paymentdate' => $TRANSD['paymentdate'] ?? '',
-                        'paymenttime' => $TRANSD['paymenttime'] ?? '',
-                        'receivedby' => $TRANSD['receivedby'] ?? '',
-                        'total_amount' => 0,
-                        'feecodes' => []
-                    ];
-                }
-                
-                // Store feecode amounts
-                $groupedData[$key]['feecodes'][$TRANSD['feecode']] = $TRANSD['amountpaid'] ?? 0;
-                $groupedData[$key]['total_amount'] += ($TRANSD['amountpaid'] ?? 0);
-            }
-
             // Initialize totals array
-            $feeTotals = array_fill_keys($uniqueFeecodes, 0);
-            $grandTotal = 0;
-
-            // Write data rows
+            $totals = [
+                'TF' => 0,  // For TF column (ISTF amounts)
+                'FEE' => 0  // For FEE column (ISTF amounts - actually just count, not sum)
+            ];
+            
+            // Initialize totals for regular fee columns
+            foreach ($regularFeecodes as $feecode) {
+                $totals[$feecode] = 0;
+            }
+            
+            // Write data rows - start from row 3
             $row = 3;
-            foreach ($groupedData as $data) {
+            foreach ($TRANSACTIONSDATA as $TRANSD) {
                 $colIndex = 'A';
-                $sheet->setCellValue($colIndex++ . $row, $data['studentno']);
-                $sheet->setCellValue($colIndex++ . $row, $data['studfullname']);
-                $sheet->setCellValue($colIndex++ . $row, $data['ornumber']);
-                $sheet->setCellValue($colIndex++ . $row, $data['course']);
-                $sheet->setCellValue($colIndex++ . $row, $data['cluster']);
-                $sheet->setCellValue($colIndex++ . $row, $data['level']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['studentno']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['studfullname']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['level']);
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['ornumber'] ?? '');
                 
-                // Fill feecode amounts and accumulate totals
-                foreach ($uniqueFeecodes as $feecode) {
-                    $amount = isset($data['feecodes'][$feecode]) ? $data['feecodes'][$feecode] : 0;
-                    $sheet->setCellValue($colIndex++ . $row, $amount);
-                    $feeTotals[$feecode] += $amount;
+                // Handle FEE column (ISTF feecode)
+                if ($TRANSD['istf'] == 1) {
+                    $sheet->setCellValue($colIndex++ . $row, $TRANSD['feecode'] ?? '');
+                    // Handle TF column (ISTF amount)
+                    $tfAmount = $TRANSD['amountpaid'] ?? 0;
+                    $sheet->setCellValue($colIndex++ . $row, $tfAmount);
+                    // Add to TF total
+                    $totals['TF'] += $tfAmount;
+                } else {
+                    $sheet->setCellValue($colIndex++ . $row, ''); // Empty FEE column
+                    $sheet->setCellValue($colIndex++ . $row, ''); // Empty TF column
                 }
                 
-                // Fill remaining data
-                $sheet->setCellValue($colIndex++ . $row, $data['paymentmethod']);
-                $sheet->setCellValue($colIndex++ . $row, $data['total_amount']);
-                $grandTotal += $data['total_amount'];
-                $sheet->setCellValue($colIndex++ . $row, $data['particulars']);
-                $sheet->setCellValue($colIndex++ . $row, $data['paymentdate']);
-                $sheet->setCellValue($colIndex++ . $row, $data['paymenttime']);
-                $sheet->setCellValue($colIndex++ . $row, $data['receivedby']);
+                // Place payment amount under the corresponding regular feecode column
+                foreach ($regularFeecodes as $feecode) {
+                    if ($TRANSD['istf'] == 0 && $TRANSD['feecode'] == $feecode) {
+                        $feeAmount = $TRANSD['amountpaid'] ?? 0;
+                        $sheet->setCellValue($feeColumns[$feecode] . $row, $feeAmount);
+                        // Add to regular fee column total
+                        $totals[$feecode] += $feeAmount;
+                    } else {
+                        $sheet->setCellValue($feeColumns[$feecode] . $row, '');
+                    }
+                    $colIndex++;
+                }
                 
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymentmethod'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['particulars'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymentdate'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['paymenttime'] ?? '');
+                $sheet->setCellValue($colIndex++ . $row, $TRANSD['receivedby'] ?? '');
                 $row++;
             }
             
-            // Add two blank rows before total
-            $row += 2; // This creates two empty rows
+            // Add total row
+            $totalRow = $row + 1;
             
-            // Add Total Row
-            $totalRow = $row;
-            // Merge cells for the "TOTAL" label
-            $sheet->mergeCells('A' . $totalRow . ':F' . $totalRow);
-            $sheet->setCellValue('A' . $totalRow, 'TOTAL');
-            $sheet->getStyle('A' . $totalRow)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $totalRow)->getAlignment()->setHorizontal('right');
-            // Add fee totals
-            $colIndex = 'G';
-            foreach ($uniqueFeecodes as $feecode) {
-                $sheet->setCellValue($colIndex++ . $totalRow, $feeTotals[$feecode]);
+            // Calculate grand total (sum of all amounts)
+            $grandTotal = array_sum(array_column($TRANSACTIONSDATA, 'amountpaid'));
+            
+            // Reset column index for total row
+            $colIndexTotal = 'A';
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, '');
+            $sheet->setCellValue($colIndexTotal++ . $totalRow, 'TOTAL:');
+            $sheet->getStyle($colIndexTotal . $totalRow)->getFont()->setBold(true);
+            
+            // Add TF total (this is in column E, after FEE column)
+            // Since FEE column is D and TF column is E
+            $sheet->setCellValue('F' . $totalRow, $totals['TF']);
+            $sheet->getStyle('F' . $totalRow)->getFont()->setBold(true);
+            
+            // Add totals for regular fee columns
+            $feeColumnsTotal = $feeColumns; // Get the starting columns for each fee
+            foreach ($regularFeecodes as $feecode) {
+                $colLetter = $feeColumns[$feecode];
+                if ($totals[$feecode] > 0) {
+                    $sheet->setCellValue($colLetter . $totalRow, $totals[$feecode]);
+                    $sheet->getStyle($colLetter . $totalRow)->getFont()->setBold(true);
+                } else {
+                    $sheet->setCellValue($colLetter . $totalRow, '-');
+                }
             }
-            $colIndex = $totalAmountCol;
-            $sheet->setCellValue($colIndex . $totalRow, $grandTotal);
             
-            // Style the total row
-            $lastColumn = $cashierCol;
-            $sheet->getStyle('A' . $totalRow . ':' . $lastColumn . $totalRow)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $totalRow . ':' . $lastColumn . $totalRow)->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FFE0E0E0'); // Light gray background
+            // Add grand total in a separate row below
+            $grandTotalRow = $totalRow + 1;
+            $sheet->setCellValue('E' . $grandTotalRow, 'GRAND TOTAL:');
+            $sheet->getStyle('E' . $grandTotalRow)->getFont()->setBold(true);
+            $sheet->setCellValue('F' . $grandTotalRow, $grandTotal);
+            $sheet->getStyle('F' . $grandTotalRow)->getFont()->setBold(true);
             
-            // Optional: Add a summary row with counts
-            $summaryRow = $totalRow + 1;
-            $sheet->mergeCells('A' . $summaryRow . ':F' . $summaryRow);
-            $sheet->setCellValue('A' . $summaryRow, 'Number of Transactions: ' . count($groupedData));
+            // Optionally, add a summary row that shows totals by payment method
+            $summaryRow = $grandTotalRow + 1;
+            $sheet->setCellValue('A' . $summaryRow, 'Number of Transactions: ' . count($TRANSACTIONSDATA));
             $sheet->getStyle('A' . $summaryRow)->getFont()->setItalic(true);
-
-            // Auto-size columns for better readability
-            $highestColumn = $sheet->getHighestColumn();
-            foreach (range('A', $highestColumn) as $columnID) {
+            
+            // Calculate payment method totals
+            $paymentMethodTotals = [];
+            foreach ($TRANSACTIONSDATA as $TRANSD) {
+                $method = $TRANSD['paymentmethod'] ?? 'Unknown';
+                if (!isset($paymentMethodTotals[$method])) {
+                    $paymentMethodTotals[$method] = 0;
+                }
+                $paymentMethodTotals[$method] += ($TRANSD['amountpaid'] ?? 0);
+            }
+            
+            // Add payment method summary
+            $summaryRow++;
+            $sheet->setCellValue('A' . $summaryRow, 'Payment Method Summary:');
+            $sheet->getStyle('A' . $summaryRow)->getFont()->setBold(true);
+            
+            foreach ($paymentMethodTotals as $method => $total) {
+                $summaryRow++;
+                $sheet->setCellValue('A' . $summaryRow, $method . ':');
+                $sheet->setCellValue('B' . $summaryRow, $total);
+            }
+            
+            // Auto-size columns
+            $lastColumn = $colIndex2;
+            $lastColumnLetter = chr(ord('A') + count(range('A', $lastColumn)) - 1);
+            
+            $columns = range('A', $lastColumnLetter);
+            foreach ($columns as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-
+            
+            // // Protect sheet
+            // $password = "misis10mb";
+            // $sheet->getProtection()->setPassword($password);
+            // $sheet->getProtection()->setSheet(true);
+            
             $writer = new Xlsx($spreadsheet);
             $filename = 'cashier_daily_transactions_' . date('Y-m-d') . '.xlsx';
             
@@ -1044,7 +1079,7 @@ class CashierController extends BaseController
                 ->setHeader('Content-Disposition', "attachment; filename=\"$filename\"")
                 ->setHeader('Cache-Control', 'max-age=0')
                 ->setBody($this->generateOutput($writer));
-        }
+        } 
     }
     private function generateOutput($writer) {
         ob_start();

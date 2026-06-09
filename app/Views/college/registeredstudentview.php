@@ -48,7 +48,7 @@
                                     <?php foreach($registeredstudents as $rsd):?>
                                         <?php foreach($paymenttransactionsData as $ptd):?>
                                             <?php if($ptd['studfullname'] == $rsd['studfullname']):?>
-                                                <?php $CHECK= $ptd['paymentstatus']; ?>
+                                                <?php $CHECK = $ptd['paymentstatus']; ?>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                         <tr>

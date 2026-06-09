@@ -66,11 +66,11 @@
                                 }
                             ?>
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-6">
                                     <h2 style="text-transform: uppercase;"><?= $studentd['studfullname']; ?></h2>
                                     <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
                                 </div>
-                                <div class="col-md-4 text-end">
+                                <div class="col-md-6 text-end">
                                     <a href="#" class="btn btn-primary me-2"
                                         data-bs-toggle="modal" data-bs-target="#makePaymentModal<?= $studentd['studentno']; ?>">
                                         <i class="bi bi-journal-text"></i> Make Payment
@@ -178,13 +178,18 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <a href="<?= base_url(); ?>books-assessment/<?= $studentd['studentno']; ?>" class="btn btn-warning me-2">
+                                        <i class="bi bi-journal-text"></i> Buy Book
+                                    </a>
+                                    <a href="<?= base_url(); ?>uniforms-assessment/<?= $studentd['studentno']; ?>" class="btn btn-primary me-2">
+                                        <i class="bi bi-journal-text"></i> Buy Uniform
+                                    </a>
                                     <a href="<?= base_url(); ?>student-accounts/ledger/<?= $studentd['studentno']; ?>" class="btn btn-info me-2">
                                         <i class="bi bi-journal-text"></i> Student Ledger
                                     </a>
                                     <a href="<?= base_url(); ?>student-accounts/view/<?= $studentd['studentno']; ?>" class="btn btn-secondary">
                                         <i class="bi bi-arrow-left"></i> Back to Accounts
                                     </a>
-                                    
                                 </div>
                                 <?php if(session()->getTempdata('paymentmessage')) :?>
                                     <div class="alert alert-info">
@@ -343,11 +348,10 @@
                                             
                                             <td class="text-end">
                                                 <?php if($studentaccountsassessmentd['amount'] == '0.00'):?>
-                                                     <?= form_open('student-accounts/view/update-nemo/'.$studentaccountsassessmentd['sadid']); ?>
+                                                    <?= form_open('student-accounts/view/update-nemo/'.$studentaccountsassessmentd['sadid']); ?>
                                                             <input type="hidden" name="ttfnemo" value="<?= $WHERENEMO; ?>">
                                                             <button class='btn btn-sm btn-icon btn-primary' title='Modify' data-bs-toggle='tooltip' data-bs-placement='top'
-                                                            <?php if($studentaccountsassessmentd['amount'] == '0.00') { echo ''; } else { echo 'hidden';} ?>>
-                                                                
+                                                            <?php if($studentaccountsassessmentd['amount'] == '0.00' && $studentaccountsassessmentd['istf'] == '1') { echo ''; } else { echo 'hidden';} ?>>
                                                                 <span class="btn-inner">
                                                                     <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                         <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -356,13 +360,74 @@
                                                                     </svg>
                                                                 </span>
                                                             </button>
-                                                        <?= form_close(); ?>
+                                                            <a href="#" class="btn btn-sm btn-icon btn-primary" title="Other Bills" data-bs-toggle="modal"
+                                                            data-bs-target="#otherbillsModal<?= $studentaccountsassessmentd['sadid']; ?>"
+                                                            <?php if($studentaccountsassessmentd['amount'] == '0.00' && $studentaccountsassessmentd['istf'] == '0') { echo ''; } else { echo 'hidden';} ?>>
+                                                                <span class="btn-inner">
+                                                                    <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                                                        <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>                                    
+                                                                        <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                                    </svg>  
+                                                                </span>
+                                                            </a>
+                                                    <?= form_close(); ?>
+                                                    <div class="modal fade" id="otherbillsModal<?= $studentaccountsassessmentd['sadid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                            <div class="modal-content dark">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">Other Bills - <?= $studentaccountsassessmentd['studentno']; ?></h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body" style="text-align: left;">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12 col-sm-12">
+                                                                            <div class="table-responsive">
+                                                                                <table id="datatable" class="table table-striped" data-toggle="" 
+                                                                                style="width: 100%; font-size: 11px;">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>#</th>
+                                                                                            <th>STUDENT NUMBER</th>
+                                                                                            <th>NAME</th>
+                                                                                            <th>TOTAL AMOUNT</th>
+                                                                                            <th>ACTION</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <?php $counter = 1; ?>
+                                                                                        <?php foreach($studentotherbillsdata as $sod): ?>
+                                                                                            <tr>
+                                                                                                <td><?= $counter++; ?></td>
+                                                                                                <td><?= $sod['studno']; ?></td>
+                                                                                                <td><?= $sod['name']; ?></td>
+                                                                                                <td><?= $sod['totalamount']; ?></td>
+                                                                                                <td>
+                                                                                                    <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Submit Assessment for this Bill"
+                                                                                                        onclick="window.location.href='<?= base_url(); ?>student-accounts/view/submit-sob/<?= $studentaccountsassessmentd['sadid']; ?>/<?= $sod['sobid']; ?>';">
+                                                                                                        <span class="btn-inner">
+                                                                                                            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                                                                                                <path d="M15.8325 8.17463L10.109 13.9592L3.59944 9.88767C2.66675 9.30414 2.86077 7.88744 3.91572 7.57893L19.3712 3.05277C20.3373 2.76963 21.2326 3.67283 20.9456 4.642L16.3731 20.0868C16.0598 21.1432 14.6512 21.332 14.0732 20.3953L10.106 13.9602" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                                                                            </svg>                            
+                                                                                                        </span>
+                                                                                                    </a>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        <?php endforeach; ?>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                        
                                                 <?php else:?>
-                                                         ₱<?= number_format($studentaccountsassessmentd['amount'], 2); ?>
+                                                        ₱<?= number_format($studentaccountsassessmentd['amount'], 2); ?>
                                                 <?php endif;?>
-                                                
-                                               
-                                              
                                             </td>
                                             <td class="text-end">₱<?= number_format($studentaccountsassessmentd['discountamount'], 2); ?>
                                                 <a href="#" class="btn btn-sm btn-icon btn-primary" title="Modify Discount" data-bs-toggle="modal"
@@ -448,7 +513,7 @@
                                             ?></td>
                                             <td class="text-center">
                                                 <a href="#" class="btn btn-sm btn-icon btn-warning" title="Allocate Payment" data-bs-toggle="modal" 
-                                                    data-bs-target="#allocateModal<?= $studentaccountsassessmentd['studentno']; ?>" 
+                                                    data-bs-target="#allocateModal<?= $studentaccountsassessmentd['sadid']; ?>" 
                                                     <?php if($studentaccountsassessmentd['balance'] == '0.00') { echo 'hidden'; } else { echo '';} ?>>
                                                     <span class="btn-inner"> 
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
@@ -457,7 +522,7 @@
                                                         </svg>                                                       
                                                     </span>
                                                 </a>
-                                                <div class="modal fade" id="allocateModal<?= $studentaccountsassessmentd['studentno']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div class="modal fade" id="allocateModal<?= $studentaccountsassessmentd['sadid']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg modal-dialog-centered">
                                                         <div class="modal-content dark">
                                                             <div class="modal-header">

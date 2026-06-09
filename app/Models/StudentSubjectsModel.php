@@ -8,7 +8,7 @@ class StudentSubjectsModel extends Model
     protected $primaryKey = 'ssid';
     protected $allowedFields = [
         'studid', 'cdid', 'prelim', 'midterm', 'final',
-        'semestral', 'status', 'isdel',
+        'semestral', 'section','teacherid', 'teachername', 'sy', 'sem', 'status', 'isdel',
     ];
     protected $returnType = 'array';
     

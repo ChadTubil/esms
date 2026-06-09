@@ -65,6 +65,7 @@ class UsersController extends BaseController
                 $ibed = $this->request->getVar('cibed');
                 $admindept = $this->request->getVar('uadmindept');
                 $cashhead = $this->request->getVar('ucashierhead');
+                $bookhead = $this->request->getVar('ubookstore');
 
                 if($admin == ''){
                     $ADMIN = 0;
@@ -126,7 +127,11 @@ class UsersController extends BaseController
                 }else{
                     $CASHHEAD = 1;
                 }
-                
+                if($bookhead == ''){
+                    $BOOKHEAD = 0;
+                }else{
+                    $BOOKHEAD = 1;
+                }
                 $udata = [
                     'uaccountid' => $this->request->getVar('account'),
                     'username' => $this->request->getVar('username'),
@@ -143,6 +148,7 @@ class UsersController extends BaseController
                     'uibed' => $IBED,
                     'uadmindept' => $ADMINDEPT,
                     'ucashierhead' => $CASHHEAD,
+                    'ubookstore' => $BOOKHEAD,
                     'ustatus' => '0',
                     'uisdel' => '0',
                 ];
@@ -170,6 +176,7 @@ class UsersController extends BaseController
             $ibed = $this->request->getVar('cibed');
             $admindept = $this->request->getVar('cadmindept');
             $cashhead = $this->request->getVar('ucashierhead');
+            $bookhead = $this->request->getVar('ubookstore');
 
             if($admin == '') {
                 $ADMIN = 0;
@@ -231,6 +238,11 @@ class UsersController extends BaseController
             }else{
                 $CASHHEAD = 1;
             }
+            if($bookhead == ''){
+                $BOOKHEAD = 0;
+            }else{
+                $BOOKHEAD = 1;
+            }
             $udata = [
                 'uaccountid' => $this->request->getVar('account'),
                 'username' => $this->request->getVar('username'),
@@ -247,6 +259,7 @@ class UsersController extends BaseController
                 'uibed' => $IBED,
                 'uadmindept' => $ADMINDEPT,
                 'ucashierhead' => $CASHHEAD,
+                'ubookstore' => $BOOKHEAD,
                 'ustatus' => '0',
                 'uisdel' => '0',
             ];

@@ -253,6 +253,27 @@ $routes->post('ibed-rates/dues/(:segment)', 'AccountingController::ibedratesDues
 $routes->post('ibed-rates/rof/(:segment)', 'AccountingController::ibedratesRof/$1');
 $routes->post('ibed-rates/dues/update/(:segment)', 'AccountingController::ibedratesDuesUpdate/$1');
 $routes->post('ibed-rates/rof/update/(:segment)', 'AccountingController::ibedratesRofUpdate/$1');
+$routes->get('books-setup', 'AccountingController::booksSetup');
+$routes->post('books-setup', 'AccountingController::booksSetup');
+$routes->add('books-setup/delete/(:segment)', 'AccountingController::deleteBooks/$1');
+$routes->get('books-assessment/(:segment)', 'AccountingController::booksAssessment/$1');
+$routes->add('books-assessment/add/(:segment)/(:segment)', 'AccountingController::addBooksAssessment/$1/$2');
+$routes->add('books-assessment/addall/(:segment)/(:segment)', 'AccountingController::addallBooksAssessment/$1/$2');
+$routes->add('books-assessment/delete/(:segment)', 'AccountingController::deleteBooksAssessment/$1');
+$routes->add('books-assessment/process/(:segment)', 'AccountingController::processBooksAssessment/$1');
+$routes->add('book-assessment/print/(:segment)', 'AccountingController::bookassessmentPrint/$1');
+$routes->post('book-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitOR/$1/$2');
+$routes->add('book-assessment/release/(:segment)', 'AccountingController::releaseBooksAssessment/$1');
+$routes->add('student-accounts/view/submit-sob/(:segment)/(:segment)', 'AccountingController::submitSOB/$1/$2');
+$routes->get('uniform-setup', 'AccountingController::uniformSetup');
+$routes->post('uniform-setup', 'AccountingController::uniformSetup');
+$routes->get('uniforms-assessment/(:segment)', 'AccountingController::uniformsAssessment/$1');
+$routes->add('uniforms-assessment/add/(:segment)/(:segment)', 'AccountingController::addUniformsAssessment/$1/$2');
+$routes->post('uniforms-assessment/updateqty/(:segment)', 'AccountingController::updateUniformsAssessmentQty/$1');
+$routes->add('uniforms-assessment/process/(:segment)', 'AccountingController::processUniformsAssessment/$1');
+$routes->add('uniforms-assessment/print/(:segment)', 'AccountingController::uniformsassessmentPrint/$1');
+$routes->post('uniforms-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitORUniform/$1/$2');
+$routes->add('uniforms-assessment/release/(:segment)', 'AccountingController::releaseUniformsAssessment/$1');
 
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
@@ -261,6 +282,12 @@ $routes->get('grades-college-result', 'GradeController::gradesCollegeResult');
 $routes->get('grades-college-encoding/(:segment)', 'GradeController::gradesCollegeEncoding/$1');
 $routes->post('grades-college-encoding-submit', 'GradeController::gradesCollegeEncodingSubmit');
 $routes->add('grades-college-print/(:segment)', 'GradeController::gradesCollegePrint/$1');
+
+$routes->get('grades-college-resultnew', 'GradeController::gradesCollegeResultNew');
+$routes->get('grades-college-encodingnew/(:segment)', 'GradeController::gradesCollegeEncodingNew/$1');
+$routes->post('grades-college-encoding-submitnew', 'GradeController::gradesCollegeEncodingSubmitNew');
+$routes->add('grades-college-printnew/(:segment)', 'GradeController::gradesCollegePrintNew/$1');
+
 // REGISTRAR
 $routes->get('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
 $routes->post('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
@@ -271,6 +298,10 @@ $routes->post('grades-college-faculty-students-submit', 'GradeController::grades
 $routes->get('registrar-onlineregistration-reports', 'RegistrarController::onlineregreports');
 $routes->get('registrar-onlineregistration-reports/export', 'RegistrarController::exportPDF');
 $routes->post('registrar-onlineregistration-update/(:segment)', 'RegistrarController::registrarOnlineRegUpdate/$1');
+$routes->get('registrar-enrollmentlist-college', 'RegistrarController::enrollmentListCollege');
+$routes->post('registrar-enrollmentlist-college', 'RegistrarController::enrollmentListCollege');
+$routes->add('pasok-section', 'COLDepartmentController::pasokMoSectionDito');
+
 // CASHIER 
 $routes->get('cashier-onlineregistration', 'CashierController::cashierOnlineRegistration');
 $routes->get('cashier-onlineregistration-payment/(:segment)', 'CashierController::cashierOnlineRegistrationPayment/$1');
@@ -282,7 +313,7 @@ $routes->post('cashier-dailytransactions', 'CashierController::cashierDailyTrans
 $routes->get('cashier-dailytransactions-2', 'CashierController::cashierDailyTransactions2');
 $routes->post('cashier-dailytransactions-pdf', 'CashierController::cashierDailyTransactionsPDF');
 $routes->post('cashier-dailytransactions-update/(:segment)', 'CashierController::cashierDailyTransactionsUpdate/$1');
-$routes->post('cashier-dailytransactions-export', 'CashierController::cashierDailyTransactionsExport');
+$routes->add('cashier-dailytransactions-export', 'CashierController::cashierDailyTransactionsExport');
 
 // SHS DEPARTMENT
 $routes->get('shs-cluster', 'SHSDepartmentController::cluster');
@@ -323,6 +354,18 @@ $routes->get('shs-assessment', 'SHSDepartmentController::assessment');
 $routes->get('shs-assessment/view/(:segment)', 'SHSDepartmentController::assessmentView/$1');
 $routes->add('shs-assessment/print/(:segment)', 'SHSDepartmentController::assessmentPrint/$1');
 $routes->add('shs-assessment/aprroved/(:segment)', 'SHSDepartmentController::assessmentApproved/$1');
+$routes->get('shs-student-info', 'SHSDepartmentController::studentinfoView');
+$routes->post('shs-student-info', 'SHSDepartmentController::studentinfoView');
+$routes->get('shs-student-info-edit/(:segment)', 'SHSDepartmentController::studentinfoEdit/$1');
+$routes->post('shs-student-info-edit/(:segment)', 'SHSDepartmentController::studentinfoEdit/$1');
+$routes->get('shs-student-infoupdate/(:segment)', 'SHSDepartmentController::studentinfoEdit/$1');
+$routes->post('shs-student-infoupdate/(:segment)', 'SHSDepartmentController::studentinfoEdit/$1');
+$routes->get('shs-classlist', 'SHSDepartmentController::classlist');
+$routes->post('shs-classlist', 'SHSDepartmentController::classlist');
+$routes->get('shs-classlist-result', 'SHSDepartmentController::classlistResult');
+$routes->get('shs-classlist-students/(:segment)', 'SHSDepartmentController::classlistStudents/$1/');
+$routes->add('shs-classlist-print/(:segment)', 'SHSDepartmentController::classlistPrint/$1');
+
 
 // IBED DEPARTMENT
 $routes->get('ibed-level', 'IBEDDepartmentController::level');
@@ -364,6 +407,18 @@ $routes->get('ibed-assessment/view/(:segment)', 'IBEDDepartmentController::asses
 $routes->add('ibed-assessment/print/(:segment)', 'IBEDDepartmentController::assessmentPrint/$1');
 $routes->add('ibed-assessment/aprroved/(:segment)', 'IBEDDepartmentController::assessmentApproved/$1');
 
+$routes->get('ibed-student-info', 'IBEDDepartmentController::studentinfoView');
+$routes->post('ibed-student-info', 'IBEDDepartmentController::studentinfoView');
+$routes->get('ibed-student-info-edit/(:segment)', 'IBEDDepartmentController::studentinfoEdit/$1');
+$routes->post('ibed-student-info-edit/(:segment)', 'IBEDDepartmentController::studentinfoEdit/$1');
+$routes->get('ibed-student-infoupdate/(:segment)', 'IBEDDepartmentController::studentinfoEdit/$1');
+$routes->post('ibed-student-infoupdate/(:segment)', 'IBEDDepartmentController::studentinfoEdit/$1');
+$routes->get('ibed-classlist', 'IBEDDepartmentController::classlist');
+$routes->post('ibed-classlist', 'IBEDDepartmentController::classlist');
+$routes->get('ibed-classlist-result', 'IBEDDepartmentController::classlistResult');
+$routes->get('ibed-classlist-students/(:segment)', 'IBEDDepartmentController::classlistStudents/$1');
+$routes->add('ibed-classlist-print/(:segment)', 'IBEDDepartmentController::classlistPrint/$1');
+
 //COLLEGE DEPARTMENT
 $routes->get('col-course', 'COLDepartmentController::course');
 $routes->post('col-course', 'COLDepartmentController::course');
@@ -398,14 +453,35 @@ $routes->add('col-admission/process-generate/(:segment)', 'COLDepartmentControll
 $routes->get('col-advising', 'COLDepartmentController::advising');
 $routes->get('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
 $routes->post('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
+$routes->add('col-advising/process-add/(:segment)', 'COLDepartmentController::advisingProcessAdd/$1');
 $routes->add('col-advising/submit-account/(:segment)/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1/$2');
 $routes->add('col-advising/drop/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2');
 $routes->get('col-assessment', 'COLDepartmentController::assessment');
 $routes->get('col-assessment/view/(:segment)', 'COLDepartmentController::assessmentView/$1');
 $routes->add('col-assessment/print/(:segment)', 'COLDepartmentController::assessmentPrint/$1');
 $routes->add('col-assessment/aprroved/(:segment)', 'COLDepartmentController::assessmentApproved/$1');
+$routes->get('col-student-info', 'COLDepartmentController::studentinfoView');
+$routes->post('col-student-info', 'COLDepartmentController::studentinfoView');
+$routes->get('col-student-info-edit/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->post('col-student-info-edit/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->get('col-student-infoupdate/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->post('col-student-infoupdate/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->get('col-classlist', 'COLDepartmentController::classlist');
+$routes->post('col-classlist', 'COLDepartmentController::classlist');
+$routes->get('col-classlist-result', 'COLDepartmentController::classlistResult');
+$routes->get('col-classlist-section/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::classlistSection/$1/$2/$3');
+$routes->get('col-classlist-students/(:segment)/(:segment)', 'COLDepartmentController::classlistStudents/$1/$2');
+$routes->add('col-classlist-print/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::classlistPrint/$1/$2/$3');
 
-
+//GUIDANCE
+$routes->get('col-student-info', 'COLDepartmentController::studentinfoView');
+$routes->post('col-student-info', 'COLDepartmentController::studentinfoView');
+$routes->get('col-student-info-edit/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->post('col-student-info-edit/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->get('col-student-infoupdate/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->post('col-student-infoupdate/(:segment)', 'COLDepartmentController::studentinfoEdit/$1');
+$routes->get('col-records/print/(:segment)', 'COLDepartmentController::printStudInfo/$1');
+$routes->post('col-records/print/(:segment)', 'COLDepartmentController::printStudInfo/$1');
 
 $routes->set404Override(function() {
     echo view('errors/custom_error');

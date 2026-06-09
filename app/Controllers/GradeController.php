@@ -9,6 +9,8 @@ use App\Models\SemesterModel;
 use App\Models\EmployeesModel;
 use App\Models\SectionTempModel;
 use App\Models\CoursesModel;
+use App\Models\StudentSubjectsModel;
+use App\Models\SectionsModel;
 use TCPDF;
 class GradeController extends BaseController
 {
@@ -20,6 +22,8 @@ class GradeController extends BaseController
     public $empModel;
     public $stModel;
     public $courseModel;
+    public $subjectSubjectsModel;
+    public $sectionsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -31,10 +35,12 @@ class GradeController extends BaseController
         $this->empModel = new EmployeesModel();
         $this->stModel = new SectionTempModel();
         $this->courseModel = new CoursesModel();
+        $this->subjectSubjectsModel = new StudentSubjectsModel();
+        $this->sectionsModel = new SectionsModel();
         $this->session = session();
     }
     public function index()
-    {
+        {
         $data = [
             'page_title' => 'Holy Cross College | Grades',
             'page_heading' => 'GRADES! ',
@@ -498,7 +504,20 @@ class GradeController extends BaseController
                 $sem = $this->request->getVar('semester');
                 $this->session->set('selected_sy', $sy);
                 $this->session->set('selected_sem', $sem);
-                return redirect()->to(base_url().'grades-college-result');
+                if($sy == '2022-2023' || $sy == '2023-2024' || $sy == '2024-2025'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester' || $sem == 'Summer'){
+                        return redirect()->to(base_url().'grades-college-result');
+                    }
+                }else if ($sy == '2025-2026'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester'){
+                        return redirect()->to(base_url().'grades-college-result');
+
+                    }else{
+                        return redirect()->to(base_url().'grades-college-resultnew');
+                    }
+                }else{
+                    return redirect()->to(base_url().'grades-college-resultnew');
+                }
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -551,7 +570,20 @@ class GradeController extends BaseController
                 $sem = $this->request->getVar('semester');
                 $this->session->set('selected_sy', $sy);
                 $this->session->set('selected_sem', $sem);
-                return redirect()->to(base_url().'grades-college-result');
+                if($sy == '2022-2023' || $sy == '2023-2024' || $sy == '2024-2025'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester' || $sem == 'Summer'){
+                        return redirect()->to(base_url().'grades-college-result');
+                    }
+                }else if ($sy == '2025-2026'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester'){
+                        return redirect()->to(base_url().'grades-college-result');
+
+                    }else{
+                        return redirect()->to(base_url().'grades-college-resultnew');
+                    }
+                }else{
+                    return redirect()->to(base_url().'grades-college-resultnew');
+                }
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -1140,5 +1172,477 @@ class GradeController extends BaseController
             
             return redirect()->to(base_url()."grades-college-faculty-result");
         }
+    }
+    public function gradesCollegeResultNew() {
+        $data = [
+            'page_title' => 'Holy Cross College | College Grades Encoding',
+            'page_heading' => 'COLLEGE GRADES ENCODING! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ]; 
+
+        if(!session()->has('logged_user'))
+        {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($data['usersaccess'] as $user) {
+            $ACCOUNTNO = $user['uaccountid'];
+        }
+        $IMPNO = $this->empModel->where('empnum', $ACCOUNTNO)->findColumn('impno');
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+        $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
+        $data['selectedsem'] = $this->semModel->where('semester', $semid)->findAll();
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'schoolyear' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'semester' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)) {
+                $sy = $this->request->getVar('schoolyear');
+                $sem = $this->request->getVar('semester');
+                $this->session->set('selected_sy', $sy);
+                $this->session->set('selected_sem', $sem);
+                return redirect()->to(base_url().'grades-college-result');
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $IMPNO);
+        $data['importedGradeData'] = $this->subjectSubjectsModel
+        ->select('student_subjects.*, subjects.subcode, subjects.subject')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where($importedGradeCondition)->groupBy('student_subjects.section')
+        ->findAll();
+        $data['sectionsData'] = $this->sectionsModel->findAll();
+        return view('collegegradesresultviewnew', $data);
+    }
+    public function gradesCollegeEncodingNew($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | College Grades Encoding',
+            'page_heading' => 'COLLEGE GRADES ENCODING! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ]; 
+
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($data['usersaccess'] as $user) {
+            $ACCOUNTNO = $user['uaccountid'];
+        }
+        $IMPNO = $this->empModel->where('empnum', $ACCOUNTNO)->findColumn('impno');
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+        $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
+        $data['selectedsem'] = $this->semModel->where('semester', $semid)->findAll();
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $IMPNO, 'student_subjects.section' => $id);
+        $data['importedGradeData'] = $this->subjectSubjectsModel
+        ->select('student_subjects.*, students_col.*')
+        ->join('students_col', 'students_col.studid = student_subjects.studid')
+        ->where($importedGradeCondition)
+        ->orderBy('students_col.studfullname', 'ASC')
+        ->findAll();
+
+        return view('collegegradesencodingviewnew', $data);
+    }
+    public function gradesCollegeEncodingSubmitNew() {
+        // if($this->request->is('post')) {
+        //     $SCHEDID = $this->request->getVar('scheduleid');
+        //     $data = [
+        //         'prelim' => $this->request->getVar('prelim'),
+        //         'midterm' => $this->request->getVar('midterm'),
+        //         'final' => $this->request->getVar('final'),
+        //     ];
+
+        //     $this->importedGradeModel->where('impgradeid', $id)->update($id, $data);
+        //     // UPDATE SEMESTRAL
+        //     $db = \Config\Database::connect();
+        //     $sql = 'UPDATE importedgrades SET semestral = (prelim * .3) + (midterm * .3) + (final* .4)';
+        //     $db->query($sql);
+
+        //     session()->setTempdata('updatesuccess', 'Update is Successful!', 2);
+        //     return redirect()->to(base_url()."grades-college-encoding/".$SCHEDID);
+        // }
+        if($this->request->is('post')) {
+            $importedG = new StudentSubjectsModel();
+            $SCHEDID = $this->request->getVar('schedid');
+            $ids = $this->request->getPost('id');
+            $prelims = $this->request->getPost('prelim');
+            $midterms = $this->request->getPost('midterm');
+            $finals = $this->request->getPost('final');
+
+            // Use a transaction to ensure data integrity
+            $db = \Config\Database::connect();
+            $db->transStart();
+            
+            try {
+                foreach ($ids as $index => $id) {
+                    $data = [
+                        'prelim' => $prelims[$index],
+                        'midterm' => $midterms[$index],
+                        'final' => $finals[$index],
+                    ];
+                    
+                    // Update each record individually
+                    $importedG->update($id, $data);
+                }
+                
+                $db->transComplete();
+                
+                if ($db->transStatus() === FALSE) {
+                    session()->setTempdata('error', 'Update failed!', 2);
+                } else {
+                    $sql = 'UPDATE student_subjects SET semestral = (prelim * .3) + (midterm * .3) + (final* .4)';
+                    $db->query($sql);
+                    session()->setTempdata('updatesuccess', 'Update is Successful!', 2);
+                }
+                
+            } catch (\Exception $e) {
+                $db->transRollback();
+                session()->setTempdata('error', 'Update failed: ' . $e->getMessage(), 2);
+            }
+            
+            return redirect()->to(base_url()."grades-college-encodingnew/".$SCHEDID);
+        }
+    }
+    public function gradesCollegePrintNew($id=null) {
+        // Load TCPDF library
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Summary of Grades');
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(5,40,5,0);
+        //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+            // set font
+        $pdf->SetFont('dejavusans', '', 10);
+        // add a page
+        $pdf->AddPage();
+
+        // HEADER
+        $imagePath = FCPATH .'public/uploads/hccheader.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 206, $h = 36); 
+        $pdf->Line(5, 37, 211, 37);
+
+        $db = \Config\Database::connect();
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        foreach($data['usersaccess'] as $user) {
+            $ACCOUNTNO = $user['uaccountid'];
+        }
+        $IMPNO = $this->empModel->where('empnum', $ACCOUNTNO)->findAll();
+        foreach($IMPNO as $impvalue){
+            $TEACHERIMP = $impvalue['impno'];
+        }
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+
+        // $summarygradeinfo = $db->query("SELECT * FROM student_subjects WHERE sy = '$syid' 
+        // AND teacherid = '$TEACHERIMP' AND sem = '$semid' AND section = '$id'");
+        // $summarygradeinforesult = $summarygradeinfo->getRow(0);
+        // $IMPSCHEDID = $summarygradeinforesult->section;
+        // // $IMPCOURSE = $summarygradeinforesult->course;
+        // $sectionTempData = $this->sectionsModel->where('secid', $IMPSCHEDID)->findAll();
+        // foreach($sectionTempData as $sectionvalue){
+        //     $SECTIONNAME = $sectionvalue['section'];
+        // }
+        // // $courseData = $this->courseModel->where('code', $IMPCOURSE)->findAll();
+        // // foreach($courseData as $coursevalue){
+        // //     $COURSENAME = $coursevalue['name'];
+        // // }
+
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $TEACHERIMP, 'student_subjects.section' => $id);
+        $studentsubdata = $this->subjectSubjectsModel
+        ->select('student_subjects.*, students_col.*, subject, subjects.*, courses.name, courses.code,')
+        ->join('students_col', 'students_col.studid = student_subjects.studid')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->join('curriculum', 'curriculum.currid = currdata.curriculumid')
+        ->join('courses', 'courses.courid = curriculum.course')
+        ->where($importedGradeCondition)
+        ->orderBy('students_col.studfullname', 'ASC')
+        ->findAll();
+
+        foreach($studentsubdata as $ssd){
+            $SUBJECT = $ssd['subcode'];
+            $SECTIONID = $ssd['section'];
+            $SUBJECTDESC = $ssd['subject'];
+            $SUBJECTUNITS = $ssd['units'];
+            $COURSENAME = $ssd['name'];
+            $TEACHERNAME = $ssd['teachername'];
+        }
+        $sectionData = $this->sectionsModel
+        ->where('secid', $SECTIONID)->findAll();
+        foreach($sectionData as $secD){
+            $SECTIONNAME = $secD['section'];
+        }
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="width: 75%;"></td>
+                    <td><h3>COLLEGE DEPARTMENT</h3></td>
+                </tr>   
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">SUMMARY OF GRADES</td>
+                </tr>
+            </table><br><br>
+
+            <table>
+                <tr>
+                    <td style="width: 60%;">Course Code: <strong>'. strtoupper($SUBJECT) .'</strong></td>
+                    <td>Instructor: <strong>'. strtoupper($TEACHERNAME) .'</strong></td>
+                </tr>
+                <tr>
+                    <td>Course Title: <strong>'. strtoupper($SUBJECTDESC) .'</strong></td>
+                    <td>Semester: <strong>'. strtoupper($semid) .'</strong></td>
+                </tr>
+                <tr>
+                    <td>Unit: <strong>'. strtoupper($SUBJECTUNITS) .'</strong></td>
+                    <td>School Year: <strong>'. strtoupper($syid) .'</strong></td>
+                </tr>
+                <tr>
+                    <td>Program: <strong>'. strtoupper($COURSENAME) .'</strong></td>
+                    <td>Section: <strong>'. strtoupper($SECTIONNAME) .'</strong></td>
+                </tr>
+            </table><br><br>
+
+            <table border="1" style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center;">STUDENT</th>
+                        <th style="width: 29%;text-align: center;">NAME</th>
+                        <th style="width: 15%;text-align: center;">PROGRAM</th>
+                        <th style="width: 7%;text-align: center;">PRELIM</th>
+                        <th style="width: 7%;text-align: center; font-size: 9px;">MIDTERM</th>
+                        <th style="width: 7%;text-align: center;">FINAL</th>
+                        <th style="width: 7%;text-align: center;">GRADE</th>
+                        <th style="width: 9%;text-align: center;">RATING</th>
+                        <th style="width: 9%;text-align: center;">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        $importedGradeCondition = array('sy' => $syid, 'sem' => $semid, 'teacherid' => $TEACHERIMP, 'scheduleid' => $id);
+        $importedGradeData = $this->importedGradeModel->where($importedGradeCondition)->orderBy('lname', 'ASC')->findAll();
+        foreach($studentsubdata as $igd) {
+            if($igd['prelim'] == 'INC' || $igd['prelim'] == 'UW' || $igd['prelim'] == 'FA' || $igd['prelim'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'fa' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
+                    $PRELIM = '0';
+                }else{
+                    $PRELIM = $igd['prelim'] * .3;
+                }
+
+                if($igd['midterm'] == 'INC' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'FA' || $igd['midterm'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'fa' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
+                    $MIDTERM = '0';
+                }else{
+                    $MIDTERM = $igd['midterm'] * .3;
+                }
+                
+                if($igd['final'] == 'INC' || $igd['final'] == 'UW' || $igd['final'] == 'FA' || $igd['final'] == '' || $igd['prelim'] == 'inc' || $igd['prelim'] == 'fa' || $igd['prelim'] == 'uw' || $igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp'){
+                    $FINALS = '0';
+                }else{
+                    $FINALS = $igd['final'] * .4;
+                }
+                
+                $SEMESTRAL = $PRELIM + $MIDTERM + $FINALS;
+                $FORMATED = round($SEMESTRAL, 0, PHP_ROUND_HALF_UP);
+
+                if($FORMATED >= '97' && $FORMATED <= '100'){
+                    $EQUIVALENT = '1.00';
+                }else if($FORMATED >= '94' && $FORMATED <= '96'){
+                    $EQUIVALENT = '1.25';
+                }else if($FORMATED >= '91' && $FORMATED <= '93'){
+                    $EQUIVALENT = '1.50';
+                }else if($FORMATED >= '88' && $FORMATED <= '90'){
+                    $EQUIVALENT = '1.75';
+                }else if($FORMATED >= '85' && $FORMATED <= '87'){
+                    $EQUIVALENT = '2.00';
+                }else if($FORMATED >= '82' && $FORMATED <= '84'){
+                    $EQUIVALENT = '2.25';
+                }else if($FORMATED >= '79' && $FORMATED <= '81'){
+                    $EQUIVALENT = '2.50';
+                }else if($FORMATED >= '76' && $FORMATED <= '78'){
+                    $EQUIVALENT = '2.75';
+                }else if($FORMATED == '75' ){
+                    $EQUIVALENT = '3.00';
+                }else if($FORMATED == '74'){
+                    $EQUIVALENT = '5.00';
+                }else if($igd['prelim'] == 'INC' || $igd['prelim'] == 'inc' || $igd['midterm'] == 'INC' || $igd['midterm'] == 'inc' || $igd['final'] == 'INC' || $igd['final'] == 'inc'){
+                    $EQUIVALENT = 'INC';
+                }else if($igd['prelim'] == 'UW' || $igd['prelim'] == 'uw' || $igd['midterm'] == 'UW' || $igd['midterm'] == 'uw' || $igd['final'] == 'UW' || $igd['final'] == 'uw'){
+                    $EQUIVALENT = 'UW';
+                }else if($igd['prelim'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['midterm'] == 'DRP' || $igd['midterm'] == 'drp' || $igd['final'] == 'DRP' || $igd['final'] == 'drp'){
+                    $EQUIVALENT = 'DRP';
+                }else{
+                    $EQUIVALENT = 'FA';
+                }
+
+                if($FORMATED >= '75' || $FORMATED == '100'){
+                    $REMARK = 'PASSED';
+                }else if($igd['prelim'] == 'INC' || $igd['prelim'] == 'inc' || $igd['midterm'] == 'INC' || $igd['midterm'] == 'inc' || $igd['final'] == 'INC' || $igd['final'] == 'inc'){
+                    $REMARK = 'INC';
+                }else if($igd['prelim'] == 'UW' || $igd['midterm'] == 'UW' || $igd['final'] == 'UW' || $igd['prelim'] == 'uw' || $igd['midterm'] == 'uw' || $igd['final'] == 'uw'){
+                    $REMARK = 'UW';
+                }else if($igd['prelim'] == 'DRP' || $igd['midterm'] == 'DRP' || $igd['final'] == 'DRP' || $igd['prelim'] == 'drp' || $igd['midterm'] == 'drp' || $igd['final'] == 'drp'){
+                    $REMARK = 'DRP';
+                }else{
+                    $REMARK = 'FAILED';
+                }
+            $html .= '<tr>
+                    <td style="width: 10%;text-align: center;">'.strtoupper($igd['studentno']).'</td>
+                    <td style="width: 29%;text-align: left;">'.strtoupper($igd['studfullname']).'</td>
+                    <td style="width: 15%;text-align: center;">'.strtoupper($igd['code']).'</td>
+                    <td style="width: 7%;text-align: center;">'.strtoupper($igd['prelim']).'</td>
+                    <td style="width: 7%;text-align: center;">'.strtoupper($igd['midterm']).'</td>
+                    <td style="width: 7%;text-align: center;">'.strtoupper($igd['final']).'</td>
+                    <td style="width: 7%;text-align: center;">'.strtoupper(round($igd['semestral'])).'</td>
+                    <td style="width: 9%;text-align: center;">'.strtoupper($EQUIVALENT).'</td>
+                    <td style="width: 9%;text-align: center;">'.strtoupper($REMARK).'</td>
+                </tr>';
+        }
+        $html .= ' 
+                <tr>
+                    <td style="width: 100%; text-align: center;">NOTHING FOLLOWS</td>
+                </tr></tbody>
+            </table><br><br>';
+        $html .='
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%;">Submitted by:</td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%;">Noted by:</td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%;">Approved by:</td>
+                    </tr>
+                    <br>
+                    <br>
+                    <tr>
+                        <td style="width: 2%;"></td>
+                        <td style="width: 32%;"><strong>'. strtoupper($TEACHERNAME) .'</strong></td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%; border-bottom: 1px solid #000000ff"></td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%; border-bottom: 1px solid #000000ff"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 2%;"></td>
+                        <td style="width: 32%;">Instructor</td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%;">Program Chair</td>
+                        <td style="width: 1%;"></td>
+                        <td style="width: 32%;">Dean</td>
+                    </tr>
+                </tbody>
+            </table><br><br>
+        ';
+        $html .='
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="width: 70%;">
+                            <table style="width: 100%; font-size: 9px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%;">97 - 100 = 1.00</td>
+                                        <td style="width: 30%;">82 - 84 = 2.25</td>
+                                        <td style="width: 40%;">FA - Failure due to Absences</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 30%;">94 - 96 = 1.25</td>
+                                        <td style="width: 30%;">79 - 81 = 2.50</td>
+                                        <td style="width: 40%;">INC - INCOMPLETE</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 30%;">91 - 93 = 1.50</td>
+                                        <td style="width: 30%;">76 - 78 = 2.75</td>
+                                        <td style="width: 40%;">UW - Unauthorized Withdrawal</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 30%;">88 - 90 = 1.75</td>
+                                        <td style="width: 30%;">75 = 3.00</td>
+                                        <td style="width: 40%;">DRP - Authorized Withdrawal</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 30%;">85 - 87 = 2.00</td>
+                                        <td style="width: 30%;">Below 75% = 5.00</td>
+                                        <td style="width: 40%;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table><br><br>
+        ';
+        // Output PDF to browser
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $pdf->Output(strtoupper($SECTIONNAME).' - Summary of Grades.pdf', 'D');
     }
 }

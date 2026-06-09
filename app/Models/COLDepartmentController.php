@@ -1171,7 +1171,7 @@ class COLDepartmentController extends BaseController
             'status' => 'Finalized',
             'ttfcollege' => $totalfeee,
         ];
-
+        
         $this->colAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
         $this->studentAccountsModel->save($studentsaccounts);
         $this->enrollmentHistoryCOLModel->where('studid', $STUDENTID)->set(['status' => 'Assessed'])->update();

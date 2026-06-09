@@ -916,7 +916,9 @@ class IBEDDepartmentController extends BaseController
         ->select('enrollmenthistory_ibed.*, students_ibed.*, levels_ibed.*')
         ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid')
         ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level')
-        ->where('enrollmenthistory_ibed.status', 'Assessed')->where('enrollmenthistory_ibed.isdel', 0)->findAll();
+        ->where('enrollmenthistory_ibed.status', 'Assessed')
+        ->orWhere('enrollmenthistory_ibed.status', 'Payment')
+        ->where('enrollmenthistory_ibed.isdel', 0)->findAll();
 
         return view('ibed/assessmentview', $data);
     }
@@ -1307,5 +1309,380 @@ class IBEDDepartmentController extends BaseController
         $this->enrollmentHistoryIBEDModel->where('ehid', $id)->update($id, $ehgsdata);
         session()->setTempdata('success', 'Student is approved!', 2);
         return redirect()->to(base_url()."ibed-assessment");
+    }
+    public function studentinfoView(){
+        $data = [
+            'page_title' => 'Holy Cross College | IBED Department',
+            'page_heading' => 'IBED STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentdata'] = $this->ibedStudentsModel->where('studisdel', 0)->findAll();
+
+        return view('ibed/studinfoview', $data);
+    }
+    public function studentinfoEdit($id=null){
+        $data = [
+            'page_title' => 'Holy Cross College | IBED Department',
+            'page_heading' => 'IBED STUDENT INFORMATION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['clusters'] = $this->ibedlevelModel->findAll();
+
+        $data['studentdata'] = $this->enrollmentHistoryIBEDModel
+        ->select('enrollmenthistory_ibed.*, students_ibed.*, ibedstudentschoolrecord.*, assessment_ibed.*, levels_ibed.*, additionalinfo_ibed.*')
+        ->join('levels_ibed', 'levels_ibed.levelid = enrollmenthistory_ibed.level', 'left')
+        ->join('additionalinfo_ibed', 'additionalinfo_ibed.studid = enrollmenthistory_ibed.studid', 'left')
+        ->join('students_ibed', 'students_ibed.studid = enrollmenthistory_ibed.studid', 'left')
+        ->join('ibedstudentschoolrecord', 'ibedstudentschoolrecord.studid = enrollmenthistory_ibed.studid', 'left')
+        ->join('assessment_ibed', 'assessment_ibed.studid = enrollmenthistory_ibed.studid', 'left')
+        ->where('enrollmenthistory_ibed.studid', $id)
+        ->findAll();
+
+        if($this->request->is('post')){
+            
+            //IBED STUDENTS
+            $FINDSTUDENT = $this->enrollmentHistoryIBEDModel
+            ->where('studid', $id)
+            ->findAll();
+
+            foreach($FINDSTUDENT as $FS){
+                $studid = $FS['studid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                $email = $this->request->getVar('email');
+                $contactno = $this->request->getVar('contactno');
+                $gender = $this->request->getVar('gender');
+                $age = $this->request->getVar('age');
+                $bday = $this->request->getVar('bday');
+                $birthplace = $this->request->getVar('birthplace');
+                $citizen = $this->request->getVar('citizen');
+                $barangay = $this->request->getVar('barangay');
+                $city = $this->request->getVar('city');
+                $province = $this->request->getVar('province');
+                $religion = $this->request->getVar('religion');
+            }
+
+            $STUDATA = [
+                'studln' => $lastname,
+                'studfn' => $firstname,
+                'studmn' => $middlename,
+                'studextension' => $extension,
+                'studfullname' => $studfullname,
+                'studlname' => $lastname,
+                'studextension' => $extension,
+                'studfname' => $firstname,
+                'studmname' => $middlename,
+                'studemail' => $email,
+                'studcontact' => $contactno,
+                'studgender' => $gender,
+                'studage' => $age,
+                'studbirthday' => $bday,
+                'studbirthplace' => $birthplace,
+                'studcitizenship' => $citizen,
+                'studstbarangay' => $barangay,
+                'studcity' => $city,
+                'studprovince' => $province,
+                'studreligion' => $religion
+
+            ];
+            $this->ibedStudentsModel->where('studid',$studid)->update($studid,$STUDATA);
+
+            $STUDSHSAss = $this->ibedAssessmentModel->where('studid', $id)->findAll();
+            foreach($STUDSHSAss as $SAshs) {
+                $STUDSHSAss = $SAshs['assid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+                
+            }
+            $STUDASSDATA = [
+                'vouchers' => $this->request->getVar('voucher'),
+                'studfullname' => $studfullname,
+            ];
+            $this->ibedAssessmentModel->where('studid',$studid)->update($STUDSHSAss,$STUDASSDATA);
+
+            $STUDSHSSrec = $this->ibedSchoolRecordModel->where('studid', $id)->findAll();
+            foreach($STUDSHSSrec as $SSshs) {
+                $STUDSHSSrec = $SSshs['ssrid'];
+                $lastname = $this->request->getVar('studln');
+                $firstname = $this->request->getVar('studfn');
+                $middlename = $this->request->getVar('studmn');
+                $extension = $this->request->getVar('extension');
+                $studfullname = $lastname. ' ' .$extension. ',' . ' ' .$firstname. ' ' .$middlename;
+
+            }
+            $STUDRECDATA = [
+                'lrn' => $this->request->getVar('lrn'),
+                'studfullname' => $studfullname,
+            ];
+            $this->ibedSchoolRecordModel->where('studid',$studid)->update($STUDSHSSrec,$STUDRECDATA);
+
+            $STUDSHSAI = $this->additionalInfoIBEDModel->where('studid', $id)->findAll();
+            foreach($STUDSHSAI as $AIshs) {
+                $STUDSHSAI = $AIshs['aiid'];
+            }
+            $STUDAIDATA = [
+                'nameg' => $this->request->getVar('guardian'),
+                'contactg' => $this->request->getVar('guardianno'),
+            ];        
+            $this->additionalInfoIBEDModel->where('studid',$studid)->update($STUDSHSAI,$STUDAIDATA);
+
+            session()->setTempdata('success', 'Student updated successfully!', 2);
+            return redirect()->to(base_url()."ibed-student-info");
+
+        }
+
+        return view('ibed/studinfoedit', $data);
+    }
+    public function classlist() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'level' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Level is required.',
+                    ],
+                ],
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School Year is required.',
+                    ],
+                ],
+            ];
+
+            if($this->validate($rules)){
+
+                $LEVEL = $this->request->getVar('level');
+                $SY = $this->request->getVar('sy');
+                
+                session()->set('selected_level', $LEVEL);
+                session()->set('selected_sy', $SY);
+                
+                return redirect()->to(base_url()."ibed-classlist-result");
+
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        
+        return view('ibed/classlistview', $data);
+    }
+    public function classlistResult() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $LEVEL = session()->get('selected_level');
+        $SY = session()->get('selected_sy');
+        
+        $data['assessmentdata'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, sections_ibed.*')
+        ->join('sections_ibed', 'sections_ibed.secid = assessment_ibed.section')
+        ->where('assessment_ibed.sy', $SY)
+        // ->where('assessment_ibed.cluster', $PROGRAM)
+        ->where('assessment_ibed.level', $LEVEL)
+        ->where('assessment_ibed.isdel', 0)
+        ->groupBy('assessment_ibed.section')
+        ->findAll();
+        
+        return view('ibed/classlistresultsview', $data);
+    }
+    public function classlistStudents($secid=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['levelsdata'] = $this->ibedlevelModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $LEVEL = session()->get('selected_level');
+        $SY = session()->get('selected_sy');
+        
+        $data['assessmentdata'] = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, students_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        ->where('assessment_ibed.sy', $SY)
+        ->where('assessment_ibed.level', $LEVEL)
+        // ->where('assessment_ibed.sem', $SEM)
+        // ->where('assessment_ibed.cluster', $PROGRAM)
+        // ->where('assessment_ibed.curriculum', $curriculumid)
+        ->where('assessment_ibed.section', $secid)
+        ->orderby('students_ibed.studfullname','ASC')
+        ->findAll();
+
+        return view('ibed/classliststudentsview', $data);
+    }
+    public function classlistPrint($secid=null) {
+
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Classlist');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $LEVEL = session()->get('selected_level');
+        $SY = session()->get('selected_sy');
+        
+        $shsassessmentdata = $this->ibedAssessmentModel
+        ->select('assessment_ibed.*, students_ibed.*')
+        ->join('students_ibed', 'students_ibed.studid = assessment_ibed.studid')
+        // ->where('assessment_ibed.sy', $SY)
+        // ->where('assessment_ibed.level', $LEVEL)
+        // ->where('assessment_ibed.sem', $SEM)
+        // ->where('assessment_ibed.level', $PROGRAM)
+        // ->where('assessment_ibed.curriculum', $curriculumid)
+        ->where('assessment_ibed.section', $secid)
+        ->orderby('students_ibed.studfullname','ASC')
+        ->findAll();
+
+        $totalStudents = count($shsassessmentdata);
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">CLASS LIST</td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center;">#</th>
+                        <th style="width: 30%;text-align: center;">STUDENT NUMBER</th>
+                        <th style="width: 60%;text-align: center;">STUDENT FULLNAME</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        $count = 1;
+        foreach($shsassessmentdata as $sad) {
+            $STUDENTNO = $sad['studentno'];
+            $STUDFULLNAME = $sad['studfullname'];
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$count++.'</td>
+                        <td style="width: 30%;text-align: center;">'.strtoupper($sad['studentno']).'</td>
+                        <td style="width: 60%;text-align: left;">'.strtoupper($sad['studfullname']).'</td>
+                    </tr>
+                    
+                        
+                    ';
+        }
+
+        $html .= '
+            <br>
+            </tbody>
+            <br>
+            <table style="width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="text-align: left; font-weight: bold; font-size: 12px; border-top: 1px solid #000; padding-top: 5px;">
+                        TOTAL NUMBER OF STUDENTS: ' . $totalStudents . '
+                    </td>
+                </tr>
+            </table>';
+
+        $html .= '
+                </tbody>
+            </table>';
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($STUDFULLNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
     }
 }

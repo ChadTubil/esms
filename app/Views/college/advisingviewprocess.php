@@ -36,7 +36,7 @@
                             <div class="col-lg-12 col-sm-12">
                                 <h5>NAME: <strong><?= $stud['studfullname']; ?></strong></h5>
                                 <br>
-                                <?= form_open('col-advising/process/'.$stud['studid']); ?>
+                                <?= form_open('col-advising/process/'.$stud['studid']) ?>
                                     <div class="row">
                                         <div class="col-lg-3 col-sm-12">
                                             <div class="form-group">
@@ -75,13 +75,15 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        
                                             <div class="col-lg-3 col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label">SECTION</label>
                                                     <select name="section" class="form-select" required>
                                                         <?php foreach($colsectiondata as $shssectiond): ?>
-                                                            <option value="<?= $shssectiond['secid']; ?>"><?= $shssectiond['section']; ?></option>
+                                                            <option value="<?= $shssectiond['secid']; ?>">
+                                                                <?= $shssectiond['section']; ?> - 
+                                                                (<?= $shssectiond['student_count'] ?? 0; ?> Students)
+                                                            </option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 </div>
@@ -103,7 +105,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <?= form_close(); ?>
+                                            
                                         <?php else: ?>
                                             <div class="col-lg-3 col-sm-12">
                                                 <div class="form-group">
@@ -121,7 +123,7 @@
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-                                    
+                                    <?= form_close(); ?>
                                     <?php if(!empty($colassessmentdata)): ?>
                                     <?php else: ?>
                                         <div class="col-lg-3 col-sm-12">
@@ -178,6 +180,62 @@
                                 <br>
                                 <div class="row">
                                     <div class="col-lg-12 col-sm-12">
+                                        <?php if(session()->getTempdata('addssuccess')) :?>
+                                            <div class="alert alert-success">
+                                                <?= session()->getTempdata('addssuccess');?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?= form_open('col-advising/process-add/'.$colassessmentd['studid']); ?>
+                                            <label for="">ADD SUBJECTS TO ASSESSMENT</label>
+                                            <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
+                                                <select name="addsubjectassessment" class="form-select" required>
+                                                    <option value="" disabled selected hidden>Select Subject to Add</option>
+                                                    <optgroup label="🔫 1st Year">
+                                                        <?php if(empty($colcurrdataasssubjects)): ?>
+                                                        <?php else: ?>
+                                                            <?php foreach($colcurrdataasssubjects as $ccas): ?>
+                                                                <?php if($ccas['level'] == "1st Year"): ?>
+                                                                    <option value="<?= $ccas['cdid']; ?>"><?= $ccas['subcode']; ?> - <?= $ccas['subject']; ?> (<?= $ccas['sem']; ?>)</option>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </optgroup>
+                                                    <optgroup label="🔫 2nd Year">
+                                                        <?php if(empty($colcurrdataasssubjects)): ?>
+                                                        <?php else: ?>
+                                                            <?php foreach($colcurrdataasssubjects as $ccas): ?>
+                                                                <?php if($ccas['level'] == "2nd Year"): ?>
+                                                                    <option value="<?= $ccas['cdid']; ?>"><?= $ccas['subcode']; ?> - <?= $ccas['subject']; ?> (<?= $ccas['sem']; ?>)</option>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </optgroup>
+                                                    <optgroup label="🔫 3rd Year">
+                                                        <?php if(empty($colcurrdataasssubjects)): ?>
+                                                        <?php else: ?>
+                                                            <?php foreach($colcurrdataasssubjects as $ccas): ?>
+                                                                <?php if($ccas['level'] == "3rd Year"): ?>
+                                                                    <option value="<?= $ccas['cdid']; ?>"><?= $ccas['subcode']; ?> - <?= $ccas['subject']; ?> (<?= $ccas['sem']; ?>)</option>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </optgroup>
+                                                    <optgroup label="🔫 4th Year">
+                                                        <?php if(empty($colcurrdataasssubjects)): ?>
+                                                        <?php else: ?>
+                                                            <?php foreach($colcurrdataasssubjects as $ccas): ?>
+                                                                <?php if($ccas['level'] == "4th Year"): ?>
+                                                                    <option value="<?= $ccas['cdid']; ?>"><?= $ccas['subcode']; ?> - <?= $ccas['subject']; ?> (<?= $ccas['sem']; ?>)</option>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </optgroup>
+                                                </select>
+                                                <button type="submit" class="btn btn-m btn-icon btn-success" style="width: 10%;">ADD</button>
+                                            </div>
+                                        <?= form_close(); ?>
+                                    </div>
+                                    <div class="col-lg-12 col-sm-12">
                                         <h5 style="text-align: center;"><strong>FIRST SEMESTER</strong></h5>
                                         <div class="table-responsive">
                                             <table class="table">
@@ -198,7 +256,29 @@
                                                             <td><?= $selectedsubj['subject']; ?></td>
                                                             <td style="text-align: center; "><?= $selectedsubj['units']; ?></td>
                                                             <td style="text-align: center; "><?= $selectedsubj['hours']; ?></td>
-                                                            <td style="text-align: center; ">TBA</td>
+                                                            <td style="text-align: center; ">
+                                                                <?php if($selectedsubj['section'] == "0"): ?>
+                                                                    <select class="form-select" name="section">
+                                                                        <option value="0" selected>No schedule assigned</option>
+                                                                    </select>
+                                                                <?php else: ?>
+                                                                    <select class="form-select" name="section">
+                                                                        <?php foreach($colsectiondata as $shssectiond): ?>
+                                                                            <?php if($shssectiond['secid'] == $selectedsubj['section']): ?>
+                                                                                <option value="<?= $shssectiond['secid']; ?>" selected>
+                                                                                    <?= $shssectiond['section']; ?> - 
+                                                                                    (<?= $shssectiond['student_count'] ?? 0; ?> Students)
+                                                                                </option>
+                                                                            <?php else: ?>
+                                                                                <option value="<?= $shssectiond['secid']; ?>">
+                                                                                    <?= $shssectiond['section']; ?> - 
+                                                                                    (<?= $shssectiond['student_count'] ?? 0; ?> Students)
+                                                                                </option>
+                                                                            <?php endif; ?>
+                                                                        <?php endforeach; ?>
+                                                                    </select>
+                                                                <?php endif; ?>
+                                                            </td>
                                                             <td>
                                                                 <a class="btn btn-sm btn-danger"
                                                                     data-bs-toggle="tooltip" data-bs-placement="top" title="DROP"
@@ -445,6 +525,7 @@
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
+                                    
     </div>
     <!-- End of Page Content -->
 

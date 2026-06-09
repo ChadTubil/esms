@@ -160,9 +160,16 @@
                                         <th>#</th>
                                         <th>Student No</th>
                                         <th>Student Name</th>
+                                        <th>Level</th>
                                         <th>OR</th>
-                                        <?php foreach($feedata as $fd): ?>
-                                            <th><?= $fd['feecode']; ?></th>
+                                        <th>FEE</th>
+                                        <th>TF</th>
+                                        <?php foreach ($transactionsdata as $td): ?>
+                                            <?php foreach($feedata as $fd): ?>
+                                                <?php if($fd['feeid'] == $td['feeid'] &&  $fd['istf'] == 0): ?>
+                                                    <th><?= $fd['feecode']; ?></th>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
                                         <?php endforeach; ?>
                                         <th>Payment Method</th>
                                         <th>Total Amount Paid</th>
@@ -253,16 +260,25 @@
                                             </td>
                                             <td><?= $td['studentno']; ?></td>
                                             <td><?= $td['studfullname']; ?></td>
+                                            <td><?= $td['level']; ?></td>
                                             <td><?= $td['ornumber']; ?></td>
-                                            <?php foreach($feedata as $fd): ?>
-                                                <td>
-                                                    <?php if($fd['feeid'] == $td['feeid']): ?>
-                                                        ₱<?= number_format($td['amountpaid'], 2); ?>
-                                                    <?php else: ?>
-                                                        -
+                                            <td><?php
+                                                if($td['istf'] == 1){
+                                                    echo $td['feecode'];
+                                                }
+                                            ?></td>
+                                            <td><?php
+                                                if($td['istf'] == 1){
+                                                    echo $td['amountpaid'];
+                                                }
+                                            ?></td>
+                                            
+                                                <?php foreach($feedata as $fd): ?>
+                                                    <?php if($fd['feeid'] == $td['feeid'] && $fd['istf'] == 0): ?>
+                                                        <td>₱<?= number_format($td['amountpaid'], 2); ?></td>
                                                     <?php endif; ?>
-                                                </td>
-                                            <?php endforeach; ?>
+                                                <?php endforeach; ?>
+                                            
                                             <td><?= $td['paymentmethod']; ?></td>
                                             <td>₱<?= number_format($td['amountpaid'], 2); ?></td>
                                             <td><?= $td['particulars']; ?></td>
@@ -273,6 +289,8 @@
                                     <?php endforeach; ?>
                                     <?php 
                                         $fee_totals = [];
+                                        $tf_total = 0; // Add this for TF total
+                                        
                                         foreach($feedata as $fd) {
                                             $fee_totals[$fd['feeid']] = 0;
                                         }
@@ -280,19 +298,34 @@
                                         $grand_total = 0;
                                         
                                         foreach($transactionsdata as $td) {
-                                            $fee_totals[$td['feeid']] += $td['amountpaid'];
+                                            // Calculate regular fee totals
+                                            $feeId = isset($td['feeid']) ? $td['feeid'] : null;
+                                            if($feeId !== null && isset($fee_totals[$feeId])) {
+                                                $fee_totals[$feeId] += $td['amountpaid'];
+                                            } elseif($feeId !== null) {
+                                                $fee_totals[$feeId] = $td['amountpaid'];
+                                            }
+                                            
+                                            // Calculate TF total (where istf == 1)
+                                            if(isset($td['istf']) && $td['istf'] == 1) {
+                                                $tf_total += $td['amountpaid'];
+                                            }
+                                            
                                             $grand_total += $td['amountpaid'];
                                         }
-                                        
                                     ?>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Totals:</th>
+                                        <th colspan="5" style="text-align:right">Totals:</th>
+                                        <th>₱<?= number_format($tf_total, 2); ?></th>
                                         <?php foreach($feedata as $fd): ?>
-                                            <th>
-                                                ₱<?= number_format($fee_totals[$fd['feeid']], 2); ?>
-                                            </th>
+                                            <?php if($fd['istf'] == 0) :?>
+                                                <th>
+                                                    ₱<?= number_format($fee_totals[$fd['feeid']], 2); ?>
+                                                </th>
+                                            <?php else: ?>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                         <th></th>
                                         <th>

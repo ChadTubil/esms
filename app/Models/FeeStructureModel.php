@@ -8,7 +8,7 @@ class FeeStructureModel extends Model
     protected $primaryKey = 'feeid';
     protected $allowedFields = [
         'feecode', 'feename', 'feedescription', 'amount', 'accountid', 'toaccountid',
-        'course', 'sy', 'semester', 'ismandatory', 'isactive',
+        'course', 'sy', 'semester', 'ismandatory', 'istf', 'isactive',
         'createddate', 'isdel',
     ];
     protected $returnType = 'array';

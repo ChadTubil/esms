@@ -73,6 +73,8 @@
                                     <input class="form-check-input" type="checkbox" name="cadmindept" value="1"><span> ADMIN Department</span>
                                     <br>
                                     <input class="form-check-input" type="checkbox" name="ucashierhead" value="1"><span> CASHIER HEAD</span>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" name="ubookstore" value="1"><span> BOOKSTORE</span>
                                 </div>
                             </div>
                             <br>
@@ -220,6 +222,9 @@
                                                                         <br>
                                                                         <input class="form-check-input" type="checkbox" name="ucashierhead" value="1"
                                                                             <?php if($user['ucashierhead'] == 1){ echo 'checked'; }else{ } ?>><span> CASHIER HEAD</span>
+                                                                        <br>
+                                                                        <input class="form-check-input" type="checkbox" name="ubookstore" value="1"
+                                                                            <?php if($user['ubookstore'] == 1){ echo 'checked'; }else{ } ?>><span> BOOKSTORE</span>
                                                                     </div>
                                                                     <div class="text-start">
                                                                         <button type="submit" name="update" class="btn btn-primary">Update</button>
