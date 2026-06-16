@@ -11,8 +11,7 @@ class UsersController extends BaseController
         $this->usersModel = new UsersModel();
         $this->session = session();
     }
-    public function index()
-    {
+    public function index() {
         $data = [
             'page_title' => 'Holy Cross College | User Management',
             'page_heading' => 'USER MANAGEMENT! ',

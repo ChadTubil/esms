@@ -118,14 +118,19 @@ $routes->add('students/resetpassword/(:segment)', 'StudentsController::resetpass
 $routes->get('studentsinfo/(:segment)', 'StudentsController::studentInfo/$1');
 $routes->post('studentsinfo/update/(:segment)', 'StudentsController::studentInfoUpdate/$1');
 $routes->add('students/delete/(:segment)', 'StudentsController::deleteStudent/$1');
+$routes->add('students/credentials/(:segment)', 'StudentsController::createaccount/$1');
 // COLLEGE
 $routes->add('collegestudents', 'ColStudentsController::collegestudentdashboard');
 $routes->get('collegestudentsgrades', 'ColStudentsController::index');
 $routes->post('collegestudentsgrades', 'ColStudentsController::index');
 $routes->get('collegestudentsgradesview', 'ColStudentsController::collegestudentgradesview');
 $routes->post('collegestudentsgradesview', 'ColStudentsController::collegestudentgradesview');
+
 $routes->get('college-enrollment', 'EnrollmentController::collegeenrollment');
 $routes->post('college-enrollment', 'EnrollmentController::collegeenrollment');
+
+$routes->get('collegestudentsgradesviewnew', 'ColStudentsController::collegestudentgradesviewnew');
+$routes->post('collegestudentsgradesviewnew', 'ColStudentsController::collegestudentgradesviewnnew');
 // PROFILE
 $routes->get('profile', 'ProfileController::index');
 $routes->post('profile/changepassword/(:segment)', 'ProfileController::changepassword/$1');
@@ -262,11 +267,13 @@ $routes->add('books-assessment/addall/(:segment)/(:segment)', 'AccountingControl
 $routes->add('books-assessment/delete/(:segment)', 'AccountingController::deleteBooksAssessment/$1');
 $routes->add('books-assessment/process/(:segment)', 'AccountingController::processBooksAssessment/$1');
 $routes->add('book-assessment/print/(:segment)', 'AccountingController::bookassessmentPrint/$1');
+
 $routes->post('book-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitOR/$1/$2');
 $routes->add('book-assessment/release/(:segment)', 'AccountingController::releaseBooksAssessment/$1');
 $routes->add('student-accounts/view/submit-sob/(:segment)/(:segment)', 'AccountingController::submitSOB/$1/$2');
 $routes->get('uniform-setup', 'AccountingController::uniformSetup');
 $routes->post('uniform-setup', 'AccountingController::uniformSetup');
+$routes->add('uniforms-setup/delete/(:segment)', 'AccountingController::deleteUniforms/$1');
 $routes->get('uniforms-assessment/(:segment)', 'AccountingController::uniformsAssessment/$1');
 $routes->add('uniforms-assessment/add/(:segment)/(:segment)', 'AccountingController::addUniformsAssessment/$1/$2');
 $routes->post('uniforms-assessment/updateqty/(:segment)', 'AccountingController::updateUniformsAssessmentQty/$1');
@@ -274,6 +281,7 @@ $routes->add('uniforms-assessment/process/(:segment)', 'AccountingController::pr
 $routes->add('uniforms-assessment/print/(:segment)', 'AccountingController::uniformsassessmentPrint/$1');
 $routes->post('uniforms-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitORUniform/$1/$2');
 $routes->add('uniforms-assessment/release/(:segment)', 'AccountingController::releaseUniformsAssessment/$1');
+$routes->add('uniforms-assessment/delete/(:segment)', 'AccountingController::deleteUniformsAssessment/$1');
 
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
@@ -287,6 +295,7 @@ $routes->get('grades-college-resultnew', 'GradeController::gradesCollegeResultNe
 $routes->get('grades-college-encodingnew/(:segment)', 'GradeController::gradesCollegeEncodingNew/$1');
 $routes->post('grades-college-encoding-submitnew', 'GradeController::gradesCollegeEncodingSubmitNew');
 $routes->add('grades-college-printnew/(:segment)', 'GradeController::gradesCollegePrintNew/$1');
+
 
 // REGISTRAR
 $routes->get('grades-college-faculty', 'GradeController::gradesCollegeFaculty');
@@ -365,7 +374,6 @@ $routes->post('shs-classlist', 'SHSDepartmentController::classlist');
 $routes->get('shs-classlist-result', 'SHSDepartmentController::classlistResult');
 $routes->get('shs-classlist-students/(:segment)', 'SHSDepartmentController::classlistStudents/$1/');
 $routes->add('shs-classlist-print/(:segment)', 'SHSDepartmentController::classlistPrint/$1');
-
 
 // IBED DEPARTMENT
 $routes->get('ibed-level', 'IBEDDepartmentController::level');
@@ -455,9 +463,12 @@ $routes->get('col-advising/process/(:segment)', 'COLDepartmentController::advisi
 $routes->post('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
 $routes->add('col-advising/process-add/(:segment)', 'COLDepartmentController::advisingProcessAdd/$1');
 $routes->add('col-advising/submit-account/(:segment)/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1/$2');
-$routes->add('col-advising/drop/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2');
+$routes->add('col-advising/drop/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2/$3');
+
+$routes->post('col-advising/process-sched-update/(:segment)/(:segment)', 'COLDepartmentController::advisingSchedUpdate/$1/$2');
+
 $routes->get('col-assessment', 'COLDepartmentController::assessment');
-$routes->get('col-assessment/view/(:segment)', 'COLDepartmentController::assessmentView/$1');
+$routes->get('col-assessment/view/(:segment)/(:segment)', 'COLDepartmentController::assessmentView/$1/$2');
 $routes->add('col-assessment/print/(:segment)', 'COLDepartmentController::assessmentPrint/$1');
 $routes->add('col-assessment/aprroved/(:segment)', 'COLDepartmentController::assessmentApproved/$1');
 $routes->get('col-student-info', 'COLDepartmentController::studentinfoView');

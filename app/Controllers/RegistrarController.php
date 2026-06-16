@@ -354,6 +354,7 @@ class RegistrarController extends BaseController
                 ->where('studentsaccounts.sy', $SY)
                 ->where('studentsaccounts.sem', $SEM)
                 ->where('student_subjects.isdel', 0)
+                ->where('studentsaccounts.totalpayments != 0')
                 ->orderBy('students_col.studfullname', 'ASC')
                 ->findAll();
 
@@ -602,10 +603,10 @@ class RegistrarController extends BaseController
                 
                 // ========== ADD ONE BLANK ROW AFTER STUDENT (ONCE ONLY) ==========
                 // Punan ng blanko ang buong row
-                for($col = 'A'; $col <= 'V'; $col++) {
-                    $sheet->setCellValue($col . $row, '');
-                }
-                $row++; // Move to next row
+                // for($col = 'A'; $col <= 'V'; $col++) {
+                //     $sheet->setCellValue($col . $row, '');
+                // }
+                // $row++; // Move to next row
                 
                 $counter++;
             }

@@ -689,6 +689,8 @@ class COLDepartmentController extends BaseController
         ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
         ->where('enrollmenthistory_col.status', 'Registered')->where('enrollmenthistory_col.isdel', 0)->findAll();
 
+        $data['coursedata'] = $this->coursesModel->findAll();
+
         return view('college/admissionview', $data);
     }
     public function admissionProcess($id=null){
@@ -704,28 +706,48 @@ class COLDepartmentController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
 
-        $data['studentsshsdata'] = $this->colStudentsModel
-        ->select('students_col.*, permanentrecord_col.*')
-        ->join('permanentrecord_col', 'permanentrecord_col.studid = students_col.studid', 'left')
-        ->where('students_col.studid', $id)->findAll();
+        $data['studentsshsdata'] = $this->enrollmentHistoryCOLModel
+        ->select('enrollmenthistory_col.*, students_col.*, permanentrecord_col.*')
+        ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
+        ->join('permanentrecord_col', 'permanentrecord_col.studid = students_col.studid')
+        ->where('enrollmenthistory_col.ehid', $id)->findAll();
+
+        // $data['studentsshsdata'] = $this->enrollmentHistoryCOLModel
+        // ->select('enrollmenthistory_col.*, students_col.*, permanentrecord_col.*, additionalinfo_col.*')
+        // ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
+        // ->join('permanentrecord_col', 'permanentrecord_col.studid = students_col.studid')
+        // ->join('additionalinfo_col', 'additionalinfo_col.studid = students_col.studid')
+        // ->where('enrollmenthistory_col.ehid', $id)->findAll();
+
+        // print_r($id);
+
+        foreach($data['studentsshsdata'] as $enrollHistoryD){
+            $STUDID = $enrollHistoryD['studid'];
+            $EHID = $enrollHistoryD['ehid'];
+        }
+
+        // $data['studentsshsdata'] = $this->colStudentsModel
+        // ->select('students_col.*, permanentrecord_col.*')
+        // ->join('permanentrecord_col', 'permanentrecord_col.studid = students_col.studid', 'left')
+        // ->where('students_col.studid', $id)->findAll();
 
         $data['schoolyear'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['coursedata'] = $this->coursesModel->where('isdel', 0)->findAll();
 
         if($this->request->is('post')){
-            
-            // SHS SCHOOL RECORD 
+            // SCHOOL RECORD 
             $schoolrecorddata = [
-                'studid' => $id,
+                'studid' => $STUDID,
                 'sy' => $this->request->getVar('sy'),
                 'level' => $this->request->getVar('level'),
                 'sem' => $this->request->getVar('sem'),
                 'course' => $this->request->getVar('course'),
             ];
             $this->colSchoolRecordModel->save($schoolrecorddata);
-            // SHS FAMILY BACKGROUND 
+            
+            // FAMILY BACKGROUND 
             $fbdata = [
-                'studid' => $id,
+                'studid' => $STUDID,
                 'nfather' => $this->request->getVar('fname'),
                 'fmobile' => $this->request->getVar('fcontact'),
                 'fwork' => $this->request->getVar('fwork'),
@@ -737,11 +759,17 @@ class COLDepartmentController extends BaseController
                 'memail' => $this->request->getVar('memail'),
                 'moffice' => $this->request->getVar('moffice'),
             ];
-            $this->colFamilyBackgroundModel->save($fbdata);
-
+            $checkFB = $this->colFamilyBackgroundModel->where('studid', $STUDID)->findAll();
+            if(empty($checkFB)){
+                $this->colFamilyBackgroundModel->save($fbdata);
+            }else{
+                // $this->colFamilyBackgroundModel->where('studid', $STUDID)->update($STUDID, $fbdata);
+                $this->colFamilyBackgroundModel->where('studid', $STUDID)->set($fbdata)->update();
+            }
+            
             // ADDITIONAL INFO
             $addinfodata = [
-                'studid' => $id,
+                'studid' => $STUDID,
                 'fdateofbirth' => $this->request->getVar('fdateofbirth'),
                 'fplaceofbirth' => $this->request->getVar('fplaceofbirth'),
                 'faddress' => $this->request->getVar('faddress'),
@@ -790,10 +818,16 @@ class COLDepartmentController extends BaseController
                 'con_regguid_diagnosis' => $this->request->getVar('con_regguid_diagnosis'),
                 'aisdel' => 0,
             ];
-            $this->additionalInfoCOLModel->save($addinfodata);
+            $checkAddInfo = $this->additionalInfoCOLModel->where('studid', $STUDID)->findAll();
+            if(empty($checkAddInfo)){
+                $this->additionalInfoCOLModel->save($addinfodata);
+            }else{
+                // $this->additionalInfoCOLModel->where('studid', $STUDID)->update($STUDID, $addinfodata);
+                $this->additionalInfoCOLModel->where('studid', $STUDID)->set($addinfodata)->update();
+            }
 
             // PERMANENT RECORD 
-            $PRSHSInfo = $this->colPermanentRecordModel->where('studid', $id)->findAll();
+            $PRSHSInfo = $this->colPermanentRecordModel->where('studid', $STUDID)->findAll();
             foreach($PRSHSInfo as $prshs) {
                 $PRSHSID = $prshs['prid'];
             }
@@ -805,18 +839,19 @@ class COLDepartmentController extends BaseController
             ];
             $this->colPermanentRecordModel->where('prid', $PRSHSID)->update($PRSHSID, $prdata);
             // ENROLLMENT TEMP DATA UPDATE
-            $EHSHSInfo = $this->enrollmentHistoryCOLModel->where('studid', $id)->findAll();
-            foreach($EHSHSInfo as $ehshs) {
-                $EHSHSID = $ehshs['ehid'];
-            }
-            $ehshsdata = [
+            // $EHSHSInfo = $this->enrollmentHistoryCOLModel->where('studid', $STUDID)->findAll();
+            // foreach($EHSHSInfo as $ehshs) {
+            //     $EHSHSID = $ehshs['ehid'];
+            // }
+            $ehdata = [
                 'sy' => $this->request->getVar('sy'),
                 'level' => $this->request->getVar('level'),
                 'sem' => $this->request->getVar('sem'),
                 'course' => $this->request->getVar('course'),
                 'status' => 'Admitted',
             ];
-            $this->enrollmentHistoryCOLModel->where('ehid', $EHSHSID)->update($EHSHSID, $ehshsdata);
+            $this->enrollmentHistoryCOLModel->where('ehid', $EHID)->update($EHID, $ehdata);
+            // $this->enrollmentHistoryCOLModel->where('ehid', $id)->set($ehshsdata)->update();
             session()->setTempdata('success', 'Admission processed successfully!', 2);
             return redirect()->to(base_url()."col-admission");
         }
@@ -882,7 +917,9 @@ class COLDepartmentController extends BaseController
         ->select('enrollmenthistory_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
         ->join('courses', 'courses.courid = enrollmenthistory_col.course')
-        ->where('students_col.studid', $id)->findAll();
+        ->where('enrollmenthistory_col.ehid', $id)
+        ->where('enrollmenthistory_col.status', 'Admitted')->findAll();
+
         foreach($data['enrollmenthistorycoldata'] as $ehs) {
             $COURSE = $ehs['course'];
             $LEVEL = $ehs['level'];
@@ -901,8 +938,6 @@ class COLDepartmentController extends BaseController
         foreach($data['colcurriculumdata'] as $colcurrdata){
             $COLCURRID = $colcurrdata['currid'];
         }
-
-        
 
         $data['colsectiondata'] = $this->sectionsModel
         ->select('sections.*, courses.*')
@@ -972,11 +1007,12 @@ class COLDepartmentController extends BaseController
             }
         }
         $data['colassessmentdata'] = $this->colAssessmentModel
-        ->select('assessment_col.*, curriculum.*, sections.*, students_col.*, courses.*')
+        ->select('assessment_col.*, curriculum.*, sections.*, students_col.*, courses.*, enrollmenthistory_col.*')
         ->join('curriculum', 'curriculum.currid = assessment_col.curriculum')
         ->join('sections', 'sections.secid = assessment_col.section')
         ->join('students_col', 'students_col.studid = assessment_col.studid')
         ->join('courses', 'courses.courid = assessment_col.course')
+        ->join('enrollmenthistory_col', 'enrollmenthistory_col.studid = students_col.studid')
         ->where('assessment_col.studid', $STUDID)
         ->where('assessment_col.sy', $SY)
         ->where('assessment_col.level', $LEVEL)
@@ -995,7 +1031,7 @@ class COLDepartmentController extends BaseController
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
+        ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
         // ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
@@ -1043,7 +1079,7 @@ class COLDepartmentController extends BaseController
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
+        ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
         // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
@@ -1062,7 +1098,7 @@ class COLDepartmentController extends BaseController
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
+        ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
         // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
@@ -1081,7 +1117,7 @@ class COLDepartmentController extends BaseController
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
+        ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
         // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
@@ -1099,7 +1135,7 @@ class COLDepartmentController extends BaseController
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
-        // ->where('currdata.sem', $SEM)
+        ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
         // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
@@ -1135,18 +1171,22 @@ class COLDepartmentController extends BaseController
             return redirect()->to(base_url()."col-advising/process/".$id);
         }
     }
-    public function advisingDrop($id=null, $studid=null) {
+    public function advisingDrop($id=null, $studid=null, $ehid=null) {
 
         $this->studentSubjectsModel->where('ssid', $id)->set(['isdel' => 1])->update();
         session()->setTempdata('success', 'Subject is dropped successfully!', 2);
-        return redirect()->to(base_url()."col-advising/process/".$studid);
+        return redirect()->to(base_url()."col-advising/process/".$ehid);
     }
     public function advisingSubmitAccount($id=null, $totalfeee=null) {
+        $EHDATA = $this->enrollmentHistoryCOLModel->where('ehid', $id)->findAll();
+        foreach($EHDATA as $ehdata){
+            $STUDID = $ehdata['studid'];
+        }
         $ASSESSMENTDATACHECKING = $this->colAssessmentModel
         ->select('assessment_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = assessment_col.studid')
         ->join('courses', 'courses.courid = assessment_col.course')
-        ->where('assessment_col.studid', $id)
+        ->where('assessment_col.studid', $STUDID)
         ->findAll();
         foreach($ASSESSMENTDATACHECKING as $adc) {
             $STUDENTNO = $adc['studentno'];
@@ -1167,14 +1207,14 @@ class COLDepartmentController extends BaseController
             'accountstatus' => 'Active',
             'createddate' => date('Y-m-d'),
         ];
-        $FINDEHSHS = $this->enrollmentHistoryCOLModel
-        ->where('studid', $id)
-        ->where('sy', $SY)
-        ->where('level', $LEVEL)
-        ->findAll();
-        foreach($FINDEHSHS as $findehshs){
-            $STUDENTID = $findehshs['studid'];
-        }
+        // $FINDEHSHS = $this->enrollmentHistoryCOLModel
+        // ->where('studid', $id)
+        // ->where('sy', $SY)
+        // ->where('level', $LEVEL)
+        // ->findAll();
+        // foreach($FINDEHSHS as $findehshs){
+        //     $STUDENTID = $findehshs['studid'];
+        // }
 
         $ehshsdata = [
             'status' => 'Assessed',
@@ -1187,9 +1227,20 @@ class COLDepartmentController extends BaseController
 
         $this->colAssessmentModel->where('assid', $ASSESSMENTID)->update($ASSESSMENTID, $shsassessment);
         $this->studentAccountsModel->save($studentsaccounts);
-        $this->enrollmentHistoryCOLModel->where('studid', $STUDENTID)->set(['status' => 'Assessed'])->update();
+        $this->enrollmentHistoryCOLModel->where('ehid', $id)->set(['status' => 'Assessed'])->update();
         session()->setTempdata('success', 'Student is assessed successfully!', 2);
         return redirect()->to(base_url()."col-advising");
+    }
+    public function advisingSchedUpdate($ssid=null, $ehid=null){
+        if($this->request->is('post')) {
+            $data = [
+                'section' => $this->request->getVar('section'),
+            ];
+
+            $this->studentSubjectsModel->where('ssid', $ssid)->update($ssid, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."col-advising/process/".$ehid);
+        }
     }
     public function assessment() {
         $data = [
@@ -1214,7 +1265,7 @@ class COLDepartmentController extends BaseController
 
         return view('college/assessmentview', $data);
     }
-    public function assessmentView($id=null) {
+    public function assessmentView($id=null, $ehid=null) {
         $data = [
             'page_title' => 'Holy Cross College | College Assessment View',
             'page_heading' => 'COLLEGE ASSESSMENT VIEW!',
@@ -1230,7 +1281,9 @@ class COLDepartmentController extends BaseController
         ->select('enrollmenthistory_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
         ->join('courses', 'courses.courid = enrollmenthistory_col.course')
-        ->where('students_col.studid', $id)->findAll();
+        ->where('enrollmenthistory_col.ehid', $ehid)
+        ->where('students_col.studid', $id)
+        ->findAll();
         foreach($data['enrollmenthistoryshsdata'] as $ehs) {
             $COURSE = $ehs['course'];
             $LEVEL = $ehs['level'];
@@ -1239,11 +1292,12 @@ class COLDepartmentController extends BaseController
             $STUDID = $ehs['studid'];
         }
         $data['colassessmentdata'] = $this->colAssessmentModel
-        ->select('assessment_col.*, curriculum.*, sections.*, students_col.*, courses.*')
+        ->select('assessment_col.*, curriculum.*, sections.*, students_col.*, courses.*, enrollmenthistory_col.*')
         ->join('curriculum', 'curriculum.currid = assessment_col.curriculum')
         ->join('sections', 'sections.secid = assessment_col.section')
         ->join('students_col', 'students_col.studid = assessment_col.studid')
         ->join('courses', 'courses.courid = assessment_col.course')
+        ->join('enrollmenthistory_col', 'enrollmenthistory_col.studid = students_col.studid')
         ->where('assessment_col.studid', $STUDID)
         ->where('assessment_col.sy', $SY)
         ->where('assessment_col.level', $LEVEL)
@@ -1256,10 +1310,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
 
@@ -1272,6 +1326,16 @@ class COLDepartmentController extends BaseController
         ->findAll();
         foreach($data['shsratedata'] as $rates){
             $RATEID = $rates['rateid'];
+            $RATESID = $rates['rateid'];
+            $RATEMAJOR = $rates['major'];
+            $RATEMINOR = $rates['minor'];
+            $RATENSTP1 = $rates['nstp01'];
+            $RATENSTP2 = $rates['nstp02'];
+            if($RATENSTP2 == '0.00'){
+                $NSTP = $RATENSTP1;
+            }else{
+                $NSTP = $RATENSTP2;
+            }
         }
 
         $data['shsrofdata'] = $this->rateOtherFeesModel->where('rateid', $RATEID)->findAll();
@@ -1282,6 +1346,9 @@ class COLDepartmentController extends BaseController
             ')->join('rates', 'rates.rateid = rateotherfees.rateid')
             ->where('rates.rateid', $RATEID)
             ->findAll();
+        foreach($data['totalotherfees'] as $dtof){
+            $TOTALOTHERFEES = $dtof['totalrof'];
+        }
 
          $data['totalminorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalminorunits')
@@ -1289,15 +1356,18 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
         ->findAll();
+        foreach($data['totalminorunits'] as $tmnu){
+            $TOTALMINORUNITS = $tmnu['totalminorunits'];
+        }
         
         $data['totalmajorunits'] = $this->studentSubjectsModel
         ->select('SUM(subjects.units) as totalmajorunits')
@@ -1305,45 +1375,65 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
             ->findAll();
+        foreach($data['totalmajorunits'] as $tmju){
+            $TOTALMAJORUNITS = $tmju['totalmajorunits'];
+        }
+        $TOTALUNITS = $TOTALMAJORUNITS + $TOTALMINORUNITS;
         $data['totalmajorhours'] = $this->studentSubjectsModel
         ->select('SUM(subjects.hours) as totalmajorhours')
         ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
             ->findAll();
+        foreach($data['totalmajorhours'] as $tmh){
+            $TOTALMAJORHOURS = $tmh['totalmajorhours'];
+        }
         $data['totalminorhours'] = $this->studentSubjectsModel
         ->select('SUM(subjects.hours) as totalminorhours')
         ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
         ->where('student_subjects.isdel', 0)
         ->findAll();
+        foreach($data['totalminorhours'] as $tmih){
+            $TOTALMINORHOURS = $tmih['totalminorhours'];
+        }
+        //MAJOR COMPUTATION
+        $MAJORAMOUNT = $RATEMAJOR * $TOTALMAJORHOURS;
+        //MINOR COMPUTATION
+        $MINORAMOUNT = $RATEMINOR * $TOTALMINORHOURS;
+        //TOTAL TUITION FEE
+        $TOTALTUITIONFEE = $MAJORAMOUNT + $MINORAMOUNT + $NSTP;
+        
+        
+        
+        $data['totalfee'] = $GRANDTOTAL = $TOTALTUITIONFEE + $TOTALOTHERFEES;
         
         return view('college/assessmentviewing', $data);
     }
@@ -1385,7 +1475,9 @@ class COLDepartmentController extends BaseController
         ->select('enrollmenthistory_col.*, students_col.*, courses.*')
         ->join('students_col', 'students_col.studid = enrollmenthistory_col.studid')
         ->join('courses', 'courses.courid = enrollmenthistory_col.course')
-        ->where('students_col.studid', $id)->findAll();
+        ->where('enrollmenthistory_col.ehid', $id)
+        // ->where('students_col.studid', $id)
+        ->findAll();
         foreach($enrollmenthistoryshsdata as $ehs) {
             $COURSE = $ehs['course'];
             $LEVEL = $ehs['level'];
@@ -1435,10 +1527,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('student_subjects.isdel', 0)
         ->findAll();
 
@@ -1482,10 +1574,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         
         ->where('student_subjects.isdel', 0)
@@ -1499,10 +1591,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         
         ->where('student_subjects.isdel', 0)
@@ -1518,10 +1610,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1537,10 +1629,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1557,10 +1649,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1577,10 +1669,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 1)
         // ->where('subjects.subcode !=', "NSTP01")
         // ->where('subjects.subcode !=', "NSTP02")
@@ -1596,10 +1688,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         ->where('subjects.subcode !=', "NSTP01")
         ->where('subjects.subcode !=', "NSTP02")
@@ -1616,10 +1708,10 @@ class COLDepartmentController extends BaseController
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
         ->where('student_subjects.studid', $STUDID)
-        ->where('currdata.level', $LEVEL)
+        // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
         ->where('curriculum.course', $COURSE)
-        ->where('curriculum.sy', $SY)
+        // ->where('curriculum.sy', $SY)
         ->where('subjects.major', 0)
         // ->where('subjects.subcode !=', "NSTP01")
         // ->where('subjects.subcode !=', "NSTP02")

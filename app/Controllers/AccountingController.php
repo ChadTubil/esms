@@ -958,9 +958,11 @@ class AccountingController extends BaseController
         ->select('studentsaccounts.*, assessment_col.*')
         ->join('assessment_col', 'assessment_col.assid = studentsaccounts.assessmentid', 'left')
         ->where('studentno', $studentno)->findAll();
+        // ->where('studentno', $studentno)->findAll();
         
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
         $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
+        
         $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
 
         $data['allfeestructuredata'] = $this->feeStructureModel

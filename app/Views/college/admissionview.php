@@ -63,7 +63,11 @@
                                                     if($enrollmenthistoryshsd['course'] == '0') {
                                                         echo "-";
                                                     } else {
-                                                        echo $enrollmenthistoryshsd['course'];
+                                                        foreach($coursedata as $coursed){
+                                                            if($coursed['courid'] == $enrollmenthistoryshsd['course']){
+                                                                echo $coursed['code'];
+                                                            }
+                                                        }
                                                     }
                                                 ?>
                                             </td>
@@ -98,7 +102,7 @@
                                             </td>
                                             <td style="text-align: center;">
                                                 <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="PROCESS"
-                                                    onclick="window.location.href='<?= base_url(); ?>col-admission/process/<?= $enrollmenthistoryshsd['studid']; ?>';">
+                                                    onclick="window.location.href='<?= base_url(); ?>col-admission/process/<?= $enrollmenthistoryshsd['ehid']; ?>';">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M12.0001 8.32739V15.6537" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>

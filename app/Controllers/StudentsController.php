@@ -3,19 +3,22 @@
 namespace App\Controllers;
 use App\Models\UsersModel;
 use App\Models\StudentsModel;
+use App\Models\COLStudentsModel;
+
 class StudentsController extends BaseController
 {
     public $usersModel;
     public $studentsModel;
+    public $colstudentsModel;
     public $session;
     public function __construct() {
         helper('form');
         $this->usersModel = new UsersModel();
         $this->studentsModel = new StudentsModel();
+        $this->colstudentsModel = new COLStudentsModel();
         $this->session = session();
     }
-    public function index()
-    {
+    public function index() {
         $data = [
             'page_title' => 'Holy Cross College | Students',
             'page_heading' => 'STUDENTS! ',
@@ -28,20 +31,38 @@ class StudentsController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $StudentsCondition = array('studisdel' => 0);
-        $data['studentdata'] = $this->studentsModel->where($StudentsCondition)->findAll();
+        // $StudentsCondition = array('studisdel' => 0);
+        // $students = $this->studentsModel->where($StudentsCondition)->findAll();
+        // $colStudents = $this->colstudentsModel->where('studisdel', 0)->findAll();
+        // $data['studentdata'] = array_merge($students, $colStudents);
 
         if($this->request->is('post')){
             $searchStudent = $this->request->getVar('searchstud');
 
             if($searchStudent == ''){
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->studentsModel->where($StudentsCondition)->findAll();
+                // $students = $this->studentsModel->where($StudentsCondition)->findAll();
+                // $colStudents = $this->colstudentsModel->where('studisdel', 0)->findAll();
+                // $data['resultStudent'] = array_merge($students, $colStudents);
+                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)->findAll();
                 return view('studentsviewsearchresult', $data);
             }
             else{
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->studentsModel->where($StudentsCondition)
+                // $students = $this->studentsModel->where($StudentsCondition)
+                // ->like('studentno', $searchStudent)
+                // ->orLike('studln', $searchStudent)
+                // ->orLike('studfn', $searchStudent)
+                // ->orLike('studfullname', $searchStudent)
+                // ->findAll();
+                // $colStudents = $this->colstudentsModel->where('studisdel', 0)
+                // ->like('studentno', $searchStudent)
+                // ->orLike('studln', $searchStudent)
+                // ->orLike('studfn', $searchStudent)
+                // ->orLike('studfullname', $searchStudent)
+                // ->findAll();
+                // $data['resultStudent'] = array_merge($students, $colStudents);
+                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)
                 ->like('studentno', $searchStudent)
                 ->orLike('studln', $searchStudent)
                 ->orLike('studfn', $searchStudent)
@@ -58,7 +79,7 @@ class StudentsController extends BaseController
             'studstatus' => '1',
         ];
 
-        $this->studentsModel->where('studid', $id)->update($id, $data);
+        $this->colstudentsModel->where('studid', $id)->update($id, $data);
         session()->setTempdata('activatesuccess', 'Account is activated!', 2);
         return redirect()->to(base_url()."students");
     }
@@ -67,7 +88,7 @@ class StudentsController extends BaseController
             'studstatus' => '2',
         ];
 
-        $this->studentsModel->where('studid', $id)->update($id, $data);
+        $this->colstudentsModel->where('studid', $id)->update($id, $data);
         session()->setTempdata('activatesuccess', 'Account is activated!', 2);
         return redirect()->to(base_url()."students");
     }
@@ -76,7 +97,7 @@ class StudentsController extends BaseController
             'studstatus' => '3',
         ];
 
-        $this->studentsModel->where('studid', $id)->update($id, $data);
+        $this->colstudentsModel->where('studid', $id)->update($id, $data);
         session()->setTempdata('activatesuccess', 'Account is activated!', 2);
         return redirect()->to(base_url()."students");
     }
@@ -85,7 +106,7 @@ class StudentsController extends BaseController
             'studstatus' => '0',
         ];
 
-        $this->studentsModel->where('studid', $id)->update($id, $data);
+        $this->colstudentsModel->where('studid', $id)->update($id, $data);
         session()->setTempdata('activatesuccess', 'Account is deactivated!', 2);
         return redirect()->to(base_url()."students");
     }
@@ -104,12 +125,11 @@ class StudentsController extends BaseController
         return redirect()->to(base_url()."students");
     }
     public function deleteStudent($id=null) {
-
         $data = [
             'studisdel' => '1',
         ];
 
-        $this->studentsModel->where('studid', $id)->update($id, $data);
+        $this->colstudentsModel->where('studid', $id)->update($id, $data);
         session()->setTempdata('activatesuccess', 'Student is deleted!', 2);
         return redirect()->to(base_url()."students");
     }
@@ -126,7 +146,7 @@ class StudentsController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $StudentsCondition = array('studid' => $id);
-        $data['studentdata'] = $this->studentsModel->where($StudentsCondition)->findAll();
+        $data['studentdata'] = $this->colstudentsModel->where($StudentsCondition)->findAll();
 
         return view('studentsinfo', $data);
     }
@@ -157,9 +177,27 @@ class StudentsController extends BaseController
                 'studcreatedat' => $this->request->getVar('section'),
             ];
 
-            $this->studentsModel->where('studid', $id)->update($id, $data);
+            $this->colstudentsModel->where('studid', $id)->update($id, $data);
             session()->setTempdata('updatesuccess', 'Update Successful!', 2);
             return redirect()->to(base_url()."students");
         }
+    }
+    public function createaccount($id=null) {
+        $checkStudentUserAccount = $this->usersModel->where('uaccountid', $id)->where('uisdel', '0')->findAll();
+        if(empty($checkStudentUserAccount)){
+            $data = [
+                'uaccountid' => $id,
+                'username' => $id,
+                'upassword' => '123456',
+                'ustudent' => '1'
+            ];
+            $this->usersModel->save($data);
+            session()->setTempdata('updatesuccess', 'Student Credentials Created Successfully!', 2);
+            return redirect()->to(base_url()."students");
+        } else {
+            session()->setTempdata('updatesuccess', 'Student Credentials already exist!', 2);
+            return redirect()->to(base_url()."students");
+        }
+        
     }
 }

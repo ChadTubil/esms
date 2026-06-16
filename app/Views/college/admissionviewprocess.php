@@ -27,7 +27,7 @@
                     </div>
                     <?php foreach($studentsshsdata as $stud): ?>
                         <div class="card-body">
-                            <?= form_open('col-admission/process/'.$stud['studid']); ?>
+                            <?= form_open('col-admission/process/'.$stud['ehid']); ?>
                                 <div class="row">
                                     <div class="col-lg-12 col-sm-12">
                                         <h5>NAME: <strong><?= $stud['studfullname']; ?></strong></h5>
@@ -51,10 +51,18 @@
                                                 <div class="form-group">
                                                     <label class="form-label">SCHOOL YEAR</label>
                                                     <select name="sy" class="form-select">
-                                                        <option></option>
-                                                        <?php foreach ($schoolyear as $sy): ?>
-                                                            <option value="<?php echo $sy['syname']; ?>"><?php echo $sy['syname']; ?></option>
-                                                        <?php endforeach; ?>
+                                                        <?php if(empty($stud['sy'])): ?>
+                                                            <option></option>
+                                                            <?php foreach ($schoolyear as $sy): ?>
+                                                                <option value="<?php echo $sy['syname']; ?>"><?php echo $sy['syname']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <option value="<?= $stud['sy'] ?>" selected><?= $stud['sy'] ?></option>
+                                                            <option></option>
+                                                            <?php foreach ($schoolyear as $sy): ?>
+                                                                <option value="<?php echo $sy['syname']; ?>"><?php echo $sy['syname']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -62,11 +70,20 @@
                                                 <div class="form-group">
                                                     <label class="form-label">LEVEL</label>
                                                     <select name="level" class="form-select">
-                                                        <option></option>
-                                                        <option value="1st Year">1st Year</option>
-                                                        <option value="2nd Year">2nd Year</option>
-                                                        <option value="3rd Year">3rd Year</option>
-                                                        <option value="4th Year">4th Year</option>
+                                                        <?php if(empty($stud['level'])): ?>
+                                                            <option></option>
+                                                            <option value="1st Year">1st Year</option>
+                                                            <option value="2nd Year">2nd Year</option>
+                                                            <option value="3rd Year">3rd Year</option>
+                                                            <option value="4th Year">4th Year</option>
+                                                        <?php else: ?>
+                                                            <option value="<?= $stud['level'] ?>" selected><?= $stud['level'] ?></option>
+                                                            <option></option>
+                                                            <option value="1st Year">1st Year</option>
+                                                            <option value="2nd Year">2nd Year</option>
+                                                            <option value="3rd Year">3rd Year</option>
+                                                            <option value="4th Year">4th Year</option>
+                                                        <?php endif; ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -74,10 +91,18 @@
                                                 <div class="form-group">
                                                     <label class="form-label">SEMESTER</label>
                                                     <select name="sem" class="form-select">
-                                                        <option></option>
-                                                        <option value="1st Semester">1st Semester</option>
-                                                        <option value="2nd Semester">2nd Semester</option>
-                                                        <option value="Summer">Summer</option>
+                                                        <?php if(empty($stud['sem'])): ?>
+                                                            <option></option>
+                                                            <option value="1st Semester">1st Semester</option>
+                                                            <option value="2nd Semester">2nd Semester</option>
+                                                            <option value="Summer">Summer</option>
+                                                        <?php else: ?>
+                                                            <option value="<?= $stud['sem'] ?>"><?= $stud['sem'] ?></option>
+                                                            <option></option>
+                                                            <option value="1st Semester">1st Semester</option>
+                                                            <option value="2nd Semester">2nd Semester</option>
+                                                            <option value="Summer">Summer</option>
+                                                        <?php endif; ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -85,10 +110,25 @@
                                                 <div class="form-group">
                                                     <label class="form-label">COURSE</label>
                                                     <select name="course" class="form-select">
-                                                        <option></option>
-                                                        <?php foreach ($coursedata as $coursed): ?>
-                                                            <option value="<?php echo $coursed['courid']; ?>"><?php echo $coursed['code']; ?> - <?php echo $coursed['name']; ?></option>
-                                                        <?php endforeach; ?>
+                                                        <?php if($stud['course'] == 0): ?>
+                                                            <option></option>
+                                                            <?php foreach ($coursedata as $coursed): ?>
+                                                                <option value="<?php echo $coursed['courid']; ?>"><?php echo $coursed['code']; ?> - <?php echo $coursed['name']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <option value="<?= $stud['course'] ?>"><?php 
+                                                                    foreach ($coursedata as $coursed){
+                                                                        if($coursed['courid'] == $stud['course']){
+                                                                            echo $coursed['code'].' - '.$coursed['name'];
+                                                                        }
+                                                                    }
+                                                                ?>
+                                                                <?php foreach ($coursedata as $coursed): ?>
+                                                                    <option value="<?php echo $coursed['courid']; ?>"><?php echo $coursed['code']; ?> - <?php echo $coursed['name']; ?></option>
+                                                                <?php endforeach; ?>
+                                                            </option>
+                                                        <?php endif; ?>
+                                                        
                                                     </select>
                                                 </div>
                                             </div>

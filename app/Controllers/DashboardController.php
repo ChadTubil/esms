@@ -1313,6 +1313,7 @@ class DashboardController extends BaseController
         $data['TOTALGR12'] = $data['stem12'] + $data['abm12'] + $data['humss12'] + $data['he12'] + $data['ict12']; //TOTAL GR 12 STUDENTS
 
         return view('dashboardview', $data);
+        //
         
     }
     public function logout() 

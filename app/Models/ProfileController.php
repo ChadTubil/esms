@@ -6,6 +6,8 @@ use App\Models\SemesterModel;
 use App\Models\StudentsModel;
 use App\Models\EmployeesModel;
 use App\Models\EnrollmentTempDataModel;
+
+use App\Models\COLStudentsModel;
 class ProfileController extends BaseController
 {
     public $usersModel;
@@ -13,6 +15,8 @@ class ProfileController extends BaseController
     public $studentModel;
     public $employeesModel;
     public $etdModel;
+
+    public $colstudentsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -21,10 +25,11 @@ class ProfileController extends BaseController
         $this->studentModel = new StudentsModel();
         $this->employeesModel = new EmployeesModel();
         $this->etdModel = new EnrollmentTempDataModel();
+
+        $this->colstudentsModel = new COLStudentsModel();
         $this->session = session();
     }
-    public function index()
-    {
+    public function index() {
         $data = [
             'page_title' => 'Holy Cross College | Profile',
             'page_heading' => 'PROFILE! ',
@@ -36,7 +41,7 @@ class ProfileController extends BaseController
         $uid = session()->get('logged_user');
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
-        $data['studdata'] = $this->studentModel->findAll();
+        $data['studdata'] = $this->colstudentsModel->findAll();
         $userinfo = $this->usersModel->where('uid', $uid)->findAll();
         if($userinfo != '') {
             foreach($userinfo as $uinfo) {
@@ -46,14 +51,14 @@ class ProfileController extends BaseController
             }
             if($userstudent == '1') {
                 // STUDENT
-                $data['profiledata'] = $this->studentModel->where('studentno', $useraccountid)->findAll();
+                $data['profiledata'] = $this->colstudentsModel->where('studentno', $useraccountid)->findAll();
             }
             else if($useradmin == '1') {
                 // EMPLOYEE
                 $data['profiledata'] = $this->employeesModel->where('empnum', $useraccountid)->findAll();
             }
         }
-        $data['studdata'] = $this->studentModel->where('studentno', $useraccountid)->findAll();
+        $data['studdata'] = $this->colstudentsModel->where('studentno', $useraccountid)->findAll();
         foreach($data['studdata'] as $sd) {
             $studid = $sd['studid'];
         }
@@ -95,7 +100,7 @@ class ProfileController extends BaseController
                 'studemail' => $this->request->getVar('email'),
             ];
 
-            $this->studentModel->where('studid', $id)->update($id, $data);
+            $this->colstudentsModel->where('studid', $id)->update($id, $data);
             session()->setTempdata('updateaccountsuccess', 'Update successful!', 2);
             return redirect()->to(base_url()."profile");
         }

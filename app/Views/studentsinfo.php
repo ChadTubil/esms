@@ -110,10 +110,6 @@
                                         <label class="form-label" for="validationDefault01">EMAIL</label>
                                         <input type="text" name="email" class="form-control" value="<?= $sdata['studemail']; ?>">
                                     </div>
-                                    <div class="col-lg-4 col-sm-12">
-                                        <label class="form-label" for="validationDefault01">SECTION</label>
-                                        <input type="text" name="section" class="form-control" value="<?= $sdata['studcreatedat']; ?>">
-                                    </div>
                                 </div>
                                 <br>
                                 <button class="btn btn-success" type="submit" name="add" style="width: 100%;">UPDATE</button>

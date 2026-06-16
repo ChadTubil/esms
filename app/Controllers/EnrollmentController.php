@@ -23,6 +23,10 @@ use App\Models\RatesModel;
 use App\Models\RateOtherFeesModel;
 use App\Models\RateDuesModel;
 use App\Models\RoomsModel;
+
+use App\Models\COLStudentsModel;
+use App\Models\EnrollmentHistoryCOLModel;
+use App\Models\COLSchoolRecordModel;
 use TCPDF;
 class EnrollmentController extends BaseController
 {
@@ -48,6 +52,10 @@ class EnrollmentController extends BaseController
     public $ratesModel;
     public $rateDuesModel;
     public $roomsModel;
+
+    public $colstudentsModel;
+    public $enrollmentHistoryCOLModel;
+    public $colSchoolRecordModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -73,10 +81,13 @@ class EnrollmentController extends BaseController
         $this->rofModel = new RateOtherFeesModel();
         $this->rateDuesModel = new RateDuesModel();
         $this->roomsModel = new RoomsModel();
+
+        $this->colstudentsModel = new COLStudentsModel();
+        $this->enrollmentHistoryCOLModel = new EnrollmentHistoryCOLModel();
+        $this->colSchoolRecordModel = new COLSchoolRecordModel();
         $this->session = session();
     }
-    public function index()
-    {
+    public function index() {
         $data = [
             'page_title' => 'Holy Cross College | Registration',
             'page_heading' => 'REGISTRATION! ',
@@ -1290,16 +1301,18 @@ class EnrollmentController extends BaseController
         foreach($UserData as $user) {
             $STUDID = $user['uaccountid'];
         }
-        $StudData = $this->studentsModel->where('studentno', $STUDID)->findAll();
+        $StudData = $this->colstudentsModel->where('studentno', $STUDID)->findAll();
         foreach($StudData as $stud) {
             $STUDENTID = $stud['studid'];
             $STUDENTNAME = $stud['studfullname'];
         }
-        $SRData = $this->srModel->where('srstudid', $STUDENTID)->findAll();
+
+        $SRData = $this->colSchoolRecordModel->where('studid', $STUDENTID)->findAll();
         foreach($SRData as $sr) {
-            $SRCOURSE = $sr['srcourseid'];
+            $SRCOURSE = $sr['course'];
         }
-        $data['etddata'] = $this->etdModel->where('studno', $STUDENTID)->findAll();
+        
+        $data['etddata'] = $this->enrollmentHistoryCOLModel->where('studid', $STUDENTID)->findAll();
         if($this->request->is('post')) {
             $rules = [
                 'schoolyear' => [
@@ -1319,11 +1332,11 @@ class EnrollmentController extends BaseController
                 $SY = $this->request->getVar('schoolyear');
                 $SEM = $this->request->getVar('semester');
                 $LEVEL = $this->request->getVar('level');
-                $CheckEnrollment = $this->etdModel->where('sy', $SY)->where('sem', $SEM)->where('level', $LEVEL)->where('studno', $STUDENTID)->findAll();
+                $CheckEnrollment = $this->enrollmentHistoryCOLModel->where('sy', $SY)->where('sem', $SEM)->where('level', $LEVEL)->where('studid', $STUDENTID)->findAll();
                 if(empty($CheckEnrollment)) {
                     $etdData = [
-                        'studno' => $STUDENTID,
-                        'fullname' => $STUDENTNAME,
+                        'studid' => $STUDENTID,
+                        'studfullname' => $STUDENTNAME,
                         'sy' => $SY,
                         'sem' => $SEM,
                         'level' => $LEVEL,
@@ -1331,7 +1344,7 @@ class EnrollmentController extends BaseController
                         'status' => 'Registered',
                         'date' => date('Y-m-d'),
                     ];
-                    $this->etdModel->save($etdData);
+                    $this->enrollmentHistoryCOLModel->save($etdData);
                     session()->setTempdata('success', 'You have successfully registered for the school year '.$SY.' , semester '.$SEM.' and year level '.$LEVEL.' .', 3);
                     return redirect()->to(current_url());
                 } else {

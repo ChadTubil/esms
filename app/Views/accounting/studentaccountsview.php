@@ -96,7 +96,6 @@
                                     <tr>
                                         <td style="text-align: center;">NO</td>
                                         <td style="text-align: center;">SY</td>
-                                        <td style="text-align: center;">SEM</td>
                                     </tr>
                                     <?php foreach($studentaccountsdata as $studentaccountsd): ?>
                                         <tr>
@@ -110,8 +109,7 @@
                                                         </svg>
                                                     </span><?= $studentaccountsd['assessmentid']; ?>
                                                 </a></td>
-                                            <td style="text-align: center;"><?= $studentaccountsd['sy']; ?></td>
-                                            <td style="text-align: center;"><?= $studentaccountsd['sem']; ?></td>
+                                            <td style="text-align: left;"><?= $studentaccountsd['sy']; ?> - <?= $studentaccountsd['sem']; ?></td>
                                         </tr>
                                     <?php endforeach; ?>    
                                 </tbody>

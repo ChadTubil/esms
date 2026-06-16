@@ -12,8 +12,7 @@ class LoginController extends BaseController
         $this->session = session();
         $this->usersModel = new UsersModel();
     }
-    public function index()
-    {
+    public function index() {
         $data = [];
         if(session()->has('logged_user')){
             return redirect()->to('dashboard');
@@ -71,8 +70,7 @@ class LoginController extends BaseController
         }
         return view('loginview', $data);
     }
-    public function loginStudent($id=null)
-    {
+    public function loginStudent($id=null) {
         $data = [
             'page_title' => 'Holy Cross College | Student Portal',
         ];
@@ -86,35 +84,25 @@ class LoginController extends BaseController
 
         $userdata = $this->usersModel->verifyUser($student);
         // print_r($userdata);
-        if($userdata != '')
-        {
-            if($password == $userdata['upassword']){
-                if($userdata['ustatus'] == '0')
-                {
-                    if($userdata['ustudent'] == '1'){
-                        
-
+        if($userdata != '') {
+            if($password == $userdata['upassword']) {
+                if($userdata['ustatus'] == '0') {
+                    if($userdata['ustudent'] == '1') {
                         $this->session->set('logged_user', $userdata['uid']);
                         return redirect()->to(base_url().'collegestudents');
                     }
                     // $loginInfo = [];
-                    $this->session->set('logged_user', $userdata['uid']);
-                    return redirect()->to(base_url().'dashboard');
-                }
-                else
-                {
+                    // $this->session->set('logged_user', $userdata['uid']);
+                    // return redirect()->to(base_url().'dashboard');
+                } else {
                     $this->session->setTempdata('error', 'Please contact administrator', 3);
                     return redirect()->to(current_url());
                 }
-            }
-            else
-            {
+            } else {
                 $this->session->setTempdata('error', 'Sorry! Wrong password', 3);
                 return redirect()->to(current_url());
             }
-        }
-        else
-        {
+        } else {
                 $this->session->setTempdata('error','Sorry! User does not exists', 3);
                 return redirect()->to(current_url());
         }

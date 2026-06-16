@@ -101,7 +101,13 @@
                                             <td><?= $etdd['sy']; ?></td>
                                             <td><?= $etdd['sem']; ?></td>
                                             <td><?= $etdd['level']; ?></td>
-                                            <td><?= $etdd['status']; ?></td>
+                                            <td><?php 
+                                                if($etdd['status'] == "Payment"){
+                                                    echo "Enrolled";
+                                                } else {
+                                                    echo $etdd['status'];
+                                                }
+                                            ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

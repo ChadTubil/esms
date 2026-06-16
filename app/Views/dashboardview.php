@@ -587,10 +587,9 @@
             </div>
         <?php endif; ?>
     <?php endforeach; ?>
-        
+        <!--  -->
     <!-- ----------- FOOTER ------------------ -->
     <?= $this->include("partials/footer"); ?>
     <!-- ----------- END OF FOOTER ------------------ -->
 
 <?= $this->endSection(); ?>
-        

@@ -36,7 +36,7 @@
                             <div class="col-lg-12 col-sm-12">
                                 <h5>NAME: <strong><?= $stud['studfullname']; ?></strong></h5>
                                 <br>
-                                <?= form_open('col-advising/process/'.$stud['studid']) ?>
+                                <?= form_open('col-advising/process/'.$stud['ehid']) ?>
                                     <div class="row">
                                         <div class="col-lg-3 col-sm-12">
                                             <div class="form-group">
@@ -112,7 +112,7 @@
                                                     <label class="form-label">ACTION</label><br>
                                                     <a class="btn btn-success" style="width: 100%;"
                                                         data-bs-toggle="tooltip" data-bs-placement="top" title="FINALIZE"
-                                                        onclick="window.location.href='<?= base_url(); ?>col-advising/submit-account/<?= $stud['studid']; ?>/<?= $totalfee;?>'">
+                                                        onclick="window.location.href='<?= base_url(); ?>col-advising/submit-account/<?= $stud['ehid']; ?>/<?= $totalfee;?>'">
                                                         <span class="btn-inner">
                                                             <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
@@ -252,7 +252,7 @@
                                                 <tbody>
                                                     <?php foreach($selectedsubjects as $selectedsubj): ?>
                                                         <tr>
-                                                            <td><?= $selectedsubj['subcode']; ?></td>
+                                                            <td><?= $selectedsubj['subcode']; ?> <?= $selectedsubj['studid']; ?> <?= $selectedsubj['cdid']; ?></td>
                                                             <td><?= $selectedsubj['subject']; ?></td>
                                                             <td style="text-align: center; "><?= $selectedsubj['units']; ?></td>
                                                             <td style="text-align: center; "><?= $selectedsubj['hours']; ?></td>
@@ -262,27 +262,39 @@
                                                                         <option value="0" selected>No schedule assigned</option>
                                                                     </select>
                                                                 <?php else: ?>
-                                                                    <select class="form-select" name="section">
-                                                                        <?php foreach($colsectiondata as $shssectiond): ?>
-                                                                            <?php if($shssectiond['secid'] == $selectedsubj['section']): ?>
-                                                                                <option value="<?= $shssectiond['secid']; ?>" selected>
-                                                                                    <?= $shssectiond['section']; ?> - 
-                                                                                    (<?= $shssectiond['student_count'] ?? 0; ?> Students)
-                                                                                </option>
-                                                                            <?php else: ?>
-                                                                                <option value="<?= $shssectiond['secid']; ?>">
-                                                                                    <?= $shssectiond['section']; ?> - 
-                                                                                    (<?= $shssectiond['student_count'] ?? 0; ?> Students)
-                                                                                </option>
-                                                                            <?php endif; ?>
-                                                                        <?php endforeach; ?>
-                                                                    </select>
+                                                                    <?= form_open('col-advising/process-sched-update/'.$selectedsubj['ssid'].'/'.$colassessmentd['ehid']); ?>
+                                                                        <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
+                                                                            <select class="form-select" name="section">
+                                                                                <?php foreach($colsectiondata as $shssectiond): ?>
+                                                                                    <?php if($shssectiond['secid'] == $selectedsubj['section']): ?>
+                                                                                        <option value="<?= $shssectiond['secid']; ?>" selected>
+                                                                                            <?= $shssectiond['section']; ?> - 
+                                                                                            (<?= $shssectiond['student_count'] ?? 0; ?> Students)
+                                                                                        </option>
+                                                                                    <?php else: ?>
+                                                                                        <option value="<?= $shssectiond['secid']; ?>">
+                                                                                            <?= $shssectiond['section']; ?> - 
+                                                                                            (<?= $shssectiond['student_count'] ?? 0; ?> Students)
+                                                                                        </option>
+                                                                                    <?php endif; ?>
+                                                                                <?php endforeach; ?>
+                                                                            </select>
+                                                                            <button class="btn btn-sm btn-success">  
+                                                                                <span class="btn-inner">                              
+                                                                                    <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
+                                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.3345 2.75024H7.66549C4.64449 2.75024 2.75049 4.88924 2.75049 7.91624V16.0842C2.75049 19.1112 4.63549 21.2502 7.66549 21.2502H16.3335C19.3645 21.2502 21.2505 19.1112 21.2505 16.0842V7.91624C21.2505 4.88924 19.3645 2.75024 16.3345 2.75024Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                                                                        <path d="M8.43994 12.0002L10.8139 14.3732L15.5599 9.6272" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                                                    </svg>  
+                                                                                </span>                          
+                                                                            </button>
+                                                                        </div>
+                                                                    <?= form_close(); ?>
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td>
                                                                 <a class="btn btn-sm btn-danger"
                                                                     data-bs-toggle="tooltip" data-bs-placement="top" title="DROP"
-                                                                    onclick="window.location.href='<?= base_url(); ?>col-advising/drop/<?= $selectedsubj['ssid']; ?>/<?= $colassessmentd['studid']; ?>'">
+                                                                    onclick="window.location.href='<?= base_url(); ?>col-advising/drop/<?= $selectedsubj['ssid']; ?>/<?= $colassessmentd['studid']; ?>/<?= $colassessmentd['ehid']; ?>'">
                                                                     <span class="btn-inner">
                                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                             <path d="M14.3955 9.59497L9.60352 14.387" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
