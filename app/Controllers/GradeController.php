@@ -11,6 +11,7 @@ use App\Models\SectionTempModel;
 use App\Models\CoursesModel;
 use App\Models\StudentSubjectsModel;
 use App\Models\SectionsModel;
+use App\Models\COLStudentsModel;
 use TCPDF;
 class GradeController extends BaseController
 {
@@ -24,6 +25,7 @@ class GradeController extends BaseController
     public $courseModel;
     public $subjectSubjectsModel;
     public $sectionsModel;
+    public $colstudentsModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -37,6 +39,7 @@ class GradeController extends BaseController
         $this->courseModel = new CoursesModel();
         $this->subjectSubjectsModel = new StudentSubjectsModel();
         $this->sectionsModel = new SectionsModel();
+        $this->colstudentsModel = new COLStudentsModel();
         $this->session = session();
     }
     public function index()
@@ -60,11 +63,11 @@ class GradeController extends BaseController
             $searchStudent = $this->request->getVar('searchstud');
             if($searchStudent == '') {
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->studentsModel->where($StudentsCondition)->findAll();
+                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)->findAll();
                 return view('gradeviewresult', $data);
             } else {
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->studentsModel->where($StudentsCondition)
+                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)
                 ->like('studentno', $searchStudent)
                 ->orLike('studln', $searchStudent)
                 ->orLike('studfn', $searchStudent)->findAll();
@@ -102,7 +105,7 @@ class GradeController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
-        $data['accountinfo'] = $this->studentsModel->where('studentno', $id)->findAll();
+        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
         $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
 
@@ -126,7 +129,21 @@ class GradeController extends BaseController
                 $sem = $this->request->getVar('semester');
                 $this->session->set('selected_sy', $sy);
                 $this->session->set('selected_sem', $sem);
-                return redirect()->to(base_url().'gradesview/result/'.$id);
+                // return redirect()->to(base_url().'gradesview/result/'.$id);
+                if($sy == '2022-2023' || $sy == '2023-2024' || $sy == '2024-2025'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester' || $sem == 'Summer'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+                    }
+                }else if ($sy == '2025-2026'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+
+                    }else{
+                        return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                    }
+                }else{
+                    return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                }
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -147,7 +164,7 @@ class GradeController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
-        $data['accountinfo'] = $this->studentsModel->where('studentno', $id)->findAll();
+        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
         $syid = session()->get('selected_sy');
         $semid = session()->get('selected_sem');
         $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
@@ -175,7 +192,22 @@ class GradeController extends BaseController
                 $sem = $this->request->getVar('semester');
                 $this->session->set('selected_sy', $sy);
                 $this->session->set('selected_sem', $sem);
-                return redirect()->to(base_url().'gradesview/result/'.$id);
+                // return redirect()->to(base_url().'gradesview/result/'.$id);
+
+                if($sy == '2022-2023' || $sy == '2023-2024' || $sy == '2024-2025'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester' || $sem == 'Summer'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+                    }
+                }else if ($sy == '2025-2026'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+
+                    }else{
+                        return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                    }
+                }else{
+                    return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                }
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -183,6 +215,75 @@ class GradeController extends BaseController
         $importedGradeCondition = array('sy' => $syid, 'sem' => $semid, 'studentno' => $id);
         $data['importedGradeData'] = $this->importedGradeModel->where($importedGradeCondition)->findAll();
         return view('gradeviewingresult', $data);
+    }
+    public function gradeViewResultNew($id=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Student Grades',
+            'page_heading' => 'GRADES ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
+        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $syid = session()->get('selected_sy');
+        $semid = session()->get('selected_sem');
+        $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
+        $data['selectedsem'] = $this->semModel->where('semester', $semid)->findAll();
+        $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
+        $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'schoolyear' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'semester' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)) {
+                $sy = $this->request->getVar('schoolyear');
+                $sem = $this->request->getVar('semester');
+                $this->session->set('selected_sy', $sy);
+                $this->session->set('selected_sem', $sem);
+                // return redirect()->to(base_url().'gradesview/result/'.$id);
+
+                if($sy == '2022-2023' || $sy == '2023-2024' || $sy == '2024-2025'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester' || $sem == 'Summer'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+                    }
+                }else if ($sy == '2025-2026'){
+                    if($sem == '1st Semester' || $sem == '2nd Semester'){
+                        return redirect()->to(base_url().'gradesview/result/'.$id);
+
+                    }else{
+                        return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                    }
+                }else{
+                    return redirect()->to(base_url().'gradesview/resultnew/'.$id);
+                }
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.studid' => $id);
+        $data['importedGradeData'] = $this->subjectSubjectsModel
+        ->select('student_subjects.*, subjects.subcode, subjects.subject')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where($importedGradeCondition)->findAll();
+        return view('gradeviewingresultnew', $data);
     }
     public function gradeViewUpdate($id=null) {
         if($this->request->is('post')) {

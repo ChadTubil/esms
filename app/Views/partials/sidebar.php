@@ -108,6 +108,19 @@
                                         <span class="item-name"> Assessment </span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="<?= base_url(); ?>col-change-enrollment">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> CE </i>
+                                        <span class="item-name"> Change Enrollment </span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -151,7 +164,20 @@
                                             </svg>
                                         </i>
                                         <i class="sidenav-mini-icon"> CL </i>
-                                        <span class="item-name">Class List</span>
+                                        <span class="item-name">Class List - Subject</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>col-classlist-persection">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> CL </i>
+                                        <span class="item-name">Class List - Section</span>
                                     </a>
                                 </li>
                             </ul>
@@ -556,6 +582,19 @@
                                             <span class="item-name"> Advising </span>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="<?= base_url(); ?>col-change-enrollment">
+                                            <i class="icon">
+                                                <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                            </i>
+                                            <i class="sidenav-mini-icon"> CE </i>
+                                            <span class="item-name"> Change Enrollment </span>
+                                        </a>
+                                    </li>
                                 </ul>
                             <?php endif; ?>
                             <?php if($usera['uregistrar'] == 1): ?>
@@ -618,7 +657,20 @@
                                             </svg>
                                         </i>
                                         <i class="sidenav-mini-icon"> CL </i>
-                                        <span class="item-name">Class List</span>
+                                        <span class="item-name">Class List - Subject</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>col-classlist-persection">
+                                        <i class="icon">
+                                            <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <g>
+                                                <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                </g>
+                                            </svg>
+                                        </i>
+                                        <i class="sidenav-mini-icon"> CL </i>
+                                        <span class="item-name">Class List - Section</span>
                                     </a>
                                 </li>
                             </ul>

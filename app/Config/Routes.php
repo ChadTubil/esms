@@ -144,6 +144,7 @@ $routes->add('gradesdownload', 'GradeController::gradesDownload');
 $routes->get('gradesview/(:segment)', 'GradeController::gradeView/$1');
 $routes->post('gradesview/(:segment)', 'GradeController::gradeView/$1');
 $routes->add('gradesview/result/(:segment)', 'GradeController::gradeViewResult/$1');
+$routes->add('gradesview/resultnew/(:segment)', 'GradeController::gradeViewResultNew/$1');
 $routes->add('gradesview/update/(:segment)', 'GradeController::gradeViewUpdate/$1');
 // USERSMANAGEMENT
 $routes->get('users', 'UsersController::index');
@@ -480,10 +481,14 @@ $routes->post('col-student-infoupdate/(:segment)', 'COLDepartmentController::stu
 $routes->get('col-classlist', 'COLDepartmentController::classlist');
 $routes->post('col-classlist', 'COLDepartmentController::classlist');
 $routes->get('col-classlist-result', 'COLDepartmentController::classlistResult');
-$routes->get('col-classlist-section/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::classlistSection/$1/$2/$3');
+$routes->get('col-classlist-section/(:segment)', 'COLDepartmentController::classlistSection/$1');
 $routes->get('col-classlist-students/(:segment)/(:segment)', 'COLDepartmentController::classlistStudents/$1/$2');
-$routes->add('col-classlist-print/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::classlistPrint/$1/$2/$3');
-
+$routes->add('col-classlist-print/(:segment)/(:segment)', 'COLDepartmentController::classlistPrint/$1/$2');
+$routes->get('col-classlist-persection', 'COLDepartmentController::classlistperSection');
+$routes->post('col-classlist-persection', 'COLDepartmentController::classlistperSection');
+$routes->get('col-classlist-persection-result', 'COLDepartmentController::classlistperSectionResult');
+$routes->get('col-classlist-persection-students/(:segment)', 'COLDepartmentController::classlistperSectionStudents/$1');
+$routes->get('col-classlist-persection-print/(:segment)', 'COLDepartmentController::classlistperSectionStudentsPrint/$1');
 //GUIDANCE
 $routes->get('col-student-info', 'COLDepartmentController::studentinfoView');
 $routes->post('col-student-info', 'COLDepartmentController::studentinfoView');

@@ -86,7 +86,7 @@
                                             <td><?= $curriculumd['subcode']; ?>-<?= $curriculumd['subject']; ?></td>
                                             <td>
                                                 <a class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View"
-                                                    onclick="window.location.href='<?= base_url(); ?>col-classlist-students/<?= $curriculumd['curriculumid']; ?>/<?= $curriculumd['level']; ?>'">
+                                                    onclick="window.location.href='<?= base_url(); ?>col-classlist-students/<?= $curriculumd['cdid']; ?>/<?= $curriculumd['section']; ?>'">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
                                                             <path d="M22.4541 11.3918C22.7819 11.7385 22.7819 12.2615 22.4541 12.6082C21.0124 14.1335 16.8768 18 12 18C7.12317 18 2.98759 14.1335 1.54586 12.6082C1.21811 12.2615 1.21811 11.7385 1.54586 11.3918C2.98759 9.86647 7.12317 6 12 6C16.8768 6 21.0124 9.86647 22.4541 11.3918Z" stroke="#ffffff"></path>                                    
@@ -99,8 +99,8 @@
                                                         </svg>                            
                                                     </span>
                                                 </a>
-                                                <a class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="View"
-                                                    href='<?= base_url(); ?>col-classlist-print/<?= $curriculumd['curriculumid']; ?>/<?= $curriculumd['level']; ?>/<?= $curriculumd['cdid']; ?>' target="_blank">
+                                                <a class="btn btn-sm btn-icon btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Print"
+                                                    href='<?= base_url(); ?>col-classlist-print/<?= $curriculumd['cdid']; ?>/<?= $curriculumd['section']; ?>' target="_blank">
                                                     <span class="btn-inner">
                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    
                                                             <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    

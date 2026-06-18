@@ -2527,7 +2527,7 @@ class COLDepartmentController extends BaseController
     public function classlist() {
         $data = [
             'page_title' => 'Holy Cross College | Class List',
-            'page_heading' => 'CLASS LIST!',
+            'page_heading' => 'CLASS LIST - SUBJECT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -2581,7 +2581,7 @@ class COLDepartmentController extends BaseController
     public function classlistResult() {
         $data = [
             'page_title' => 'Holy Cross College | Class List',
-            'page_heading' => 'CLASS LIST!',
+            'page_heading' => 'CLASS LIST - SUBJECT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -2598,21 +2598,18 @@ class COLDepartmentController extends BaseController
         $SY = session()->get('selected_sy');
         $SEM = session()->get('selected_sem');
 
-        $data['assessmentdata'] = $this->colAssessmentModel
-        ->select('assessment_col.*, sections.*')
-        ->join('sections', 'sections.secid = assessment_col.section')
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.sem', $SEM)
-        ->where('assessment_col.course', $PROGRAM)
-        ->groupBy('assessment_col.section')
+        $data['assessmentdata'] = $this->sectionsModel
+        ->where('sy', $SY)
+        ->where('sem', $SEM)
+        ->where('course', $PROGRAM)
         ->findAll();
 
         return view('college/classlistresultview', $data);
     }
-    public function classlistSection($curriculumid=null, $level=null, $section=null) {
+    public function classlistSection($section=null) {
         $data = [
             'page_title' => 'Holy Cross College | Class List',
-            'page_heading' => 'CLASS LIST!',
+            'page_heading' => 'CLASS LIST - SUBJECT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -2630,23 +2627,22 @@ class COLDepartmentController extends BaseController
         $SEM = session()->get('selected_sem');
         session()->set('selected_section', $section);
 
-        $data['curriculumdata'] = $this->curriculumDataModel
-        ->select('currdata.*, subjects.*, assessment_col.*, sections.*')
+        $data['curriculumdata'] = $this->studentSubjectsModel
+        ->select('student_subjects.*, subjects.subcode, subjects.subject')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
         ->join('subjects', 'subjects.subid = currdata.subid')
-        ->join('assessment_col', 'assessment_col.curriculum = currdata.curriculumid')
-        ->join('sections', 'sections.secid = assessment_col.section')
-        ->where('currdata.curriculumid', $curriculumid)
-        ->where('currdata.level', $level)
-        ->where('currdata.sem', $SEM)
-        ->groupBy('currdata.subid')
+        ->where('student_subjects.section', $section)
+        ->where('student_subjects.sy', $SY)
+        ->where('student_subjects.sem', $SEM)
+        ->groupby('student_subjects.cdid')
         ->findAll();
 
         return view('college/classlistsectionview', $data);
     }
-    public function classlistStudents($curriculumid=null, $level=null) { 
+    public function classlistStudents($cdid=null, $section=null) { 
         $data = [
             'page_title' => 'Holy Cross College | Class List',
-            'page_heading' => 'CLASS LIST!',
+            'page_heading' => 'CLASS LIST - SUBJECT!',
             'page_p' => 'Welcome to Holy Cross College School Management System.',
         ];
         if(!session()->has('logged_user')) {
@@ -2664,23 +2660,19 @@ class COLDepartmentController extends BaseController
         $SEM = session()->get('selected_sem');
         $SECTION = session()->get('selected_section');
 
-        $data['assessmentdata'] = $this->colAssessmentModel
-        ->select('assessment_col.*, students_col.*')
-        ->join('students_col', 'students_col.studid = assessment_col.studid')
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.level', $level)
-        ->where('assessment_col.sem', $SEM)
-        ->where('assessment_col.course', $PROGRAM)
-        ->where('assessment_col.curriculum', $curriculumid)
-        ->where('assessment_col.section', $SECTION)
-        ->groupBy('students_col.studfullname')
-        ->orderby('students_col.studfullname','ASC')
-        
+        $data['assessmentdata'] = $this->studentSubjectsModel
+        ->select('students_col.studentno, students_col.studfullname')
+        ->join('students_col', 'students_col.studid = student_subjects.studid')
+        ->join('studentsaccounts', 'studentsaccounts.studentno = students_col.studentno')
+        ->where('student_subjects.section', $section)
+        ->where('student_subjects.cdid', $cdid)
+        ->where('studentsaccounts.totalpayments !=', '0.00')
+        ->orderby('students_col.studfullname', 'ASC')
         ->findAll();
 
         return view('college/classliststudentsview', $data);
     }
-    public function classlistPrint($curriculumid=null, $level=null, $cdidd=null) {
+    public function classlistPrint($cdid=null, $section=null) {
 
         $pageSize = array(216, 330);
         $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
@@ -2733,32 +2725,25 @@ class COLDepartmentController extends BaseController
         // ->findAll();
 
         $shsassessmentdata = $this->studentSubjectsModel
-        ->select('student_subjects.cdid, students_col.studentno, students_col.studfullname')
+        ->select('students_col.studentno, students_col.studfullname, student_subjects.cdid')
         ->join('students_col', 'students_col.studid = student_subjects.studid')
-        ->join('assessment_col', 'assessment_col.studid = students_col.studid')
         ->join('studentsaccounts', 'studentsaccounts.studentno = students_col.studentno')
-        ->where('assessment_col.sy', $SY)
-        ->where('assessment_col.sem', $SEM)
-        ->where('assessment_col.course', $PROGRAM)
-        ->where('assessment_col.level', $level)
-        ->where('assessment_col.curriculum', $curriculumid)
-        ->where('assessment_col.section', $SECTION)
+        ->where('student_subjects.section', $section)
+        ->where('student_subjects.cdid', $cdid)
         ->where('studentsaccounts.totalpayments !=', '0.00')
-        ->where('student_subjects.cdid', $cdidd)
-        ->orderby('students_col.studfullname','ASC')
-        ->groupBy('students_col.studfullname')
+        ->orderby('students_col.studfullname', 'ASC')
         ->findAll();
 
         $cddata = $this->curriculumDataModel
         ->select('subjects.subcode, subjects.subject')
         ->join('subjects', 'subjects.subid = currdata.subid')
-        ->where('cdid', $cdidd)->findAll();
+        ->where('cdid', $cdid)->findAll();
         foreach($cddata as $cdD){
             $SUBJCODE = $cdD['subcode'];
             $SUBJDESC = $cdD['subject'];
         }
 
-        $sectiondata = $this->sectionsModel->where('secid', $SECTION)->findAll();
+        $sectiondata = $this->sectionsModel->where('secid', $section)->findAll();
         foreach($sectiondata as $secD){
             $SECTIONNAME = $secD['section'];
         }
@@ -2849,5 +2834,262 @@ class COLDepartmentController extends BaseController
             ];
             $this->studentSubjectsModel->where('studid', $STUDID)->set($data)->update();
         }
+    }
+    public function classlistperSection() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST - SECTION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'course' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Program is required.',
+                    ],
+                ],
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School Year is required.',
+                    ],
+                ],
+                'sem' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $PROGRAM = $this->request->getVar('course');
+                $SY = $this->request->getVar('sy');
+                $SEM = $this->request->getVar('sem');
+
+                session()->set('selected_program', $PROGRAM);
+                session()->set('selected_sy', $SY);
+                session()->set('selected_sem', $SEM);
+
+                return redirect()->to(base_url()."col-classlist-persection-result");
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('college/classlistpersectionview', $data);
+    }
+    public function classlistperSectionResult() {
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST - SECTION!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+
+        $data['assessmentdata'] = $this->sectionsModel
+        ->where('sy', $SY)
+        ->where('sem', $SEM)
+        ->where('course', $PROGRAM)
+        ->findAll();
+
+        return view('college/classlistpersectionresultview', $data);
+    }
+    public function classlistperSectionStudents($section=null) { 
+        $data = [
+            'page_title' => 'Holy Cross College | Class List',
+            'page_heading' => 'CLASS LIST - SUBJECT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coursesdata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['sydata'] = $this->syModel->where('syisdel', 0)->findAll();
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+        $SECTION = session()->get('selected_section');
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->select('students_col.*, assessment_col.*, studentsaccounts.*')
+        ->join('students_col', 'students_col.studid = assessment_col.studid')
+        ->join('studentsaccounts', 'studentsaccounts.studentno = students_col.studentno')
+        ->where('assessment_col.section', $section)
+        ->where('assessment_col.sy', $SY)
+        ->where('assessment_col.sem', $SEM)
+        ->where('studentsaccounts.totalpayments !=', '0.00')
+        ->findAll();
+
+        return view('college/classlistperstudentsview', $data);
+    }
+    public function classlistperSectionStudentsPrint($section=null) {
+
+        $pageSize = array(216, 330);
+        $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
+        // Load TCPDF library
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetCreator('Holy Cross College');
+        $pdf->SetAuthor('TRS Department');
+        $pdf->SetTitle('Classlist');
+
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $pdf->SetMargins(5,40,5,0);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+        $pdf->SetFont('dejavusans', '', 10);
+        $pdf->AddPage();
+
+        $imagePath = FCPATH .'public/uploads/hccheader3.png';
+        $pdf->Image($imagePath, $x = 5, $y = 0, $w = 201, $h = 36); 
+        $pdf->Line(5, 37, 206, 37);
+
+        $PROGRAM = session()->get('selected_program');
+        $SY = session()->get('selected_sy');
+        $SEM = session()->get('selected_sem');
+        $SECTION = session()->get('selected_section');
+
+        // $shsassessmentdata = $this->colAssessmentModel
+        // ->select('assessment_col.*, students_col.*')
+        // ->join('students_col', 'students_col.studid = assessment_col.studid')
+        // ->where('assessment_col.sy', $SY)
+        // ->where('assessment_col.level', $level)
+        // ->where('assessment_col.sem', $SEM)
+        // ->where('assessment_col.course', $PROGRAM)
+        // ->where('assessment_col.curriculum', $curriculumid)
+        // ->where('assessment_col.section', $SECTION)
+        // ->orderby('students_col.studfullname','ASC')
+        // ->findAll();
+
+        $shsassessmentdata = $this->colAssessmentModel
+        ->select('students_col.*, assessment_col.*, studentsaccounts.*')
+        ->join('students_col', 'students_col.studid = assessment_col.studid')
+        ->join('studentsaccounts', 'studentsaccounts.studentno = students_col.studentno')
+        ->where('assessment_col.section', $section)
+        ->where('assessment_col.sy', $SY)
+        ->where('assessment_col.sem', $SEM)
+        ->where('studentsaccounts.totalpayments !=', '0.00')
+        ->orderBy('students_col.studfullname', 'ASC')
+        ->findAll();
+
+        $sectiondata = $this->sectionsModel->where('secid', $section)->findAll();
+        foreach($sectiondata as $secD){
+            $SECTIONNAME = $secD['section'];
+        }
+
+        $totalStudents = count($shsassessmentdata);
+
+        $html = '
+            <style>        
+                    .evaluation {
+                    border: 1px solid black;
+                }
+                table td{
+                    font-size: 12px;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                }
+                .misctbl{
+                    display: inline-block;
+                }
+            </style>
+
+            <table>
+                <tr>
+                    <td style="background-color: #b5b5b5; font-size: 25px; font-weight: bold; text-align: center;">CLASS LIST</td>
+                </tr>
+            </table><br><br>
+            <table>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">('.strtoupper($SECTIONNAME).')</td>
+                </tr>
+            </table><br><br>
+
+            <table style="width: 100%; font-size: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;text-align: center;">#</th>
+                        <th style="width: 30%;text-align: center;">STUDENT NUMBER</th>
+                        <th style="width: 60%;text-align: center;">STUDENT FULLNAME</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ';
+        $count = 1;
+        foreach($shsassessmentdata as $sad) {
+            $STUDENTNO = $sad['studentno'];
+            $STUDFULLNAME = $sad['studfullname'];
+                $html .= '
+                    <tr>
+                        <td style="width: 10%;text-align: center;">'.$count++.'</td>
+                        <td style="width: 30%;text-align: center;">'.strtoupper($sad['studentno']).'</td>
+                        <td style="width: 60%;text-align: left;">'.strtoupper($sad['studfullname']).'</td>
+                    </tr>
+
+                    ';
+        }
+
+        $html .= '
+            <br>
+            </tbody>
+            <br>
+            <table style="width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="text-align: left; font-weight: bold; font-size: 12px; border-top: 1px solid #000; padding-top: 5px;">
+                        TOTAL NUMBER OF STUDENTS: ' . $totalStudents . '
+                    </td>
+                </tr>
+            </table>';
+        
+        $html .= '
+                </tbody>
+            </table>';
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $filename = strtoupper($SECTIONNAME).'.pdf';
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
+            ->setBody($pdfContent);
     }
 }
