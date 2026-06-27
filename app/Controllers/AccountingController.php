@@ -36,7 +36,8 @@ use App\Models\BooksAssessment;
 use App\Models\StudentOtherBillsModel;
 use App\Models\UniformsModel;
 use App\Models\UniformsAssessmentModel;
-
+use App\Models\OtherFeesModel;
+use App\Models\OtherFeesAssessmentModel;
 use TCPDF;
 use NumberFormatter; // Add this line
 class AccountingController extends BaseController
@@ -76,7 +77,8 @@ class AccountingController extends BaseController
     public $studentOtherBillsModel;
     public $uniformsModel;
     public $uniformsAssessmentModel;
-
+    public $otherfessModel;
+    public $otherfeesAssessmentModel;
     public $session;
     public function __construct() {
         helper('form');
@@ -115,7 +117,8 @@ class AccountingController extends BaseController
         $this->studentOtherBillsModel = new StudentOtherBillsModel();
         $this->uniformsModel = new UniformsModel();
         $this->uniformsAssessmentModel = new UniformsAssessmentModel();
-
+        $this->otherfessModel = new OtherFeesModel();
+        $this->otherfeesAssessmentModel = new OtherFeesAssessmentModel();
         $this->session = session();
     }
     public function index() {
@@ -2650,5 +2653,150 @@ class AccountingController extends BaseController
         $this->uniformsAssessmentModel->where('transactionno', $id)->where('status', 'Paid')->set($uniformassessmentdata)->update();
         session()->setTempdata('updatesuccess', 'Update Successful!', 2);
         return redirect()->to(base_url()."uniforms-assessment/".$STUDNO);
+    }
+    
+    public function otherfeessetup() {
+        $data = [
+            'page_title' => 'Holy Cross College | Other Fee Setup',
+            'page_heading' => 'OTHER FEE SETUP',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['ofdata'] = $this->otherfessModel->where('isdel', 0)->findAll();
+        if($this->request->is('post')) {
+            $rules = [
+                'title' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Name is required.',
+                    ],
+                ],
+                'price' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Price is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $data = [
+                    'name' => $this->request->getVar('title'),
+                    'price' => $this->request->getVar('price'),
+                ];
+                $this->otherfessModel->save($data);
+                session()->setTempdata('addsuccess','Other Fee added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        return view('accounting/otherfeesetupview', $data);
+    }
+    public function otherfeesAssessment($studno=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | Other Fee Assessment',
+            'page_heading' => 'OHTER FEE ASSESSMENT! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $shsStudents = $this->shsStudentsModel->where('studentno', $studno)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $studno)->findAll();
+        $colStudents = $this->colStudentsModel->where('studentno', $studno)->findAll();
+        
+        $data['studentdata'] = array_merge($shsStudents, $ibedStudents, $colStudents);
+        foreach($data['studentdata'] as $sd){
+            $STUDNO = $sd['studentno'];
+        }
+
+        $data['ofassessmentdata'] = $this->otherfeesAssessmentModel
+        ->select('*, SUM(price) as total')
+        ->where('studno', $studno)
+        ->where('isdel', 0)
+        ->groupBy('transactionno')
+        ->findAll();
+
+        $data['otherfeesassessmentdata'] = $this->otherfeesAssessmentModel
+        ->select('otherfees.*, otherfeesassessment.*')
+        ->join('otherfees', 'otherfees.ofid = otherfeesassessment.ofid', 'left')
+        ->where('otherfeesassessment.status', 'Assessed')
+        ->where('otherfeesassessment.studno', $STUDNO)
+        ->where('otherfeesassessment.isdel', 0)
+        ->findAll();
+
+        $data['otherfeesdata'] = $this->otherfessModel->where('isdel', 0)->findAll();
+        return view('accounting/otherfeesassessmentview', $data);
+    }
+    public function addOFAssessment($studno=null, $ofid=null) {
+        $ofdata= $this->otherfessModel->where('ofid', $ofid)->findAll();
+        foreach ($ofdata as $ud) {
+            $price = $ud['price'];
+        }
+
+        $data = [
+            'studno' => $studno,
+            'ofid' => $ofid,
+            'price' => $price,
+            'status' => 'Assessed',
+            'isdel' => 0,
+        ];
+
+        $this->otherfeesAssessmentModel->save($data);
+        session()->setTempdata('addsuccess','Uniform added successfully', 3);
+        return redirect()->to(base_url()."otherfee-assessment/".$studno);
+    }
+    public function processOFAssessment($id=null) {
+        $UAID = $this->otherfeesAssessmentModel->where('studno', $id)->where('status', 'Assessed')->where('isdel', 0)->findAll();
+        $GETTRANSACTIONNO = $this->otherfeesAssessmentModel
+        ->where('studno', $id)
+        ->groupBy('transactionno')
+        ->where('isdel', 0)->findAll();
+        
+        foreach($GETTRANSACTIONNO as $GTN) {
+            $TRANSACTIONNO = $GTN['transactionno'];
+        }
+        if($GETTRANSACTIONNO==0) {
+            $TRANNO = 0;
+        }else{
+            $TRANNO = $TRANSACTIONNO + 1;
+        }
+
+        $TOTAL= 0;
+
+        foreach($UAID as $uaid) {
+
+            $TOTAL += $uaid['price'];
+            
+        }
+
+        $data = [
+            'studno' => $id,
+            'name' => 'Other Fee Assessment',
+            'totalamount' => $TOTAL,
+            'tablename' => 'otherfeesassessment',
+            'status' => 'Payment',
+            'isdel' => 0,
+
+        ];
+
+        $uniformassessmentdata = [
+            'status' => 'Payment',
+            'transactionno' => $TRANNO,
+        ];
+
+        $this->studentOtherBillsModel->save($data);
+        $this->otherfeesAssessmentModel->where('studno', $id)->where('status', 'Assessed')->where('isdel', 0)->set($uniformassessmentdata)->update();
+        session()->setTempdata('addsuccess', 'Book is deleted!', 2);
+        return redirect()->to(base_url()."student-accounts/view/".$id);
     }
 }

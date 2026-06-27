@@ -11,6 +11,8 @@ $routes->post('/', 'LoginController::index');
 $routes->get('dashboard', 'DashboardController::index');
 $routes->get('logout', 'DashboardController::logout');
 $routes->add('students/login/(:segment)', 'LoginController::loginStudent/$1');
+$routes->get('dashboard-el/print', 'DashboardController::enrollmentList');
+$routes->post('dashboard-el/print', 'DashboardController::enrollmentList');
 
 //ONLINE REGISTRATION
 $routes->get('online-registration', 'OnlineRegController::index');
@@ -97,11 +99,30 @@ $routes->add('employees/delete/(:segment)', 'EmployeesController::deleteEmployee
 $routes->post('employees/update/(:segment)', 'EmployeesController::updateEmployee/$1');
 $routes->post('employees/rfid/(:segment)', 'EmployeesController::updateRfid/$1');
 $routes->post('employees/image/(:segment)', 'EmployeesController::updateImage/$1');
+// //SCHEDULES
+// $routes->get('schedules', 'SchedulesController::index');
+// $routes->post('schedules', 'SchedulesController::index');
+// $routes->add('schedules/delete/(:segment)', 'SchedulesController::deleteSchedule/$1');
+// $routes->post('schedules/update/(:segment)', 'SchedulesController::updateSched/$1');
 //SCHEDULES
 $routes->get('schedules', 'SchedulesController::index');
 $routes->post('schedules', 'SchedulesController::index');
+$routes->get('schedules/fetchsections', 'SchedulesController::fetchsections');
+$routes->post('schedules/fetchsections', 'SchedulesController::fetchsections');
+$routes->get('schedules/add/(:segment)', 'SchedulesController::addSchedule/$1');
+$routes->post('schedules/add/(:segment)', 'SchedulesController::addSchedule/$1');
 $routes->add('schedules/delete/(:segment)', 'SchedulesController::deleteSchedule/$1');
 $routes->post('schedules/update/(:segment)', 'SchedulesController::updateSched/$1');
+$routes->post('schedules/fetchsections', 'SchedulesController::fetchsections');
+$routes->post('schedules/fetchCurriculumSubjects', 'SchedulesController::fetchCurriculumSubjects');
+$routes->get('generate-schedule', 'SchedulesController::generateFromCurriculum');
+$routes->post('generate-schedule', 'SchedulesController::generateFromCurriculum');
+$routes->get('generate-schedule-view', 'SchedulesController::generateFromCurriculumView');
+$routes->post('generate-schedule-view', 'SchedulesController::generateFromCurriculumView');
+$routes->get('schedules/downloadExcel/(:segment)', 'SchedulesController::downloadExcel/$1');
+$routes->post('schedules/downloadExcel/(:segment)', 'SchedulesController::downloadExcel/$1');
+$routes->get('schedules/exportAllSchedules', 'SchedulesController::exportAllSchedules');
+$routes->post('schedules/exportAllSchedules', 'SchedulesController::exportAllSchedules');
 //ROOMS
 $routes->get('rooms', 'RoomsController::index');
 $routes->post('rooms', 'RoomsController::index');
@@ -268,7 +289,6 @@ $routes->add('books-assessment/addall/(:segment)/(:segment)', 'AccountingControl
 $routes->add('books-assessment/delete/(:segment)', 'AccountingController::deleteBooksAssessment/$1');
 $routes->add('books-assessment/process/(:segment)', 'AccountingController::processBooksAssessment/$1');
 $routes->add('book-assessment/print/(:segment)', 'AccountingController::bookassessmentPrint/$1');
-
 $routes->post('book-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitOR/$1/$2');
 $routes->add('book-assessment/release/(:segment)', 'AccountingController::releaseBooksAssessment/$1');
 $routes->add('student-accounts/view/submit-sob/(:segment)/(:segment)', 'AccountingController::submitSOB/$1/$2');
@@ -283,7 +303,11 @@ $routes->add('uniforms-assessment/print/(:segment)', 'AccountingController::unif
 $routes->post('uniforms-assessment/submitOR/(:segment)/(:segment)', 'AccountingController::submitORUniform/$1/$2');
 $routes->add('uniforms-assessment/release/(:segment)', 'AccountingController::releaseUniformsAssessment/$1');
 $routes->add('uniforms-assessment/delete/(:segment)', 'AccountingController::deleteUniformsAssessment/$1');
-
+$routes->get('otherfee-setup', 'AccountingController::otherfeessetup');
+$routes->post('otherfee-setup', 'AccountingController::otherfeessetup');
+$routes->get('otherfee-assessment/(:segment)', 'AccountingController::otherfeesAssessment/$1');
+$routes->add('otherfee-assessment/add/(:segment)/(:segment)', 'AccountingController::addOFAssessment/$1/$2');
+$routes->add('otherfee-assessment/process/(:segment)', 'AccountingController::processOFAssessment/$1');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');
@@ -462,12 +486,10 @@ $routes->add('col-admission/process-generate/(:segment)', 'COLDepartmentControll
 $routes->get('col-advising', 'COLDepartmentController::advising');
 $routes->get('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
 $routes->post('col-advising/process/(:segment)', 'COLDepartmentController::advisingProcess/$1');
-$routes->add('col-advising/process-add/(:segment)', 'COLDepartmentController::advisingProcessAdd/$1');
+$routes->add('col-advising/process-add/(:segment)/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::advisingProcessAdd/$1/$2/$3/$4');
 $routes->add('col-advising/submit-account/(:segment)/(:segment)', 'COLDepartmentController::advisingSubmitAccount/$1/$2');
 $routes->add('col-advising/drop/(:segment)/(:segment)/(:segment)', 'COLDepartmentController::advisingDrop/$1/$2/$3');
-
 $routes->post('col-advising/process-sched-update/(:segment)/(:segment)', 'COLDepartmentController::advisingSchedUpdate/$1/$2');
-
 $routes->get('col-assessment', 'COLDepartmentController::assessment');
 $routes->get('col-assessment/view/(:segment)/(:segment)', 'COLDepartmentController::assessmentView/$1/$2');
 $routes->add('col-assessment/print/(:segment)', 'COLDepartmentController::assessmentPrint/$1');
@@ -489,6 +511,15 @@ $routes->post('col-classlist-persection', 'COLDepartmentController::classlistper
 $routes->get('col-classlist-persection-result', 'COLDepartmentController::classlistperSectionResult');
 $routes->get('col-classlist-persection-students/(:segment)', 'COLDepartmentController::classlistperSectionStudents/$1');
 $routes->get('col-classlist-persection-print/(:segment)', 'COLDepartmentController::classlistperSectionStudentsPrint/$1');
+
+$routes->get('col-change-enrollment', 'COLDepartmentController::changeenrollment');
+$routes->get('col-change-enrollment/process/(:segment)', 'COLDepartmentController::changeenrollmentProcess/$1');
+$routes->get('col-change-enrollment/process-assessment/(:segment)', 'COLDepartmentController::changeenrollmentProcessAssessment/$1');
+$routes->get('col-change-enrollment/process-assessment-adddrop/(:segment)', 'COLDepartmentController::changeenrollmentProcessAssessmentAddDrop/$1');
+$routes->get('col-change-enrollment/process-assessment-changeschedule/(:segment)', 'COLDepartmentController::changeenrollmentProcessAssessmentChangeSchedule/$1');
+$routes->post('col-change-enrollment/process-assessment-changeschedule-updatesubjectsched/(:segment)/(:segment)', 'COLDepartmentController::changeenrollmentProcessAssessmentChangeScheduleUpdateSubjectSched/$1/$2');
+$routes->post('col-change-enrollment/process-assessment-changeschedule-updatesection/(:segment)', 'COLDepartmentController::changeenrollmentProcessAssessmentChangeScheduleUpdateSection/$1');
+
 //GUIDANCE
 $routes->get('col-student-info', 'COLDepartmentController::studentinfoView');
 $routes->post('col-student-info', 'COLDepartmentController::studentinfoView');

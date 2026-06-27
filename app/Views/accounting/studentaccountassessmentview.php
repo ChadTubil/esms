@@ -71,6 +71,9 @@
                                     <h4><strong>Student No: <?= $studentd['studentno']; ?></strong></h4>
                                 </div>
                                 <div class="col-md-6 text-end">
+                                    <a href="<?= base_url(); ?>otherfee-assessment/<?= $studentd['studentno']; ?>" class="btn btn-warning me-2">
+                                        <i class="bi bi-journal-text"></i> Other Fee
+                                    </a>
                                     <a href="#" class="btn btn-primary me-2"
                                         data-bs-toggle="modal" data-bs-target="#makePaymentModal<?= $studentd['studentno']; ?>">
                                         <i class="bi bi-journal-text"></i> Make Payment
@@ -178,12 +181,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="<?= base_url(); ?>books-assessment/<?= $studentd['studentno']; ?>" class="btn btn-warning me-2">
+                                    <!-- <a href="<?= base_url(); ?>books-assessment/<?= $studentd['studentno']; ?>" class="btn btn-warning me-2">
                                         <i class="bi bi-journal-text"></i> Buy Book
                                     </a>
                                     <a href="<?= base_url(); ?>uniforms-assessment/<?= $studentd['studentno']; ?>" class="btn btn-primary me-2">
                                         <i class="bi bi-journal-text"></i> Buy Uniform
-                                    </a>
+                                    </a> -->
+                                    
                                     <a href="<?= base_url(); ?>student-accounts/ledger/<?= $studentd['studentno']; ?>" class="btn btn-info me-2">
                                         <i class="bi bi-journal-text"></i> Student Ledger
                                     </a>

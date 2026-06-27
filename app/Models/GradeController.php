@@ -270,8 +270,22 @@ class GradeController extends BaseController
 
             $db = \Config\Database::connect();
 
-            $studinfo = $db->query("SELECT * FROM students WHERE studentno = '$studentnum'");
-            $studresult = $studinfo->getRow(0);
+            // $studinfo = $db->query("SELECT * FROM students WHERE studentno = '$studentnum'");
+            // $studresult = $studinfo->getRow(0);
+            
+            $studinfoold = $db->query("SELECT * FROM students WHERE studentno = '$studentnum'")->getRow(0);
+            $studinfonew = $db->query("SELECT * FROM students_col WHERE studentno = '$studentnum'")->getRow(0);
+            
+            // Check which query returned a result
+            if ($studinfoold) {
+                $studresult = $studinfoold;
+            } else if ($studinfonew) {
+                $studresult = $studinfonew;
+            } else {
+                // Handle case where no student found
+                // You might want to redirect or show an error
+                throw new \Exception("Student not found");
+            }
 
             
 

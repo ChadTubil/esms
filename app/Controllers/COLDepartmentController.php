@@ -1159,16 +1159,18 @@ class COLDepartmentController extends BaseController
 
         return view('college/advisingviewprocess', $data);
     }
-    public function advisingProcessAdd($id=null) {
+    public function advisingProcessAdd($id=null,$sy=null,$sem=null,$ehid=null) {
         if($this->request->is('post')) {
             $ssdata = [
                 'studid' => $id,
                 'cdid' => $this->request->getVar('addsubjectassessment'),
+                'sy' => $sy,
+                'sem' => $sem,
             ];
             // print_r($ssdata);
             $this->studentSubjectsModel->save($ssdata);
             session()->setTempdata('addssuccess','Subject added successfully', 3);
-            return redirect()->to(base_url()."col-advising/process/".$id);
+            return redirect()->to(base_url()."col-advising/process/".$ehid);
         }
     }
     public function advisingDrop($id=null, $studid=null, $ehid=null) {
@@ -1521,11 +1523,12 @@ class COLDepartmentController extends BaseController
         // ->where('student_subjects.isdel', 0)
         // ->findAll();
         
-         $firstsemester = $this->studentSubjectsModel
-        ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*')
+        $firstsemester = $this->studentSubjectsModel
+        ->select('student_subjects.*, currdata.*, subjects.*, curriculum.*, sections.*')
         ->join('currdata', 'currdata.cdid = student_subjects.cdid', 'left')
         ->join('subjects', 'subjects.subid = currdata.subid', 'left')
         ->join('curriculum', 'curriculum.currid = currdata.curriculumid', 'left')
+        ->join('sections', 'sections.secid = student_subjects.section')
         ->where('student_subjects.studid', $STUDID)
         // ->where('currdata.level', $LEVEL)
         ->where('currdata.sem', $SEM)
@@ -1806,6 +1809,7 @@ class COLDepartmentController extends BaseController
             $SUBCODE = $subd['subcode'];
             $SUBJECT = $subd['subject'];
             $UNIT = $subd['units'];
+            $SECTIONSCHED = $subd['section'];
             $UNITFORMATED =  number_format($UNIT, 2);
             $HOUR = $subd['hours'];
             $HOURFORMATED =  number_format($HOUR, 2);
@@ -1815,7 +1819,7 @@ class COLDepartmentController extends BaseController
                     <td style="width: 50%; text-align: left">'.$SUBJECT.' </td>
                     <td style="width: 7%; text-align: center;">'.$UNITFORMATED.'</td>
                     <td style="width: 7%; text-align: center;">'.$HOURFORMATED.'</td>
-                    <td style="width: 26%; text-align: center;">TBA</td>
+                    <td style="width: 26%; text-align: center;">'.$SECTIONSCHED.'</td>
                 </tr>';
         }
         $html .='
@@ -3091,5 +3095,255 @@ class COLDepartmentController extends BaseController
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
             ->setBody($pdfContent);
+    }
+    public function changeenrollment(){
+        $data = [
+            'page_title' => 'Holy Cross College | College Change Enrollment',
+            'page_heading' => 'COLLEGE CHANGE ENROLLMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $data['studentsdata'] = $this->colStudentsModel
+        ->where('studisdel', 0)
+        ->where('studentno !=', '')
+        ->findAll();
+
+        return view('college/changeenrollmentview', $data);
+    }
+    public function changeenrollmentProcess($studid=null){
+        $data = [
+            'page_title' => 'Holy Cross College | College Change Enrollment',
+            'page_heading' => 'COLLEGE CHANGE ENROLLMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['studentdata'] = $this->colStudentsModel
+        ->where('studid', $studid)
+        ->where('studisdel', '0')
+        ->findAll();
+
+        $data['enrollmmenthistorydata'] = $this->enrollmentHistoryCOLModel->where('studid', $studid)->where('isdel', '0')->findAll();
+
+        return view('college/changeenrollmentprocessview', $data);
+    }
+    public function changeenrollmentProcessAssessment($ehid=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | College Change Enrollment',
+            'page_heading' => 'COLLEGE CHANGE ENROLLMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['selectedeh'] = $this->enrollmentHistoryCOLModel->where('ehid', $ehid)->findAll();
+        foreach($data['selectedeh'] as $selectedEH) {
+            $STUDID = $selectedEH['studid'];
+            $SY = $selectedEH['sy'];
+            $SEM = $selectedEH['sem'];
+            $LEVEL = $selectedEH['level'];
+            $COURSE = $selectedEH['course'];
+        }
+
+        $data['studentdata'] = $this->colStudentsModel
+        ->where('studid', $STUDID)
+        ->where('studisdel', '0')
+        ->findAll();
+
+        $data['enrollmmenthistorydata'] = $this->enrollmentHistoryCOLModel->where('studid', $STUDID)->where('isdel', '0')->findAll();
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->where('studid', $STUDID)
+        ->where('sy', $SY)
+        ->where('sem', $SEM)
+        ->where('level', $LEVEL)
+        ->where('course', $COURSE)
+        ->findAll();
+
+        $data['coursedata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['curriculumdata'] = $this->curriculumModel->where('isdel', 0)->findAll();
+        $data['sectiondata'] = $this->sectionsModel->where('isdel', 0)->findAll();
+
+        return view('college/changeenrollmentprocessassessmmentview', $data);
+    }
+    public function changeenrollmentProcessAssessmentAddDrop($assid=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | College Change Enrollment',
+            'page_heading' => 'COLLEGE CHANGE ENROLLMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->where('assid', $assid)
+        ->findAll();
+        foreach($data['assessmentdata'] as $assessdata){
+            $CURRICULUMID = $assessdata['curriculum'];
+            $STUDID = $assessdata['studid'];
+            $SY = $assessdata['sy'];
+            $SEM = $assessdata['sem'];
+            $LEVEL = $assessdata['level'];
+            $COURSE = $assessdata['course'];
+        }
+
+        $data['studentdata'] = $this->colStudentsModel
+        ->where('studid', $STUDID)
+        ->where('studisdel', '0')
+        ->findAll();
+
+        $data['enrollmmenthistorydata'] = $this->enrollmentHistoryCOLModel->where('studid', $STUDID)->where('isdel', '0')->findAll();
+        $data['coursedata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['curriculumdata'] = $this->curriculumModel->where('isdel', 0)->findAll();
+        $data['sectiondata'] = $this->sectionsModel->where('isdel', 0)->findAll();
+
+        $data['studentsubjectsdata'] = $this->studentSubjectsModel
+        ->select('student_subjects.*, subjects.*')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('student_subjects.sy', $SY)
+        ->where('student_subjects.sem', $SEM)
+        ->where('student_subjects.isdel', '0')
+        ->findAll();
+
+        $data['colcurrdataasssubjects'] = $this->curriculumDataModel
+        ->select('currdata.*, subjects.*')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where('curriculumid', $CURRICULUMID)->findAll();
+
+        return view('college/changeenrollmentprocessassessmmentadddropview', $data);
+    }
+    public function changeenrollmentProcessAssessmentChangeSchedule($assid=null, $studid=null, $sy=null, $sem=null) {
+        $data = [
+            'page_title' => 'Holy Cross College | College Change Enrollment',
+            'page_heading' => 'COLLEGE CHANGE ENROLLMENT!',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['assessmentdata'] = $this->colAssessmentModel
+        ->where('assid', $assid)
+        ->findAll();
+        foreach($data['assessmentdata'] as $assessdata){
+            $CURRICULUMID = $assessdata['curriculum'];
+            $STUDID = $assessdata['studid'];
+            $SY = $assessdata['sy'];
+            $SEM = $assessdata['sem'];
+            $LEVEL = $assessdata['level'];
+            $COURSE = $assessdata['course'];
+        }
+
+        $data['studentdata'] = $this->colStudentsModel
+        ->where('studid', $STUDID)
+        ->where('studisdel', '0')
+        ->findAll();
+
+        $data['enrollmmenthistorydata'] = $this->enrollmentHistoryCOLModel->where('studid', $STUDID)->where('isdel', '0')->findAll();
+        $data['coursedata'] = $this->coursesModel->where('isdel', 0)->findAll();
+        $data['curriculumdata'] = $this->curriculumModel->where('isdel', 0)->findAll();
+        $data['sectiondata'] = $this->sectionsModel->where('isdel', 0)->findAll();
+
+        $data['changesectiondata'] = $this->sectionsModel
+        ->where('sy', $SY)
+        ->where('sem', $SEM)
+        ->where('level', $LEVEL)
+        ->where('course', $COURSE)
+        ->where('isdel', '0')
+        ->findAll();
+
+        $data['studentsubjectsdata'] = $this->studentSubjectsModel
+        ->select('student_subjects.*, subjects.*')
+        ->join('currdata', 'currdata.cdid = student_subjects.cdid')
+        ->join('subjects', 'subjects.subid = currdata.subid')
+        ->where('student_subjects.studid', $STUDID)
+        ->where('student_subjects.sy', $SY)
+        ->where('student_subjects.sem', $SEM)
+        ->where('student_subjects.isdel', '0')
+        ->findAll();
+
+        $data['colsectiondata'] = $this->sectionsModel
+        ->select('sections.*, courses.*')
+        ->join('courses', 'courses.courid = sections.course')
+        ->where('sections.course', $COURSE)
+        ->where('sections.level', $LEVEL)
+        ->where('sections.sy', $SY)
+        ->where('sections.sem', $SEM)
+        ->findAll();
+        foreach($data['colsectiondata'] as &$colsecdata){
+            $sectionCount = $this->colAssessmentModel
+                ->where('section', $colsecdata['secid'])
+                ->where('sy', $SY)
+                ->where('level', $LEVEL)
+                ->where('sem', $SEM)
+                ->countAllResults();
+            $colsecdata['student_count'] = $sectionCount;
+        }
+
+        return view('college/changeenrollmentprocessassessmmentchangescheduleview', $data);
+    }
+    public function changeenrollmentProcessAssessmentChangeScheduleUpdateSubjectSched($SSID=null, $ASSID=null) {
+        if($this->request->is('post')) {
+            $data = [
+                'section' => $this->request->getVar('subjectsection'),
+            ];
+
+            $this->studentSubjectsModel->where('ssid', $SSID)->update($SSID, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+            return redirect()->to(base_url()."col-change-enrollment/process-assessment-changeschedule/".$ASSID);
+        }
+    }
+    public function changeenrollmentProcessAssessmentChangeScheduleUpdateSection($ASSID=null) {
+        if($this->request->is('post')) {
+            $CHECKASSESSMENT = $this->colAssessmentModel->where('assid', $ASSID)->findAll();
+            foreach($CHECKASSESSMENT as $CA) {
+                $STUDID = $CA['studid'];
+                $SY = $CA['sy'];
+                $SEM = $CA['sem'];
+            }
+
+            $data = [
+                'section' => $this->request->getVar('section'),
+            ];
+            $this->colAssessmentModel->where('assid', $ASSID)->update($ASSID, $data);
+
+            $ssdata = [
+                'section' => $this->request->getVar('section'),
+            ];
+            $this->studentSubjectsModel
+            ->where('studid', $STUDID)
+            ->update($ASSID, $data);
+            session()->setTempdata('updatesuccess', 'Update Successful!', 2);
+
+            $this->studentSubjectsModel
+            ->where('studid', $STUDID)
+            ->where('sy', $SY)
+            ->where('sem', $SEM)
+            ->set($ssdata)->update();
+            return redirect()->to(base_url()."col-change-enrollment/process-assessment-changeschedule/".$ASSID);
+        }
     }
 }

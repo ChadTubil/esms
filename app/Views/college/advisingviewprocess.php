@@ -9,7 +9,10 @@
 <?= $this->section("page_p"); ?>
     <?= $page_p; ?>
 <?= $this->endSection(); ?>
-
+<?php foreach($enrollmenthistorycoldata as $ASSD){
+        $EHID = $ASSD['ehid'];
+    } 
+?>
 <?= $this->section('content'); ?>
     <!-- ----------- SIDEBAR ------------------ -->
     <?= $this->include("partials/sidebar"); ?>  
@@ -185,7 +188,7 @@
                                                 <?= session()->getTempdata('addssuccess');?>
                                             </div>
                                         <?php endif; ?>
-                                        <?= form_open('col-advising/process-add/'.$colassessmentd['studid']); ?>
+                                        <?= form_open('col-advising/process-add/'.$colassessmentd['studid'].'/'.$colassessmentd['sy'].'/'.$colassessmentd['level'].'/'.$EHID); ?>
                                             <label for="">ADD SUBJECTS TO ASSESSMENT</label>
                                             <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
                                                 <select name="addsubjectassessment" class="form-select" required>

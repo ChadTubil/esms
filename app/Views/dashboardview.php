@@ -89,6 +89,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-12 col-sm-12" style="text-align: right;">
+                    <a class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="GENERATE REPORT"
+                    href="<?= base_url('dashboard-el/print') ?>" 
+                    target="_blank">
+                    GENERATE ENROLLMENT REPORT
+                    </a>
+                </div>
+                <br>
                 <div class="row">
                     <div class="col-lg-4 col-sm-12">
                         <div class="card" data-aos="fade-up" data-aos-delay="800">
@@ -267,14 +275,6 @@
                                             <td><?= $actdev3rd; ?></td>
                                             <td><?= $actdev4th; ?></td>
                                             <td><?= $ACTDEVTOTAL; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td>ACT - NETWORKING</td>
-                                            <td><?= $actnet1st; ?></td>
-                                            <td><?= $actnet2nd; ?></td>
-                                            <td><?= $actnet3rd; ?></td>
-                                            <td><?= $actnet4th; ?></td>
-                                            <td><?= $ACTNETTOTAL; ?></td>
                                         </tr>
                                         <tr>
                                             <td>BSCE</td>

@@ -63,14 +63,21 @@ class GradeController extends BaseController
             $searchStudent = $this->request->getVar('searchstud');
             if($searchStudent == '') {
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)->findAll();
+                $oldStudents = $this->studentsModel->where($StudentsCondition)->findAll();
+                $colStudents = $this->colstudentsModel->where($StudentsCondition)->findAll();
+                $data['resultStudent'] = array_merge($colStudents, $oldStudents);
                 return view('gradeviewresult', $data);
             } else {
                 $StudentsCondition = array('studisdel' => 0);
-                $data['resultStudent'] = $this->colstudentsModel->where($StudentsCondition)
+                $oldStudents = $this->studentsModel->where($StudentsCondition)
                 ->like('studentno', $searchStudent)
                 ->orLike('studln', $searchStudent)
                 ->orLike('studfn', $searchStudent)->findAll();
+                $colStudents = $this->colstudentsModel->where($StudentsCondition)
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)->findAll();
+                $data['resultStudent'] = array_merge($colStudents, $oldStudents);
                 return view('gradeviewresult', $data);
             }
         }
@@ -105,7 +112,11 @@ class GradeController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
-        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+
+        // $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $oldStudents = $this->studentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $data['accountinfo'] = array_merge($colStudents, $oldStudents);
         $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
 
@@ -164,7 +175,10 @@ class GradeController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
-        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        // $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $oldStudents = $this->studentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $data['accountinfo'] = array_merge($colStudents, $oldStudents);
         $syid = session()->get('selected_sy');
         $semid = session()->get('selected_sem');
         $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
@@ -229,7 +243,10 @@ class GradeController extends BaseController
         $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
         $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
         $usersinfo = $this->usersModel->where('uid', $uid)->findAll();
-        $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        // $data['accountinfo'] = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $oldStudents = $this->studentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colstudentsModel->where('studentno', $id)->findAll();
+        $data['accountinfo'] = array_merge($colStudents, $oldStudents);
         $syid = session()->get('selected_sy');
         $semid = session()->get('selected_sem');
         $data['selectedsy'] = $this->syModel->where('syname', $syid)->findAll();
