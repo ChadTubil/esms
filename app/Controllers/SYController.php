@@ -74,6 +74,7 @@ class SYController extends BaseController
     }
     public function updateSY($id=null) {
         if($this->request->is('post')) {
+            $this->request->getVar('schoolyear');
             $data = [
                 'syname' => $this->request->getVar('schoolyear'),
             ];

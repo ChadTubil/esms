@@ -713,6 +713,24 @@ class AccountingController extends BaseController
         session()->setTempdata('deletesuccess', 'Fee is deleted!', 2);
         return redirect()->to(base_url()."feestructure");
     }
+    public function activateFEE($id=null) {
+        $data = [
+            'isactive' => '0',
+        ];
+
+        $this->feeStructureModel->where('feeid', $id)->update($id, $data);
+        session()->setTempdata('deletesuccess', 'Fee is active!', 2);
+        return redirect()->to(base_url()."feestructure");
+    }
+    public function deactivateFEE($id=null) {
+        $data = [
+            'isactive' => '1',
+        ];
+
+        $this->feeStructureModel->where('feeid', $id)->update($id, $data);
+        session()->setTempdata('deletesuccess', 'Fee is not active!', 2);
+        return redirect()->to(base_url()."feestructure");
+    }
     public function updateFEE($id=null) {
         if($this->request->is('post')) {
             $data = [
@@ -1338,7 +1356,7 @@ class AccountingController extends BaseController
             return redirect()->to(base_url()."student-accounts/view/details/".$studentno."/".$studentaccountno);
         }    
     }
-    public function receiptPrint($id=null){
+    public function receiptPrint($id=null, $sadid=null){
         $pageSize = array(140, 175);
         $pdf = new TCPDF('P', 'mm', $pageSize, true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
@@ -1370,6 +1388,28 @@ class AccountingController extends BaseController
             $PAYMENTDATE = $ptdata['paymentdate'];
             $PAYMENTAMOUNT = $ptdata['amountpaid'];
             $PAYMENTPARTICULARS = $ptdata['particulars'];
+            $PAYMENTSTUDENTNO = $ptdata['studentno'];
+            if($PAYMENTSTUDENTNO == ''){
+                $PSTUDENTNO = '';
+            }else{
+                $PSTUDENTNO = $PAYMENTSTUDENTNO;
+            }
+        }
+        $studentassessmentdata = $this->studentAccountsAssessmentModel->where('sadid', $sadid)->findAll();
+        foreach($studentassessmentdata as $sad){
+            $SAID = $sad['said'];
+            $FEEID = $sad['feeid'];
+        }
+        $studentaccountdata = $this->studentAccountsModel->where('said', $SAID)->findAll();
+        foreach($studentaccountdata as $sad){
+            $SY = $sad['sy'];
+            $SEM = $sad['sem'];
+            $COURSE = $sad['course'];
+            $LEVEL = $sad['level'];
+        }
+        $feedata = $this->feeStructureModel->where('feeid', $FEEID)->findAll();
+        foreach($feedata as $fd){
+            $FEECODE = $fd['feecode'];
         }
         $formatter = new NumberFormatter('en', NumberFormatter::SPELLOUT);
         $PAYMENTAMOUNT_IN_WORDS = $formatter->format($PAYMENTAMOUNT);
@@ -1399,6 +1439,14 @@ class AccountingController extends BaseController
                 </tr>
                 <tr>
                     <td style="width: 40%;"></td>
+                    <td style="width: 60%;">'.$PSTUDENTNO.'</td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;"></td>
+                    <td style="width: 60%;">'.$COURSE.' '.$LEVEL.' '.$SY.' '.$SEM.'</td>
+                </tr>
+                <tr>
+                    <td style="width: 40%;"></td>
                     <td style="width: 60%;">'.$PAYMENTREFERENCE.'</td>
                 </tr>
             </table>
@@ -1408,12 +1456,10 @@ class AccountingController extends BaseController
             <br>
             <br>
             <br>
-            <br>
-            <br>
             <table>
                 <tr>
                     <td style="width: 15%;"></td>
-                    <td style="width: 65%;">Fees<br>Misc</td>
+                    <td style="width: 65%;">'.$FEECODE.'</td>
                     <td style="width: 20%;">'.$PAYMENTAMOUNT.'</td>
                 </tr>
             </table>
@@ -1581,7 +1627,8 @@ class AccountingController extends BaseController
         
         $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
         $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
-        $data['studentdata'] = array_merge($shsStudents, $ibedStudents);
+        $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
+        $data['studentdata'] = array_merge($shsStudents, $ibedStudents, $colStudents);
         $data['booksassessmentdata'] = $this->booksAssessmentModel
         ->select('booksassessment.*, books.*')
         ->join('books', 'books.bookid = booksassessment.bookid', 'left')
@@ -2654,7 +2701,6 @@ class AccountingController extends BaseController
         session()->setTempdata('updatesuccess', 'Update Successful!', 2);
         return redirect()->to(base_url()."uniforms-assessment/".$STUDNO);
     }
-    
     public function otherfeessetup() {
         $data = [
             'page_title' => 'Holy Cross College | Other Fee Setup',
@@ -2798,5 +2844,234 @@ class AccountingController extends BaseController
         $this->otherfeesAssessmentModel->where('studno', $id)->where('status', 'Assessed')->where('isdel', 0)->set($uniformassessmentdata)->update();
         session()->setTempdata('addsuccess', 'Book is deleted!', 2);
         return redirect()->to(base_url()."student-accounts/view/".$id);
+    }
+    public function oldstudentAccounts() {
+        $data = [
+            'page_title' => 'Holy Cross College | Old Student Accounts',
+            'page_heading' => 'OLD STUDENT ACCOUNTS MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+        $StudentsCondition = array('studisdel' => 0);
+
+        $data['studentdata'] = $this->studentsModel->where($StudentsCondition)->findAll();
+
+        if($this->request->is('post')){
+            $searchStudent = $this->request->getVar('searchstud');
+
+            if($searchStudent == ''){
+                // $students = $this->studentsModel->where('studisdel', 0)->findAll();
+                $colStudents = $this->colStudentsModel->where('studisdel', 0)->findAll();
+                $shsStudents = $this->shsStudentsModel->where('studisdel', 0)->findAll();
+                $ibedStudents = $this->ibedStudentsModel->where('studisdel', 0)->findAll();
+                $resultStudent = array_merge($colStudents, $shsStudents, $ibedStudents);
+                foreach($resultStudent as $key => $student) {
+                    $accountCount = $this->studentAccountsModel
+                        ->where('studentno', $student['studentno'])
+                        ->where('isdel', 0)
+                        ->countAllResults();
+                    $resultStudent[$key]['account_count'] = $accountCount;
+                }
+                $data['resultStudent'] = $resultStudent;
+                return view('accounting/studentaccountssearchresultview', $data);
+
+            }
+            else{
+                // $students = $this->studentsModel
+                // ->like('studentno', $searchStudent)
+                // ->orLike('studln', $searchStudent)
+                // ->orLike('studfn', $searchStudent)
+                // ->orLike('studfullname', $searchStudent)
+                // ->where('studisdel', 0)->findAll();
+                $shsStudents = $this->shsStudentsModel
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->where('studisdel', 0)->findAll();
+                $colStudents = $this->colStudentsModel
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->where('studisdel', 0)->findAll();
+                $ibedStudents = $this->ibedStudentsModel
+                ->like('studentno', $searchStudent)
+                ->orLike('studln', $searchStudent)
+                ->orLike('studfn', $searchStudent)
+                ->orLike('studfullname', $searchStudent)
+                ->where('studisdel', 0)->findAll();
+                $resultStudent = array_merge($colStudents, $shsStudents, $ibedStudents);
+
+                // Add account count for each student
+                foreach($resultStudent as $key => $student) {
+                    $accountCount = $this->studentAccountsModel
+                        ->where('studentno', $student['studentno'])
+                        ->where('isdel', 0)
+                        ->countAllResults();
+                    $resultStudent[$key]['account_count'] = $accountCount;
+                }
+                
+                $data['resultStudent'] = $resultStudent;
+                return view('accounting/oldstudentaccountssearchresultview', $data);
+            }
+        }
+
+        return view('accounting/oldstudentaccountssearchview', $data);
+    }
+    public function oldviewStudentAccounts($id=null){
+        $data = [
+            'page_title' => 'Holy Cross College | Old Student Accounts',
+            'page_heading' => 'OLD STUDENT ACCOUNTS MANAGEMENT',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        // $data['studentdata'] = $this->studentsModel->where('studentno', $id)->findAll();
+        // $students = $this->studentsModel->where('studentno', $id)->findAll();
+        $shsStudents = $this->shsStudentsModel->where('studentno', $id)->findAll();
+        $ibedStudents = $this->ibedStudentsModel->where('studentno', $id)->findAll();
+        $colStudents = $this->colStudentsModel->where('studentno', $id)->findAll();
+        $data['studentdata'] = array_merge($colStudents, $shsStudents, $ibedStudents);
+        $data['sydata'] = $this->syModel->where('syisdel', '0')->findAll();
+        $data['semdata'] = $this->semModel->where('semisdel', '0')->findAll();
+        $data['coursedata'] = $this->coursesModel->where('isdel', '0')->findAll();
+        $data['clusterdata'] = $this->clustersModel->where('isdel', '0')->findAll();
+
+        $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $id)->where('isdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            $rules = [
+                'sy' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'School year is required.',
+                    ],
+                ],
+                'sem' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Semester is required.',
+                    ],
+                ],
+            ];
+            if($this->validate($rules)){
+                $sadata = [
+                    'studentno' => $id,
+                    'sy' => $this->request->getVar('sy'),
+                    'sem' => $this->request->getVar('sem'),
+                    'course' => $this->request->getVar('course'),
+                    'cluster' => $this->request->getVar('cluster'),
+                    'level' => $this->request->getVar('level'),
+                    'accountstatus' => 'Active',
+                    'createddate' => date('Y-m-d'),
+                ];
+                $this->studentAccountsModel->save($sadata);
+                session()->setTempdata('addsuccess','Old Student Account added successfully', 3);
+                return redirect()->to(current_url());
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+
+        return view('accounting/oldstudentaccountsview', $data);
+    }
+    public function addOldFee($id=null) {
+        $SAID = $this->request->getVar('said');
+        $FINDSAID = $this->studentAccountsModel->where('said', $SAID)->findAll();
+        foreach($FINDSAID as $FSAID) {
+            $TOTALASSESSMENT = $FSAID['totalassessment'];
+            $TOTALBALANCE = $FSAID['totalbalance'];
+            $STUDENTNO = $FSAID['studentno'];
+        }
+        $saassessmentdata = [
+            'amount' => $this->request->getVar('amount'),
+            'netamount' => $this->request->getVar('amount'),
+            'balance' => $this->request->getVar('amount'),
+        ];
+
+        $sadata = [
+            'totalassessment' => $TOTALASSESSMENT + $this->request->getVar('amount'),
+            'totalbalance' => $TOTALBALANCE + $this->request->getVar('amount'),
+        ];
+
+        $this->studentAccountsAssessmentModel->where('sadid', $id)->set($saassessmentdata)->update();
+        $this->studentAccountsModel->where('said', $SAID)->set($sadata)->update();
+        session()->setTempdata('addsuccess', 'Fee added successfully!', 2);
+        return redirect()->to(base_url()."student-accounts/view/details/".$STUDENTNO."/".$SAID);
+
+    }
+    public function oldstudentAccountsAddStudent() {
+        $DEPARTMENT = $this->request->getVar('department');
+        $LASTNAME = $this->request->getVar('studln');
+        $FIRSTNAME = $this->request->getVar('studfn');
+        $MIDDLENAME = $this->request->getVar('studmn');
+        $EXTENSION = $this->request->getVar('studsuffix');
+        $STUDENTNO = $this->request->getVar('studentno');
+        if($DEPARTMENT == 'COLLEGE') {
+            $data = [
+                'studentno' => $STUDENTNO,
+                'studln' => $LASTNAME,
+                'studfn' => $FIRSTNAME,
+                'studmn' => $MIDDLENAME,
+                'studextension' => $EXTENSION,
+                'studfullname' => $LASTNAME.' '.$EXTENSION.', '.$FIRSTNAME.' '.$MIDDLENAME,
+            ];
+            $this->colStudentsModel->save($data);
+            session()->setTempdata('addsuccess', 'Fee added successfully!', 2);
+            return redirect()->to(base_url()."old-student-accounts");
+        } else if($DEPARTMENT == 'SHS') {
+            $data = [
+                'studentno' => $STUDENTNO,
+                'studln' => $LASTNAME,
+                'studfn' => $FIRSTNAME,
+                'studmn' => $MIDDLENAME,
+                'studextension' => $EXTENSION,
+                'studfullname' => $LASTNAME.' '.$EXTENSION.', '.$FIRSTNAME.' '.$MIDDLENAME,
+            ];
+            $this->shsStudentsModel->save($data);
+            session()->setTempdata('addsuccess', 'Fee added successfully!', 2);
+            return redirect()->to(base_url()."old-student-accounts");
+        } else if($DEPARTMENT == 'IBED') {
+            $data = [
+                'studentno' => $STUDENTNO,
+                'studln' => $LASTNAME,
+                'studfn' => $FIRSTNAME,
+                'studmn' => $MIDDLENAME,
+                'studextension' => $EXTENSION,
+                'studfullname' => $LASTNAME.' '.$EXTENSION.', '.$FIRSTNAME.' '.$MIDDLENAME,
+            ];
+            $this->ibedStudentsModel->save($data);
+            session()->setTempdata('addsuccess', 'Fee added successfully!', 2);
+            return redirect()->to(base_url()."old-student-accounts");
+        } else {
+            session()->setTempdata('adderror', 'Please select a department!', 2);
+            return redirect()->to(base_url()."old-student-accounts");
+        }
+    }
+    public function deleteOFAssessment($id=null) {
+        $OFID = $this->otherfeesAssessmentModel->where('ofaid', $id)->findAll();
+
+        foreach($OFID as $ofid) {
+            $STUDNO = $ofid['studno'];
+        }
+
+        $data = [
+            'isdel' => '1',
+        ];
+        
+        $this->otherfeesAssessmentModel->where('ofaid', $id)->update($id, $data);
+        session()->setTempdata('addsuccess', 'Other fee is deleted!', 2);
+        return redirect()->to(base_url()."otherfee-assessment/".$STUDNO);
     }
 }

@@ -140,6 +140,8 @@ $routes->get('studentsinfo/(:segment)', 'StudentsController::studentInfo/$1');
 $routes->post('studentsinfo/update/(:segment)', 'StudentsController::studentInfoUpdate/$1');
 $routes->add('students/delete/(:segment)', 'StudentsController::deleteStudent/$1');
 $routes->add('students/credentials/(:segment)', 'StudentsController::createaccount/$1');
+$routes->get('students/studentaccounts', 'StudentsController::studentaccounts');
+$routes->get('students/studentaccounts-details/(:segment)', 'StudentsController::studentaccountsdetails/$1');
 // COLLEGE
 $routes->add('collegestudents', 'ColStudentsController::collegestudentdashboard');
 $routes->get('collegestudentsgrades', 'ColStudentsController::index');
@@ -271,7 +273,7 @@ $routes->post('student-accounts/view/update-nemo/(:segment)', 'AccountingControl
 $routes->add('student-accounts/view/allocate-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAllocate/$1/$2');
 $routes->add('student-accounts/view/add-discount/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsAddDiscount/$1/$2');
 $routes->post('student-accounts/view/details-payment/(:segment)/(:segment)', 'AccountingController::viewStudentAccountsDetailsPayment/$1/$2');
-$routes->add('student-accounts/receipt-print/(:segment)', 'AccountingController::receiptPrint/$1');
+$routes->add('student-accounts/receipt-print/(:segment)/(:segment)', 'AccountingController::receiptPrint/$1/$2');
 $routes->get('ibed-rates', 'AccountingController::ibedRates');
 $routes->post('ibed-rates', 'AccountingController::ibedRates');
 $routes->get('ibed-rates/setup/(:segment)', 'AccountingController::ibedratesSetup/$1');
@@ -308,6 +310,16 @@ $routes->post('otherfee-setup', 'AccountingController::otherfeessetup');
 $routes->get('otherfee-assessment/(:segment)', 'AccountingController::otherfeesAssessment/$1');
 $routes->add('otherfee-assessment/add/(:segment)/(:segment)', 'AccountingController::addOFAssessment/$1/$2');
 $routes->add('otherfee-assessment/process/(:segment)', 'AccountingController::processOFAssessment/$1');
+$routes->add('otherfee-assessment/delete/(:segment)', 'AccountingController::deleteOFAssessment/$1');
+
+$routes->get('old-student-accounts', 'AccountingController::oldstudentAccounts');
+$routes->post('old-student-accounts', 'AccountingController::oldstudentAccounts');
+$routes->get('old-student-accounts/view/(:segment)', 'AccountingController::oldviewStudentAccounts/$1');
+$routes->post('old-student-accounts/view/(:segment)', 'AccountingController::oldviewStudentAccounts/$1');
+$routes->add('feestructure/active/(:segment)', 'AccountingController::activateFEE/$1');
+$routes->add('feestructure/deactivate/(:segment)', 'AccountingController::deactivateFEE/$1');
+$routes->post('old-student-accounts/addoldfee/(:segment)', 'AccountingController::addOldFee/$1');
+$routes->post('old-student-accounts/add-student', 'AccountingController::oldstudentAccountsAddStudent');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');

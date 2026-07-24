@@ -1199,7 +1199,7 @@ class DashboardController extends BaseController
         ->where('studentsaccounts.sy', '2026-2027')
         // ->where('studentsaccounts.sem', '1st Semester')
         ->where('studentsaccounts.totalpayments !=', 0.00)
-        ->groupBy('students_ibed.studid')  // Group by student ID
+        // ->groupBy('students_ibed.studid')  // Group by student ID
         ->countAllResults();
 
         //GRADE 9

@@ -555,6 +555,7 @@ class CashierController extends BaseController
             ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
             ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
             ->where('paymenttransactions.isdel', 0)
+            ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
             ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
             ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
             ->findAll();
@@ -569,6 +570,7 @@ class CashierController extends BaseController
             ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
             ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
             ->where('paymenttransactions.isdel', 0)
+            ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
             ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
             ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
             ->where('paymenttransactions.receivedby', $CASHIER)
@@ -627,6 +629,7 @@ class CashierController extends BaseController
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
                 ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
                 ->where('paymenttransactions.isdel', 0)
+                ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
                 ->findAll();
@@ -641,6 +644,7 @@ class CashierController extends BaseController
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
                 ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
                 ->where('paymenttransactions.isdel', 0)
+                ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
                 ->where('paymenttransactions.receivedby', $CASHIER)
@@ -871,6 +875,7 @@ class CashierController extends BaseController
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
                 ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
                 ->where('paymenttransactions.isdel', 0)
+                ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
                 ->findAll();
@@ -885,6 +890,7 @@ class CashierController extends BaseController
                 ->join('studentsaccounts', 'studentsaccounts.said = studentassessment.said', 'left')
                 ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
                 ->where('paymenttransactions.isdel', 0)
+                ->where('paymenttransactions.paymentstatus !=', 'Cancelled')
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) >=", $startDatetime)
                 ->where("CONCAT(paymenttransactions.paymentdate, ' ', paymenttransactions.paymenttime) <=", $endDatetime)
                 ->where('paymenttransactions.receivedby', $CASHIER)

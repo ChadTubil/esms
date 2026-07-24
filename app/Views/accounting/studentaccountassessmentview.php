@@ -233,7 +233,7 @@
                                                             <path d="M16.0861 12H7.91406" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                             <path d="M12.3223 8.25205L16.0863 12L12.3223 15.748" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                                         </svg>
-                                                    </span><?= $studentaccountsd['assessmentid']; ?>
+                                                    </span><?= $studentaccountsd['said']; ?>
                                                 </a></td>
                                             <td style="text-align: center;"><?= $studentaccountsd['sy']; ?></td>
                                             <td style="text-align: center;"><?= $studentaccountsd['sem']; ?></td>
@@ -351,7 +351,7 @@
                                             <!-- <td><?= $studentaccountsassessmentd['feename'] ?? 'Unknown Fee'; ?></td> -->
                                             
                                             <td class="text-end">
-                                                <?php if($studentaccountsassessmentd['amount'] == '0.00'):?>
+                                                <?php if($studentaccountsassessmentd['amount'] == '0.00' && $studentaccountsassessmentd['isactive'] == '0'):?>
                                                     <?= form_open('student-accounts/view/update-nemo/'.$studentaccountsassessmentd['sadid']); ?>
                                                             <input type="hidden" name="ttfnemo" value="<?= $WHERENEMO; ?>">
                                                             <button class='btn btn-sm btn-icon btn-primary' title='Modify' data-bs-toggle='tooltip' data-bs-placement='top'
@@ -428,7 +428,13 @@
                                                     </div>
 
 
-                                                        
+                                                <?php elseif($studentaccountsassessmentd['amount'] == '0.00' && $studentaccountsassessmentd['isactive'] == '1'): ?>
+                                                    <?= form_open('old-student-accounts/addoldfee/'.$studentaccountsassessmentd['sadid']); ?>
+                                                        <input type="hidden" name="said" value="<?= $studentaccountsassessmentd['said']; ?>">
+                                                        <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
+                                                            <input type="number" class="form-control" name="amount" placeholder="Enter Amount" step="0.01" min="0" required>
+                                                        </div>
+                                                    <?= form_close(); ?>
                                                 <?php else:?>
                                                         ₱<?= number_format($studentaccountsassessmentd['amount'], 2); ?>
                                                 <?php endif;?>
@@ -557,7 +563,7 @@
                                                                                             <td><?= $paymenttransactiond['particulars']; ?></td>
                                                                                             <td>
                                                                                                 <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-info" title="Print Receipt" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                                                                    onclick="printReceipt('<?= base_url(); ?>student-accounts/receipt-print/<?= $paymenttransactiond['paymentid']; ?>')"
+                                                                                                    onclick="printReceipt('<?= base_url(); ?>student-accounts/receipt-print/<?= $paymenttransactiond['paymentid']; ?>/<?= $studentaccountsassessmentd['sadid']; ?>')"
                                                                                                     >
                                                                                                     <span class="btn-inner">
                                                                                                         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

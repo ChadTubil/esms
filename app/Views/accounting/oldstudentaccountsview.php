@@ -82,6 +82,87 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-lg-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">ADD ACCOUNT</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <?= form_open('old-student-accounts/view/'.$studentd['studentno']); ?>
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">SCHOOL YEAR</label>
+                                    <select name="sy" class="form-select">
+                                        <option value="">-</option>
+                                        <?php foreach($sydata as $syd): ?>
+                                            <option value="<?= $syd['syname']; ?>"><?= $syd['syname']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">SEMESTER</label>
+                                    <select name="sem" class="form-select">
+                                        <option value="">-</option>
+                                        <?php foreach($semdata as $semd): ?>
+                                            <option value="<?= $semd['semester']; ?>"><?= $semd['semester']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">COURSE</label>
+                                    <select name="course" class="form-select">
+                                        <option value="">-</option>
+                                        <?php foreach($coursedata as $coursed): ?>
+                                            <option value="<?= $coursed['code']; ?>"><?= $coursed['code']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">CLUSTER</label>
+                                    <select name="cluster" class="form-select">
+                                        <option value="">-</option>
+                                        <?php foreach($clusterdata as $clusterd): ?>
+                                            <option value="<?= $clusterd['code']; ?>"><?= $clusterd['code']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">LEVEL</label>
+                                    <select name="level" class="form-select">
+                                        <option value="">-</option>
+                                        <option value="KINDER 1">KINDER 1</option>
+                                        <option value="KINDER 2">KINDER 2</option>
+                                        <option value="GRADE 1">GRADE 1</option>
+                                        <option value="GRADE 2">GRADE 2</option>
+                                        <option value="GRADE 3">GRADE 3</option>
+                                        <option value="GRADE 4">GRADE 4</option>
+                                        <option value="GRADE 5">GRADE 5</option>
+                                        <option value="GRADE 6">GRADE 6</option>
+                                        <option value="GRADE 7">GRADE 7</option>
+                                        <option value="GRADE 8">GRADE 8</option>
+                                        <option value="GRADE 9">GRADE 9</option>
+                                        <option value="GRADE 10">GRADE 10</option>
+                                        <option value="Grade 11">GRADE 11</option>
+                                        <option value="Grade 12">GRADE 12</option>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-12">
+                                    <label class="form-label">ACTION</label>
+                                    <button class="btn btn-success" type="submit" name="add" style="width: 100%;">ADD</button>
+                                </div>
+                            </div>
+                        <?= form_close(); ?>
+                    </div>
+                </div>
+            </div>                        
+        </div>
+        <div class="row">
             <div class="col-lg-3 col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
