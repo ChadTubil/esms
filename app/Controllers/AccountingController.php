@@ -982,6 +982,7 @@ class AccountingController extends BaseController
         // ->where('studentno', $studentno)->findAll();
         
         $data['studentaccountsdata'] = $this->studentAccountsModel->where('studentno', $studentno)->where('isdel', 0)->findAll();
+        $data['selectedstudentaccount'] = $this->studentAccountsModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
         $data['studentaccountsassessmentdata'] = $this->studentAccountsAssessmentModel->where('said', $studentaccountno)->where('isdel', 0)->findAll();
         
         $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
@@ -3073,5 +3074,72 @@ class AccountingController extends BaseController
         $this->otherfeesAssessmentModel->where('ofaid', $id)->update($id, $data);
         session()->setTempdata('addsuccess', 'Other fee is deleted!', 2);
         return redirect()->to(base_url()."otherfee-assessment/".$STUDNO);
+    }
+    public function entriesReports() {
+        $data = [
+            'page_title' => 'Holy Cross College | Entries Reports',
+            'page_heading' => 'ENTRIES REPORTS! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
+
+        if($this->request->is('post')) {
+            
+            $STARTDATE = $this->request->getVar('start_date');
+            $ENDDATE = $this->request->getVar('end_date');
+            $COA = $this->request->getVar('coa');
+
+            session()->set('start_date', $STARTDATE);
+            session()->set('end_date', $ENDDATE);
+            session()->set('coa', $COA);
+            
+            // print_r([session()->get('start_date'), session()->get('end_date'), session()->get('coa')]);
+
+            // print_r([$STARTDATE, $ENDDATE, $COA]);
+            // return redirect()->to(base_url()."accounting-reports/entries-show/".$STARTDATE.'/'.$ENDDATE.'/'.$COA);
+            return redirect()->to(base_url()."accounting-reports/entries-show/");
+        }
+
+        return view('accounting/reports-entriesview', $data);
+    }
+    public function entriesReportsShow(){
+        $data = [
+            'page_title' => 'Holy Cross College | Entries Reports',
+            'page_heading' => 'ENTRIES REPORTS! ',
+            'page_p' => 'Welcome to Holy Cross College School Management System.',
+        ];
+        if(!session()->has('logged_user')) {
+            return redirect()->to(base_url());
+        }
+        $uid = session()->get('logged_user');
+        $data['userdata'] = $this->usersModel->getLoggedInUserData($uid);
+        $data['usersaccess'] = $this->usersModel->where('uid', $uid)->findAll();
+
+        $data['coadata'] = $this->coaModel->where('isdel', 0)->findAll();
+        
+        $STARTDATE = session()->get('start_date');
+        $ENDDATE = session()->get('end_date');
+        $COA = session()->get('coa');
+
+        // print_r([$STARTDATE, $ENDDATE, $COA]);
+
+        $data['entriesdata'] = $this->studentAccountsAssessmentModel
+        ->select('feestructure.feename, paymenttransactions.amountpaid, paymenttransactions.ornumber, paymenttransactions.receivedby')
+        ->join('feestructure', 'feestructure.feeid = studentassessment.feeid', 'left')
+        ->join('paymentallocation', 'paymentallocation.sadid = studentassessment.sadid', 'left')
+        ->join('paymenttransactions', 'paymenttransactions.paymentid = paymentallocation.paymentid', 'left')
+        ->where('feestructure.accountid', $COA)
+        ->where('paymenttransactions.paymentdate >=', $STARTDATE)
+        ->where('paymenttransactions.paymentdate <=', $ENDDATE)
+        ->findAll();
+
+        return view('accounting/reports-entriesview-show', $data);
     }
 }

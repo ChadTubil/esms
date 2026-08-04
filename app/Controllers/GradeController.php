@@ -1344,7 +1344,7 @@ class GradeController extends BaseController
         
         $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $IMPNO);
         $data['importedGradeData'] = $this->subjectSubjectsModel
-        ->select('student_subjects.*, subjects.subcode, subjects.subject')
+        ->select('student_subjects.*, subjects.subcode, subjects.subject, student_subjects.cdid')
         ->join('currdata', 'currdata.cdid = student_subjects.cdid')
         ->join('subjects', 'subjects.subid = currdata.subid')
         ->where($importedGradeCondition)->groupBy('student_subjects.section')
@@ -1352,7 +1352,7 @@ class GradeController extends BaseController
         $data['sectionsData'] = $this->sectionsModel->findAll();
         return view('collegegradesresultviewnew', $data);
     }
-    public function gradesCollegeEncodingNew($id=null) {
+    public function gradesCollegeEncodingNew($id=null, $cdid=null) {
         $data = [
             'page_title' => 'Holy Cross College | College Grades Encoding',
             'page_heading' => 'COLLEGE GRADES ENCODING! ',
@@ -1376,7 +1376,7 @@ class GradeController extends BaseController
         $data['schoolyeardata'] = $this->syModel->where('syisdel', 0)->findAll();
         $data['semesterdata'] = $this->semModel->where('semisdel', 0)->findAll();
 
-        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $IMPNO, 'student_subjects.section' => $id);
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $IMPNO, 'student_subjects.section' => $id, 'student_subjects.cdid' => $cdid);
         $data['importedGradeData'] = $this->subjectSubjectsModel
         ->select('student_subjects.*, students_col.*')
         ->join('students_col', 'students_col.studid = student_subjects.studid')
@@ -1386,7 +1386,7 @@ class GradeController extends BaseController
 
         return view('collegegradesencodingviewnew', $data);
     }
-    public function gradesCollegeEncodingSubmitNew() {
+    public function gradesCollegeEncodingSubmitNew($cdid=null) {
         // if($this->request->is('post')) {
         //     $SCHEDID = $this->request->getVar('scheduleid');
         //     $data = [
@@ -1443,10 +1443,10 @@ class GradeController extends BaseController
                 session()->setTempdata('error', 'Update failed: ' . $e->getMessage(), 2);
             }
             
-            return redirect()->to(base_url()."grades-college-encodingnew/".$SCHEDID);
+            return redirect()->to(base_url()."grades-college-encodingnew/".$SCHEDID."/".$cdid);
         }
     }
-    public function gradesCollegePrintNew($id=null) {
+    public function gradesCollegePrintNew($id=null, $cdid=null) {
         // Load TCPDF library
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
@@ -1518,7 +1518,7 @@ class GradeController extends BaseController
         // //     $COURSENAME = $coursevalue['name'];
         // // }
 
-        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $TEACHERIMP, 'student_subjects.section' => $id);
+        $importedGradeCondition = array('student_subjects.sy' => $syid, 'student_subjects.sem' => $semid, 'student_subjects.teacherid' => $TEACHERIMP, 'student_subjects.section' => $id, 'student_subjects.cdid' => $cdid);
         $studentsubdata = $this->subjectSubjectsModel
         ->select('student_subjects.*, students_col.*, subject, subjects.*, courses.name, courses.code,')
         ->join('students_col', 'students_col.studid = student_subjects.studid')

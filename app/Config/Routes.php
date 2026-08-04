@@ -320,6 +320,9 @@ $routes->add('feestructure/active/(:segment)', 'AccountingController::activateFE
 $routes->add('feestructure/deactivate/(:segment)', 'AccountingController::deactivateFEE/$1');
 $routes->post('old-student-accounts/addoldfee/(:segment)', 'AccountingController::addOldFee/$1');
 $routes->post('old-student-accounts/add-student', 'AccountingController::oldstudentAccountsAddStudent');
+$routes->get('accounting-reports/entries', 'AccountingController::entriesReports');
+$routes->post('accounting-reports/entries', 'AccountingController::entriesReports');
+$routes->get('accounting-reports/entries-show', 'AccountingController::entriesReportsShow');
 // ENCODING GRADES
 $routes->get('grades-college', 'GradeController::gradesCollege');
 $routes->post('grades-college', 'GradeController::gradesCollege');
@@ -329,9 +332,9 @@ $routes->post('grades-college-encoding-submit', 'GradeController::gradesCollegeE
 $routes->add('grades-college-print/(:segment)', 'GradeController::gradesCollegePrint/$1');
 
 $routes->get('grades-college-resultnew', 'GradeController::gradesCollegeResultNew');
-$routes->get('grades-college-encodingnew/(:segment)', 'GradeController::gradesCollegeEncodingNew/$1');
-$routes->post('grades-college-encoding-submitnew', 'GradeController::gradesCollegeEncodingSubmitNew');
-$routes->add('grades-college-printnew/(:segment)', 'GradeController::gradesCollegePrintNew/$1');
+$routes->get('grades-college-encodingnew/(:segment)/(:segment)', 'GradeController::gradesCollegeEncodingNew/$1/$2');
+$routes->post('grades-college-encoding-submitnew/(:segment)', 'GradeController::gradesCollegeEncodingSubmitNew/$1');
+$routes->add('grades-college-printnew/(:segment)/(:segment)', 'GradeController::gradesCollegePrintNew/$1/$2');
 
 
 // REGISTRAR

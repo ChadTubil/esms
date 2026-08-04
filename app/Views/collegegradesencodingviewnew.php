@@ -14,7 +14,9 @@
     <!-- ----------- SIDEBAR ------------------ -->
     <?= $this->include("partials/sidebar"); ?>  
     <!-- ----------- END OF SIDEBAR ------------------ --> 
-
+    <?php foreach($importedGradeData as $igd):?>
+        <?php $cdid = $igd['cdid']; ?>  
+    <?php endforeach; ?>    
     <!-- Begin Page Content -->
     <div class="conatiner-fluid content-inner mt-n5 py-0">
         <div class="row">
@@ -92,7 +94,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?= form_open('grades-college-encoding-submitnew'); ?>
+                                    <?= form_open('grades-college-encoding-submitnew/'.$cdid); ?>
                                     <?php foreach($importedGradeData as $igd):?>
                                         <tr>
                                             

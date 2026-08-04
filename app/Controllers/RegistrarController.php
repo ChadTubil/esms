@@ -519,26 +519,37 @@ class RegistrarController extends BaseController
                     $femaleSex = '/';
                 }
                 
-                // ========== FIX MAJOR COLUMN ==========
                 // Determine Major based on Course
                 $major = '';
                 $course = $student['course'];
                 
                 if($course == 'BSBA-MM') {
-                    $major = 'Marketing Management';
+                    $major = 'MM';
+                    $course = 'BSBA';
                 } elseif($course == 'BSBA-FM') {
-                    $major = 'Financial Management';
+                    $major = 'FM';
+                    $course = 'BSBA';
                 } elseif($course == 'BSEd-ENGLISH') {
                     $major = 'English';
+                    $course = 'BSED';
                 } elseif($course == 'BSEd-SCIENCE') {
                     $major = 'Science';
+                    $course = 'BSED';
                 } elseif($course == 'BSEd-FILIPINO') {
                     $major = 'Filipino';
+                    $course = 'BSED';
                 } elseif($course == 'BSEd-MATHEMATICS') {
                     $major = 'Mathematics';
+                    $course = 'BSED';
                 } else {
-                    $major = ''; // Blank for non-BSBA courses
+                    $major = '';
+                    $course = $student['course'];
                 }
+                
+                // ========== FORMAT STUDENT NAME WITH SPECIAL CHARACTERS SUPPORT ==========
+                $fullName = $student['studfullname'];
+                $lowercaseName = mb_convert_case($fullName, MB_CASE_LOWER, 'UTF-8');
+                $formattedName = mb_convert_case($lowercaseName, MB_CASE_TITLE, 'UTF-8');
                 
                 // Calculate total units
                 $totalUnits = 0;
@@ -559,12 +570,12 @@ class RegistrarController extends BaseController
                     // Set basic student info (ONLY on first row)
                     if($isFirstRow) {
                         $sheet->setCellValue('A' . $row, $counter);
-                        $sheet->setCellValue('B' . $row, $student['studfullname']);
+                        $sheet->setCellValue('B' . $row, $formattedName);
                         $sheet->setCellValue('C' . $row, $maleSex);
                         $sheet->setCellValue('D' . $row, $femaleSex);
-                        $sheet->setCellValue('E' . $row, $student['course']);
+                        $sheet->setCellValue('E' . $row, $course);
                         $sheet->setCellValue('F' . $row, $yearLevel);
-                        $sheet->setCellValue('G' . $row, $major);  // Fixed: gamit ang $major variable
+                        $sheet->setCellValue('G' . $row, $major);
                         $isFirstRow = false;
                     } else {
                         // Blank student info for additional rows
@@ -601,12 +612,17 @@ class RegistrarController extends BaseController
                     $row++;
                 }
                 
-                // ========== ADD ONE BLANK ROW AFTER STUDENT (ONCE ONLY) ==========
-                // Punan ng blanko ang buong row
-                // for($col = 'A'; $col <= 'V'; $col++) {
-                //     $sheet->setCellValue($col . $row, '');
-                // }
-                // $row++; // Move to next row
+                // ========== ADD ONE BLANK ROW AFTER STUDENT (ONLY IF STUDENT HAS 1 ROW OF SUBJECTS) ==========
+                // If the student has more than 7 subjects (2 or more rows), we DON'T add a blank row
+                // If the student has 7 or fewer subjects (1 row), we ADD a blank row
+                if($chunkCount <= 1) {
+                    // Add blank row after student with 1 row of subjects
+                    for($col = 'A'; $col <= 'V'; $col++) {
+                        $sheet->setCellValue($col . $row, '');
+                    }
+                    $row++; // Move to next row for the next student
+                }
+                // If chunkCount > 1 (student has 2+ rows of subjects), skip adding blank row
                 
                 $counter++;
             }

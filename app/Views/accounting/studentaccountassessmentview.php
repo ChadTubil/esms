@@ -297,9 +297,12 @@
                         <?php endif; ?>
                         <label for="email" class="form-label">ADD FEE</label>
                         <?= form_open('student-accounts/view/details-add'); ?>
+                        <?php foreach($selectedstudentaccount as $selectedsaid): ?>
+                            <?php $SAIDDD = $selectedsaid['said']; ?>
+                        <?php endforeach; ?>
                         <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
                             <input type="hidden" name="studentno" value="<?= $studentd['studentno']; ?>">
-                            <input type="hidden" name="accountno" value="<?= $studentaccountsd['said']; ?>">
+                            <input type="hidden" name="accountno" value="<?= $SAIDDD; ?>">
                             <select id="feeStructureSelect" class="form-control" name="selectedfeeid" required style="width: 90%;" required>
                                 <option value="" disabled selected hidden>Select Fee to Add</option>
                                 <!-- All Available Fees -->
