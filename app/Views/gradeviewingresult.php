@@ -62,7 +62,7 @@
                         <br>
                         <div class="row">
                             <div class="col-lg-12 col-sm-12">
-                                <table id="datatable" class="table table-striped" data-toggle="data-table" style="font-size: 12px">
+                                <table id="datatable" class="table table-striped" data-toggle="data-table">
                                     <thead>
                                         <tr>
                                             <th>CODE</th>

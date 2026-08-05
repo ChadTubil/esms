@@ -190,7 +190,7 @@
                                                                                     required>
                                                                                         <option selected="" disabled=""></option>
                                                                                         <?php foreach ($schoolyeardata as $syd): ?>
-                                                                                            <option value="<?php echo $syd['syid']; ?>"><?php echo $syd['syname']; ?></option>
+                                                                                            <option value="<?php echo $syd['syname']; ?>"><?php echo $syd['syname']; ?></option>
                                                                                         <?php endforeach; ?>
                                                                                     </select>
                                                                                 </div>
@@ -200,7 +200,7 @@
                                                                                     required>
                                                                                         <option selected="" disabled=""></option>
                                                                                         <?php foreach ($semesterdata as $semd): ?>
-                                                                                            <option value="<?php echo $semd['semid']; ?>"><?php echo $semd['semester']; ?></option>
+                                                                                            <option value="<?php echo $semd['semester']; ?>"><?php echo $semd['semester']; ?></option>
                                                                                         <?php endforeach; ?>
                                                                                     </select>
                                                                                 </div>

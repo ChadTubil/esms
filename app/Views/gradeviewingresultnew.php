@@ -80,12 +80,12 @@
                                     <tbody>
                                         <?php foreach($importedGradeData as $igd):?>
                                             <tr>
-                                                <?= form_open('gradesview/update/'.$igd['ssid']); ?>
+                                                <?= form_open('gradesview/updatenew/'.$igd['ssid']); ?>
                                                     <td>
-                                                        <input type="hidden" name="studnotext" value="<?= $igd['studentno']; ?>">
-                                                        <?= $igd['subjectcode']; ?>
+                                                        <input type="hidden" name="studnotext" value="<?= $igd['studid']; ?>">
+                                                        <?= $igd['subcode']; ?>
                                                     </td>
-                                                    <td><?= $igd['subjectdescription']; ?></td>
+                                                    <td><?= $igd['subject']; ?></td>
                                                     <td><?= $igd['teachername']; ?></td>
                                                     <td style="text-align: center;"><input type="text" name="prelimtext" class="form-control" 
                                                         style="width: 70px; height: 25px; text-align: center; color: white;" 

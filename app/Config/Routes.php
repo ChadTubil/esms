@@ -169,6 +169,7 @@ $routes->post('gradesview/(:segment)', 'GradeController::gradeView/$1');
 $routes->add('gradesview/result/(:segment)', 'GradeController::gradeViewResult/$1');
 $routes->add('gradesview/resultnew/(:segment)', 'GradeController::gradeViewResultNew/$1');
 $routes->add('gradesview/update/(:segment)', 'GradeController::gradeViewUpdate/$1');
+$routes->add('gradesview/updatenew/(:segment)', 'GradeController::gradeViewUpdateNew/$1');
 // USERSMANAGEMENT
 $routes->get('users', 'UsersController::index');
 $routes->post('users', 'UsersController::index');
